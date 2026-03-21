@@ -1,1 +1,2 @@
-# intentionally empty (schema validation disabled for now)
+# minimal runtime deps
+jsonschema>=4.0.0
