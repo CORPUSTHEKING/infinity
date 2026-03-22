@@ -1,7 +1,7 @@
-export function renderScriptCards(items = [], actions = {}) {
+export function renderScriptCards(items = []) {
   return `
-    <section class="inf-cards-rail" aria-label="Scripts">
-      ${items.map((item) => `
+    <div class="inf-cards-rail" aria-label="Scripts">
+      ${items.length ? items.map((item) => `
         <article class="inf-card" data-script-card data-script-id="${item.id || ''}">
           <header class="inf-card-head">
             <div class="inf-card-author">${item.author || item.owner || 'Unknown author'}</div>
@@ -27,24 +27,7 @@ export function renderScriptCards(items = [], actions = {}) {
             <pre class="inf-card-deps">${Array.isArray(item.dependencies) ? item.dependencies.join('\n') : (item.dependencies || '')}</pre>
           </footer>
         </article>
-      `).join('')}
-    </section>
+      `).join('') : '<div class="inf-result">No scripts loaded yet.</div>'}
+    </div>
   `;
-}
-
-export function bindCardActions(root, handlers = {}) {
-  root.querySelectorAll('[data-script-card]').forEach((card) => {
-    const itemId = card.getAttribute('data-script-id');
-
-    card.querySelector('[data-script-expand]')?.addEventListener('click', () => {
-      handlers.onExpand?.(itemId, card);
-    });
-
-    card.querySelectorAll('[data-action]').forEach((btn) => {
-      btn.addEventListener('click', (event) => {
-        const action = event.currentTarget.getAttribute('data-action');
-        handlers.onAction?.(action, itemId, card);
-      });
-    });
-  });
 }

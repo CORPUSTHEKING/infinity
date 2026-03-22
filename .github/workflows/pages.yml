@@ -32,6 +32,15 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v5
 
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - name: Build scripts manifest
+        working-directory: infinity-web
+        run: node tools/generate-scripts-manifest.mjs
+
       - name: Setup Pages
         uses: actions/configure-pages@v5
 

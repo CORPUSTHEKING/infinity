@@ -26,9 +26,15 @@
     {"key": "terminal", "label": "Terminal Helpers"},
     {"key": "iwl", "label": "I Would Like"}
   ],
+  "quick_actions": [
+    {"key": "download", "label": "scripts"},
+    {"key": "share", "label": "share"},
+    {"key": "request", "label": "request"},
+    {"key": "disclaimer", "label": "configs"}
+  ],
   "ui": {
-    "hide_topbar_on_scroll": true,
-    "show_floating_logo": true,
+    "hide_topbar_on_scroll": false,
+    "show_floating_logo": false,
     "show_bottom_bar": true,
     "show_bottom_search": true,
     "card_style": "rolling",

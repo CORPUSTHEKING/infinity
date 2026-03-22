@@ -15,7 +15,7 @@
       "title": "Upload a Script",
       "mode": "email_or_form",
       "fields": [
-        {"name": "category", "type": "select", "required": true},
+        {"name": "category", "type": "select", "required": true, "options": ["terminal", "downloads", "helpers"]},
         {"name": "purpose", "type": "text", "required": true},
         {"name": "shell", "type": "text", "required": true},
         {"name": "language", "type": "text", "required": true},
@@ -25,7 +25,7 @@
         {"name": "email", "type": "email", "required": false},
         {"name": "phone", "type": "tel", "required": false},
         {"name": "address", "type": "text", "required": false},
-        {"name": "personal_or_business", "type": "radio", "required": false},
+        {"name": "personal_or_business", "type": "radio", "required": false, "options": ["personal", "business"]},
         {"name": "reason", "type": "textarea", "required": false},
         {"name": "review", "type": "textarea", "required": false}
       ]
@@ -46,7 +46,7 @@
       "title": "Request a Script",
       "mode": "questionnaire",
       "fields": [
-        {"name": "category", "type": "select", "required": true},
+        {"name": "category", "type": "select", "required": true, "options": ["terminal", "downloads", "helpers"]},
         {"name": "what", "type": "textarea", "required": true},
         {"name": "why", "type": "textarea", "required": true},
         {"name": "where", "type": "text", "required": false},

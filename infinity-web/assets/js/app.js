@@ -1,18 +1,17 @@
 import { mountLayout } from '../../components/layout.js';
 import { bindDrawerToggle } from '../../components/drawer.js';
+import { bindQuickRail } from '../../components/quickrail.js';
 import { bindScrollChrome } from '../../components/scroll.js';
-import { renderHero } from '../../components/hero.js';
-import { renderSummary } from '../../components/summary.js';
-import { renderCategoriesView, renderSearchResultsView } from '../../components/categories.js';
-import { bindSearchDock } from '../../components/searchdock.js';
 import { normalizeRoute, onRouteChange } from '../../components/router.js';
 import { searchItems } from '../../components/search.js';
-import { bindCardActions } from '../../components/cards.js';
+import { renderCategoriesView, renderSearchResultsView } from '../../components/categories.js';
+import { bindCardActions } from '../../components/cardActions.js';
+import { bindSearchDock } from '../../components/searchdock.js';
 import { bindAutosave, serializeForm } from '../../components/forms.js';
+import { getState, setState } from '../../components/state.js';
 
 import { renderAssistancePage } from '../../pages/assistance.js';
 import { renderDownloadPage } from '../../pages/download.js';
-import { renderSearchPage } from '../../pages/search.js';
 import { renderSharePage } from '../../pages/share.js';
 import { renderUploadPage } from '../../pages/upload.js';
 import { renderRequestPage } from '../../pages/request.js';
@@ -51,9 +50,26 @@ const scriptItems = Array.isArray(scriptsConfig.scripts) ? scriptsConfig.scripts
 const configuredCategories = Array.isArray(scriptsConfig.categories) ? scriptsConfig.categories : [];
 const indexFields = Array.isArray(scriptsConfig.index_fields) ? scriptsConfig.index_fields : [];
 
-const drawerToggle = bindDrawerToggle({
+const quickRail = bindQuickRail({
+  rail: layout.quickRail,
+  shell: layout.shell,
+  onOpen: () => setState({ quickRailOpen: true }),
+  onClose: () => setState({ quickRailOpen: false })
+});
+
+bindDrawerToggle({
   drawer: layout.drawer,
   button: appRoot.querySelector('[data-inf-menu-toggle]')
+});
+
+bindScrollChrome({
+  shell: layout.shell,
+  threshold: 18
+});
+
+layout.brandbar?.addEventListener('click', () => {
+  quickRail.open();
+  window.location.hash = '#assistance';
 });
 
 const searchDock = bindSearchDock({
@@ -62,29 +78,39 @@ const searchDock = bindSearchDock({
   input: layout.searchInput,
   toggleButton: appRoot.querySelector('[data-inf-search-toggle]'),
   onChange: (value) => {
+    setState({ query: value });
     if (normalizeRoute(window.location.hash) === 'search') {
       renderRoute('search', value);
     }
-  }
-});
-
-bindScrollChrome({
-  topbar: layout.topbar,
-  floatingLogo: layout.floatingLogo,
-  shell: layout.shell,
-  threshold: 28
+  },
+  onOpen: () => setState({ searchOpen: true }),
+  onClose: () => setState({ searchOpen: false })
 });
 
 function summaryHtml() {
   const live = scriptsConfig?.counts?.live ?? scriptItems.length;
   const total = scriptsConfig?.counts?.total ?? scriptItems.length;
 
-  return renderSummary({
-    live,
-    total,
-    platforms: (platformsConfig.platforms || []).length,
-    devices: (devicesConfig.devices || []).length
-  });
+  return `
+    <div class="inf-summary-grid">
+      <article class="inf-summary-card">
+        <strong>${live}</strong>
+        <span>live scripts</span>
+      </article>
+      <article class="inf-summary-card">
+        <strong>${total}</strong>
+        <span>total scripts</span>
+      </article>
+      <article class="inf-summary-card">
+        <strong>${(platformsConfig.platforms || []).length}</strong>
+        <span>platform links</span>
+      </article>
+      <article class="inf-summary-card">
+        <strong>${(devicesConfig.devices || []).length}</strong>
+        <span>devices</span>
+      </article>
+    </div>
+  `;
 }
 
 function attachFormBehavior(route) {
@@ -103,10 +129,10 @@ function attachFormBehavior(route) {
 
 function renderRoute(route, queryOverride = '') {
   const cleanRoute = normalizeRoute(route);
-  const query = queryOverride || layout.searchInput?.value || '';
+  const query = queryOverride || getState().query || layout.searchInput?.value || '';
   let html = '';
 
-  layout.setHero(renderHero(siteConfig.site_name || 'Infinity'));
+  setState({ route: cleanRoute, query });
   layout.setSummary(summaryHtml());
 
   if (cleanRoute === 'assistance') {
@@ -145,10 +171,7 @@ function renderRoute(route, queryOverride = '') {
   layout.setPageContent(html);
 
   const main = appRoot.querySelector('[data-inf-main]');
-  if (!main) return;
-
-  const cardRoot = main.querySelector('.inf-categories, .inf-category');
-  if (cardRoot) {
+  if (main) {
     bindCardActions(main, {
       onExpand: (id, card) => {
         card.classList.toggle('is-expanded');

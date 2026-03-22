@@ -34,9 +34,7 @@ export function renderCategorySection(category, items = [], query = '') {
         <span>${countLabel}</span>
       </div>
       <p class="inf-category-desc">${desc}${query ? ` • filtered by “${query}”` : ''}</p>
-      <div class="inf-cards-rail">
-        ${items.length ? renderScriptCards(items) : '<div class="inf-result">No scripts loaded yet.</div>'}
-      </div>
+      ${renderScriptCards(items)}
     </section>
   `;
 }
@@ -58,9 +56,8 @@ export function renderSearchResultsView(results = [], query = '') {
         <span>${results.length} result${results.length === 1 ? '' : 's'}</span>
       </div>
       <p class="inf-category-desc">Search matches across names, authors, shells, languages, descriptions, dependencies, and install notes.</p>
-      <div class="inf-cards-rail">
-        ${results.length ? renderScriptCards(results) : '<div class="inf-result">No matching scripts.</div>'}
-      </div>
+      ${renderScriptCards(results)}
+      ${!results.length ? `<div class="inf-result">No matching scripts for “${query}”.</div>` : ''}
     </section>
   `;
 }
