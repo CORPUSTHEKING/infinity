@@ -2,38 +2,64 @@ export function createLayoutShell(config = {}) {
   const nav = Array.isArray(config.navigation) ? config.navigation : [];
   const admin = config.admin_contacts || {};
   const siteName = config.site_name || 'Infinity';
+
   return `
     <div class="inf-shell" data-inf-shell>
       <header class="inf-topbar" data-inf-topbar>
-        <div class="inf-brand">
-          <a class="inf-logo" href="#home" aria-label="${siteName} home">${siteName}</a>
+        <div class="inf-topbar-left">
+          <a class="inf-logo" href="#assistance" aria-label="${siteName} home">${siteName}</a>
+          <button type="button" class="inf-chip" data-inf-search-toggle>Search</button>
         </div>
-        <div class="inf-top-actions">
-          <button type="button" class="inf-icon-btn" data-inf-search-toggle>Search</button>
-          <button type="button" class="inf-icon-btn" data-inf-menu-toggle>Menu</button>
+
+        <div class="inf-topbar-center">
+          <span class="inf-topbar-kicker">Workspace • Scripts • Requests • Sharing</span>
+        </div>
+
+        <div class="inf-topbar-right">
+          <button type="button" class="inf-chip" data-inf-menu-toggle>Menu</button>
+          <a class="inf-chip inf-chip-accent" href="#sponsor">Sponsor</a>
         </div>
       </header>
 
       <div class="inf-floating-logo" data-inf-floating-logo hidden>
-        <a href="#home">${siteName}</a>
+        <a href="#assistance">${siteName}</a>
       </div>
 
       <aside class="inf-drawer" data-inf-drawer hidden>
+        <div class="inf-drawer-head">
+          <strong>${siteName}</strong>
+          <span>Admin: ${admin.primary_email || ''}</span>
+        </div>
         <nav class="inf-drawer-nav" aria-label="Primary">
           ${nav.map(item => `<a href="#${item.key}" data-route="${item.key}">${item.label}</a>`).join('')}
         </nav>
-        <div class="inf-drawer-meta">
-          <div>Admin: ${admin.primary_email || ''}</div>
-        </div>
       </aside>
 
       <section class="inf-hero" data-inf-hero>
         <div class="inf-hero-media" aria-hidden="true"></div>
+        <div class="inf-hero-overlay"></div>
         <div class="inf-hero-copy">
-          <h1>${siteName}</h1>
-          <p>Terminal helpers, scripts, requests, uploads, and community sharing in one place.</p>
+          <p class="inf-hero-eyebrow">Infinity Terminal Helpers</p>
+          <h1>Portable workspace, script library, and community actions in one contained system.</h1>
+          <p class="inf-hero-text">
+            Search, download, upload, request, review, report, and share from a single layout that stays fast on mobile.
+          </p>
+          <div class="inf-hero-actions">
+            <a href="#download" class="inf-hero-btn">Browse scripts</a>
+            <a href="#iwl" class="inf-hero-btn inf-hero-btn-soft">I Would Like</a>
+          </div>
+        </div>
+
+        <div class="inf-hero-marquee" aria-hidden="true">
+          <span>Terminal helpers</span>
+          <span>Rolling cards</span>
+          <span>Fuzzy + regex search</span>
+          <span>Uploads by schema</span>
+          <span>Community sharing</span>
         </div>
       </section>
+
+      <section class="inf-summary" data-inf-summary></section>
 
       <main class="inf-main" data-inf-main></main>
 
@@ -43,7 +69,7 @@ export function createLayoutShell(config = {}) {
       </section>
 
       <footer class="inf-bottombar" data-inf-bottombar>
-        <a href="#profile">Profile</a>
+        <a href="#assistance">Home</a>
         <a href="#upload">Upload</a>
         <a href="#download">Downloads</a>
       </footer>
@@ -62,17 +88,15 @@ export function mountLayout(root, config = {}) {
   const searchToggle = root.querySelector('[data-inf-search-toggle]');
   const searchBar = root.querySelector('[data-inf-searchbar]');
   const searchInput = root.querySelector('[data-inf-search-input]');
-
-  let lastScrollY = window.scrollY || 0;
+  const summaryHost = root.querySelector('[data-inf-summary]');
 
   const updateScrollUI = () => {
     const currentY = window.scrollY || 0;
-    const hideTop = currentY > 24;
+    const hideTop = currentY > 32;
     topbar?.classList.toggle('is-hidden', hideTop);
     floatingLogo.hidden = !hideTop;
-    searchBar?.classList.toggle('is-hidden', currentY > 24);
-    shell?.classList.toggle('is-scrolled', currentY > 24);
-    lastScrollY = currentY;
+    searchBar?.classList.toggle('is-hidden', currentY > 32);
+    shell?.classList.toggle('is-scrolled', currentY > 32);
   };
 
   menuToggle?.addEventListener('click', () => {
@@ -94,6 +118,10 @@ export function mountLayout(root, config = {}) {
     drawer,
     searchBar,
     searchInput,
+    summaryHost,
+    setSummary(html) {
+      if (summaryHost) summaryHost.innerHTML = html;
+    },
     setPageContent(html) {
       const main = root.querySelector('[data-inf-main]');
       if (main) main.innerHTML = html;

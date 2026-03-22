@@ -43,6 +43,56 @@ const layout = mountLayout(appRoot, siteConfig);
 const scriptItems = Array.isArray(scriptsConfig.scripts) ? scriptsConfig.scripts : [];
 const indexFields = Array.isArray(scriptsConfig.index_fields) ? scriptsConfig.index_fields : [];
 
+function summaryHtml() {
+  const counts = [
+    { value: scriptItems.length, label: 'Scripts loaded' },
+    { value: (platformsConfig.platforms || []).length, label: 'Platforms' },
+    { value: (devicesConfig.devices || []).length, label: 'Devices' },
+    { value: Object.keys(formsConfig.forms || {}).length, label: 'Forms' }
+  ];
+
+  return `
+    <div class="inf-summary-grid">
+      ${counts.map((item) => `
+        <article class="inf-summary-card">
+          <strong>${item.value}</strong>
+          <span>${item.label}</span>
+        </article>
+      `).join('')}
+    </div>
+  `;
+}
+
+function renderHome() {
+  const categories = scriptsConfig.categories || [];
+  const grouped = categories.length
+    ? categories.map((category) => {
+        const items = scriptItems.filter((item) => String(item.category || '').toLowerCase() === String(category).toLowerCase());
+        return { category, items };
+      })
+    : [{ category: 'All scripts', items: scriptItems }];
+
+  return `
+    <section class="inf-page">
+      <h2>Featured categories</h2>
+      <div class="inf-grid">
+        ${grouped.map((group) => `
+          <article class="inf-tile">
+            <strong>${group.category}</strong>
+            <p>${group.items.length} script${group.items.length === 1 ? '' : 's'}</p>
+            <a href="#download">Open</a>
+          </article>
+        `).join('')}
+      </div>
+    </section>
+
+    <section class="inf-page">
+      <h2>Rolling cards</h2>
+      ${renderScriptCards(scriptItems)}
+    </section>
+  `;
+}
+
 function attachFormBehavior(route) {
   const main = appRoot.querySelector('[data-inf-main]');
   const form = main?.querySelector('[data-inf-form]');
@@ -61,7 +111,7 @@ function renderRoute(route) {
   const cleanRoute = normalizeRoute(route);
   let html = '';
 
-  if (cleanRoute === 'assistance') html = renderAssistancePage();
+  if (cleanRoute === 'assistance') html = renderHome();
   else if (cleanRoute === 'download') html = renderDownloadPage(scriptItems);
   else if (cleanRoute === 'search') html = renderSearchPage(scriptItems, layout.searchInput?.value || '');
   else if (cleanRoute === 'share') html = renderSharePage(formsConfig.forms?.share || {});
@@ -75,19 +125,31 @@ function renderRoute(route) {
   else if (cleanRoute === 'disclaimer') html = renderDisclaimerPage();
   else if (cleanRoute === 'terminal') html = renderTerminalPage();
   else if (cleanRoute === 'iwl') html = renderIwlPage(formsConfig.forms?.iwl || {});
-  else html = renderAssistancePage();
+  else html = renderHome();
 
   layout.setPageContent(html);
+  layout.setSummary(summaryHtml());
 
   const main = appRoot.querySelector('[data-inf-main]');
   if (!main) return;
 
-  if (cleanRoute === 'download' || cleanRoute === 'search') {
+  if (cleanRoute === 'download' || cleanRoute === 'search' || cleanRoute === 'assistance') {
     const visible = cleanRoute === 'search'
       ? searchItems(scriptItems, layout.searchInput?.value || '', { fields: indexFields })
       : scriptItems;
 
-    main.insertAdjacentHTML('beforeend', renderScriptCards(visible));
+    if (cleanRoute === 'search') {
+      main.innerHTML = renderSearchPage(visible, layout.searchInput?.value || '');
+    } else if (cleanRoute === 'download') {
+      main.innerHTML = renderDownloadPage(visible);
+    } else {
+      main.innerHTML = renderHome();
+    }
+
+    const cardsHost = document.createElement('div');
+    cardsHost.innerHTML = renderScriptCards(visible);
+    main.appendChild(cardsHost);
+
     bindCardActions(main, {
       onExpand: (id, card) => {
         card.classList.toggle('is-expanded');
