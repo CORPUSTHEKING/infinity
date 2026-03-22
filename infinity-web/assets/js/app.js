@@ -1,7 +1,13 @@
 import { mountLayout } from '../../components/layout.js';
+import { bindDrawerToggle } from '../../components/drawer.js';
+import { bindScrollChrome } from '../../components/scroll.js';
+import { renderHero } from '../../components/hero.js';
+import { renderSummary } from '../../components/summary.js';
+import { renderCategoriesView, renderSearchResultsView } from '../../components/categories.js';
+import { bindSearchDock } from '../../components/searchdock.js';
 import { normalizeRoute, onRouteChange } from '../../components/router.js';
 import { searchItems } from '../../components/search.js';
-import { renderScriptCards, bindCardActions } from '../../components/cards.js';
+import { bindCardActions } from '../../components/cards.js';
 import { bindAutosave, serializeForm } from '../../components/forms.js';
 
 import { renderAssistancePage } from '../../pages/assistance.js';
@@ -40,81 +46,45 @@ const [siteConfig, scriptsConfig, platformsConfig, devicesConfig, formsConfig] =
 ]);
 
 const layout = mountLayout(appRoot, siteConfig);
+
 const scriptItems = Array.isArray(scriptsConfig.scripts) ? scriptsConfig.scripts : [];
+const configuredCategories = Array.isArray(scriptsConfig.categories) ? scriptsConfig.categories : [];
 const indexFields = Array.isArray(scriptsConfig.index_fields) ? scriptsConfig.index_fields : [];
+
+const drawerToggle = bindDrawerToggle({
+  drawer: layout.drawer,
+  button: appRoot.querySelector('[data-inf-menu-toggle]')
+});
+
+const searchDock = bindSearchDock({
+  dock: layout.searchDock,
+  panel: layout.searchPanel,
+  input: layout.searchInput,
+  toggleButton: appRoot.querySelector('[data-inf-search-toggle]'),
+  onChange: (value) => {
+    if (normalizeRoute(window.location.hash) === 'search') {
+      renderRoute('search', value);
+    }
+  }
+});
+
+bindScrollChrome({
+  topbar: layout.topbar,
+  floatingLogo: layout.floatingLogo,
+  shell: layout.shell,
+  threshold: 28
+});
 
 function summaryHtml() {
   const live = scriptsConfig?.counts?.live ?? scriptItems.length;
   const total = scriptsConfig?.counts?.total ?? scriptItems.length;
 
-  return `
-    <div class="inf-summary-grid">
-      <article class="inf-summary-card">
-        <strong>${live}</strong>
-        <span>live scripts</span>
-      </article>
-      <article class="inf-summary-card">
-        <strong>${total}</strong>
-        <span>total scripts</span>
-      </article>
-      <article class="inf-summary-card">
-        <strong>${(platformsConfig.platforms || []).length}</strong>
-        <span>platform links</span>
-      </article>
-      <article class="inf-summary-card">
-        <strong>${(devicesConfig.devices || []).length}</strong>
-        <span>devices</span>
-      </article>
-    </div>
-  `;
-}
-
-function uniqueCategories() {
-  const fromConfig = Array.isArray(scriptsConfig.categories) ? scriptsConfig.categories : [];
-  const fromItems = scriptItems.map((item) => item.category).filter(Boolean);
-  return Array.from(new Set([...fromConfig, ...fromItems]));
-}
-
-function groupScriptsByCategory() {
-  const groups = new Map();
-  for (const category of uniqueCategories()) {
-    groups.set(category, []);
-  }
-  for (const item of scriptItems) {
-    const key = item.category || 'uncategorized';
-    if (!groups.has(key)) groups.set(key, []);
-    groups.get(key).push(item);
-  }
-  return [...groups.entries()].map(([category, items]) => ({ category, items }));
-}
-
-function renderCategorySection(category, items, query = '') {
-  const title = String(category || 'uncategorized');
-  const label = title.toUpperCase();
-  const desc = 'Scripts in this category are kept data-driven, so new items can be added by editing config only.';
-  const countLabel = `${items.length} script${items.length === 1 ? '' : 's'} loaded`;
-
-  return `
-    <section class="inf-category">
-      <div class="inf-category-head">
-        <h2>${label}</h2>
-        <span>${countLabel}</span>
-      </div>
-      <p class="inf-category-desc">${desc}${query ? ` • filtered by “${query}”` : ''}</p>
-      <div class="inf-cards-rail">
-        ${renderScriptCards(items)}
-      </div>
-    </section>
-  `;
-}
-
-function renderHome(query = '') {
-  const groups = groupScriptsByCategory();
-  return `
-    <section class="inf-categories">
-      ${groups.map((group) => renderCategorySection(group.category, group.items, query)).join('')}
-    </section>
-  `;
+  return renderSummary({
+    live,
+    total,
+    platforms: (platformsConfig.platforms || []).length,
+    devices: (devicesConfig.devices || []).length
+  });
 }
 
 function attachFormBehavior(route) {
@@ -131,56 +101,54 @@ function attachFormBehavior(route) {
   }, { once: true });
 }
 
-function renderRoute(route) {
+function renderRoute(route, queryOverride = '') {
   const cleanRoute = normalizeRoute(route);
-  const query = layout.searchInput?.value || '';
+  const query = queryOverride || layout.searchInput?.value || '';
   let html = '';
 
-  if (cleanRoute === 'assistance') html = renderHome();
-  else if (cleanRoute === 'download') html = renderHome();
-  else if (cleanRoute === 'search') {
-    const visible = searchItems(scriptItems, query, { fields: indexFields });
-    html = `
-      <section class="inf-category">
-        <div class="inf-category-head">
-          <h2>SEARCH RESULTS</h2>
-          <span>${visible.length} result${visible.length === 1 ? '' : 's'}</span>
-        </div>
-        <p class="inf-category-desc">Search matches across names, authors, shells, languages, descriptions, dependencies, and install notes.</p>
-        <div class="inf-cards-rail">
-          ${renderScriptCards(visible)}
-        </div>
-      </section>
-    `;
-  } else if (cleanRoute === 'share') html = renderSharePage(formsConfig.forms?.share || {});
-  else if (cleanRoute === 'upload') html = renderUploadPage(formsConfig.forms?.upload || {});
-  else if (cleanRoute === 'request') html = renderRequestPage(formsConfig.forms?.request || {});
-  else if (cleanRoute === 'review') html = renderReviewPage(formsConfig.forms?.review || {});
-  else if (cleanRoute === 'report') html = renderReportPage(formsConfig.forms?.report || {});
-  else if (cleanRoute === 'sponsor') html = renderSponsorPage();
-  else if (cleanRoute === 'platforms') html = renderPlatformsPage(platformsConfig.platforms || []);
-  else if (cleanRoute === 'devices') html = renderDevicesPage(devicesConfig.devices || []);
-  else if (cleanRoute === 'disclaimer') html = renderDisclaimerPage();
-  else if (cleanRoute === 'terminal') html = renderTerminalPage();
-  else if (cleanRoute === 'iwl') html = renderIwlPage(formsConfig.forms?.iwl || {});
-  else html = renderHome();
-
+  layout.setHero(renderHero(siteConfig.site_name || 'Infinity'));
   layout.setSummary(summaryHtml());
+
+  if (cleanRoute === 'assistance') {
+    html = renderCategoriesView(scriptItems, { configuredCategories, query });
+  } else if (cleanRoute === 'download') {
+    html = renderDownloadPage(scriptItems);
+  } else if (cleanRoute === 'search') {
+    const visible = searchItems(scriptItems, query, { fields: indexFields });
+    html = renderSearchResultsView(visible, query);
+  } else if (cleanRoute === 'share') {
+    html = renderSharePage(formsConfig.forms?.share || {});
+  } else if (cleanRoute === 'upload') {
+    html = renderUploadPage(formsConfig.forms?.upload || {});
+  } else if (cleanRoute === 'request') {
+    html = renderRequestPage(formsConfig.forms?.request || {});
+  } else if (cleanRoute === 'review') {
+    html = renderReviewPage(formsConfig.forms?.review || {});
+  } else if (cleanRoute === 'report') {
+    html = renderReportPage(formsConfig.forms?.report || {});
+  } else if (cleanRoute === 'sponsor') {
+    html = renderSponsorPage();
+  } else if (cleanRoute === 'platforms') {
+    html = renderPlatformsPage(platformsConfig.platforms || []);
+  } else if (cleanRoute === 'devices') {
+    html = renderDevicesPage(devicesConfig.devices || []);
+  } else if (cleanRoute === 'disclaimer') {
+    html = renderDisclaimerPage();
+  } else if (cleanRoute === 'terminal') {
+    html = renderTerminalPage();
+  } else if (cleanRoute === 'iwl') {
+    html = renderIwlPage(formsConfig.forms?.iwl || {});
+  } else {
+    html = renderCategoriesView(scriptItems, { configuredCategories, query });
+  }
+
   layout.setPageContent(html);
 
   const main = appRoot.querySelector('[data-inf-main]');
   if (!main) return;
 
-  if (cleanRoute === 'assistance' || cleanRoute === 'download') {
-    main.innerHTML = renderHome(query);
-  }
-
-  if (cleanRoute === 'search') {
-    main.innerHTML = html;
-  }
-
-  const railCards = main.querySelectorAll('[data-script-card]');
-  if (railCards.length) {
+  const cardRoot = main.querySelector('.inf-categories, .inf-category');
+  if (cardRoot) {
     bindCardActions(main, {
       onExpand: (id, card) => {
         card.classList.toggle('is-expanded');
@@ -198,11 +166,17 @@ function renderRoute(route) {
   if (['share', 'upload', 'request', 'review', 'report', 'iwl'].includes(cleanRoute)) {
     attachFormBehavior(cleanRoute);
   }
+
+  if (cleanRoute === 'search') {
+    searchDock.open();
+  } else {
+    searchDock.close();
+  }
 }
 
 layout.searchInput?.addEventListener('input', () => {
   if (normalizeRoute(window.location.hash) === 'search') {
-    renderRoute('search');
+    renderRoute('search', layout.searchInput.value);
   }
 });
 

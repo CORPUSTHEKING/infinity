@@ -39,25 +39,7 @@ export function createLayoutShell(config = {}) {
         </nav>
       </aside>
 
-      <section class="inf-hero" data-inf-hero>
-        <div class="inf-hero-media" aria-hidden="true"></div>
-        <div class="inf-hero-overlay"></div>
-        <div class="inf-hero-copy">
-          <p class="inf-hero-eyebrow">LET’S ASSUME THIS IS AN ANDROID DEVICE</p>
-          <h1>${siteName}</h1>
-          <p class="inf-hero-text">
-            Scripts, requests, uploads, sharing, and category browsing stay inside one compact layout.
-          </p>
-        </div>
-
-        <div class="inf-hero-marquee" aria-hidden="true">
-          <span>scripts</span>
-          <span>share</span>
-          <span>request</span>
-          <span>configs</span>
-          <span>search</span>
-        </div>
-      </section>
+      <section class="inf-hero" data-inf-hero></section>
 
       <section class="inf-summary" data-inf-summary></section>
 
@@ -87,42 +69,15 @@ export function mountLayout(root, config = {}) {
   const topbar = root.querySelector('[data-inf-topbar]');
   const floatingLogo = root.querySelector('[data-inf-floating-logo]');
   const drawer = root.querySelector('[data-inf-drawer]');
-  const menuToggle = root.querySelector('[data-inf-menu-toggle]');
-  const searchToggle = root.querySelector('[data-inf-search-toggle]');
   const searchDock = root.querySelector('[data-inf-searchdock]');
-  const searchInput = root.querySelector('[data-inf-search-input]');
   const searchPanel = root.querySelector('[data-inf-searchpanel]');
+  const searchInput = root.querySelector('[data-inf-search-input]');
 
   const syncSearchDock = () => {
     const open = searchDock?.classList.contains('is-open');
     if (searchPanel) searchPanel.hidden = !open;
   };
 
-  const updateScrollUI = () => {
-    const currentY = window.scrollY || 0;
-    const hideTop = currentY > 28;
-    topbar?.classList.toggle('is-hidden', hideTop);
-    floatingLogo.hidden = !hideTop;
-    shell?.classList.toggle('is-scrolled', currentY > 28);
-  };
-
-  const toggleSearchDock = () => {
-    if (!searchDock) return;
-    searchDock.classList.toggle('is-open');
-    syncSearchDock();
-    if (searchDock.classList.contains('is-open')) {
-      searchInput?.focus();
-    }
-  };
-
-  menuToggle?.addEventListener('click', () => {
-    if (drawer) drawer.hidden = !drawer.hidden;
-  });
-
-  searchToggle?.addEventListener('click', toggleSearchDock);
-
-  window.addEventListener('scroll', updateScrollUI, { passive: true });
-  updateScrollUI();
   syncSearchDock();
 
   return {
@@ -134,6 +89,10 @@ export function mountLayout(root, config = {}) {
     searchDock,
     searchPanel,
     searchInput,
+    setHero(html) {
+      const hero = root.querySelector('[data-inf-hero]');
+      if (hero) hero.innerHTML = html;
+    },
     setSummary(html) {
       const summary = root.querySelector('[data-inf-summary]');
       if (summary) summary.innerHTML = html;
