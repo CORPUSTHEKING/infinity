@@ -444,7 +444,6 @@ button {
   position: fixed;
   left: 50%;
   transform: translateX(-50%);
-  width: min(94vw, 920px);
   z-index: 48;
   backdrop-filter: blur(18px);
 }
@@ -454,7 +453,8 @@ button {
   display: grid;
   grid-template-columns: 1fr auto;
   gap: 0.6rem;
-  padding: 0.7rem;
+  padding: 0.55rem;
+  width: min(46vw, 420px);
   border-radius: 999px;
   border: 1px solid var(--line);
   background: rgba(15, 23, 42, 0.74);
@@ -472,7 +472,7 @@ button {
   border: 0;
   outline: 0;
   border-radius: 999px;
-  padding: 0.88rem 1rem;
+  padding: 0.82rem 0.95rem;
   color: var(--text);
   background: rgba(255, 255, 255, 0.04);
 }
@@ -483,6 +483,7 @@ button {
   justify-content: space-between;
   gap: 0.6rem;
   padding: 0.7rem;
+  width: min(94vw, 920px);
   border-radius: 999px;
   background: rgba(15, 23, 42, 0.82);
   border: 1px solid var(--line);
@@ -572,6 +573,10 @@ button {
 
   .inf-topbar-right {
     justify-content: space-between;
+  }
+
+  .inf-searchbar {
+    width: min(70vw, 420px);
   }
 }
 
