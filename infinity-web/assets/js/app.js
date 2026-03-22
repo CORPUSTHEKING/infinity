@@ -42,53 +42,82 @@ const [siteConfig, scriptsConfig, platformsConfig, devicesConfig, formsConfig] =
 const layout = mountLayout(appRoot, siteConfig);
 const scriptItems = Array.isArray(scriptsConfig.scripts) ? scriptsConfig.scripts : [];
 const indexFields = Array.isArray(scriptsConfig.index_fields) ? scriptsConfig.index_fields : [];
+const categoryDescriptions = {
+  terminal: 'Terminal helpers and shell utilities for workflows, recovery, and everyday command-line work.',
+  downloads: 'Immediate script bundles and helper flows ready for local or Git-backed delivery.',
+  helpers: 'Utility scripts that speed up repo checks, setup, and common maintenance tasks.'
+};
 
 function summaryHtml() {
-  const counts = [
-    { value: scriptItems.length, label: 'Scripts loaded' },
-    { value: (platformsConfig.platforms || []).length, label: 'Platforms' },
-    { value: (devicesConfig.devices || []).length, label: 'Devices' },
-    { value: Object.keys(formsConfig.forms || {}).length, label: 'Forms' }
-  ];
+  const live = scriptsConfig?.counts?.live ?? scriptItems.length;
+  const total = scriptsConfig?.counts?.total ?? scriptItems.length;
 
   return `
     <div class="inf-summary-grid">
-      ${counts.map((item) => `
-        <article class="inf-summary-card">
-          <strong>${item.value}</strong>
-          <span>${item.label}</span>
-        </article>
-      `).join('')}
+      <article class="inf-summary-card">
+        <strong>${live}</strong>
+        <span>live scripts</span>
+      </article>
+      <article class="inf-summary-card">
+        <strong>${total}</strong>
+        <span>total scripts</span>
+      </article>
+      <article class="inf-summary-card">
+        <strong>${(platformsConfig.platforms || []).length}</strong>
+        <span>platform links</span>
+      </article>
+      <article class="inf-summary-card">
+        <strong>${(devicesConfig.devices || []).length}</strong>
+        <span>devices</span>
+      </article>
     </div>
   `;
 }
 
-function renderHome() {
-  const categories = scriptsConfig.categories || [];
-  const grouped = categories.length
-    ? categories.map((category) => {
-        const items = scriptItems.filter((item) => String(item.category || '').toLowerCase() === String(category).toLowerCase());
-        return { category, items };
-      })
-    : [{ category: 'All scripts', items: scriptItems }];
+function uniqueCategories() {
+  const fromConfig = Array.isArray(scriptsConfig.categories) ? scriptsConfig.categories : [];
+  const fromItems = scriptItems.map((item) => item.category).filter(Boolean);
+  return Array.from(new Set([...fromConfig, ...fromItems]));
+}
+
+function groupScriptsByCategory() {
+  const groups = new Map();
+  for (const category of uniqueCategories()) {
+    groups.set(category, []);
+  }
+  for (const item of scriptItems) {
+    const key = item.category || 'uncategorized';
+    if (!groups.has(key)) groups.set(key, []);
+    groups.get(key).push(item);
+  }
+  return [...groups.entries()].map(([category, items]) => ({ category, items }));
+}
+
+function renderCategorySection(category, items, query = '') {
+  const title = String(category || 'uncategorized');
+  const label = title.toUpperCase();
+  const desc = categoryDescriptions[title] || 'Scripts in this category are kept data-driven, so new items can be added by editing config only.';
+  const countLabel = `${items.length} script${items.length === 1 ? '' : 's'} loaded`;
 
   return `
-    <section class="inf-page">
-      <h2>Featured categories</h2>
-      <div class="inf-grid">
-        ${grouped.map((group) => `
-          <article class="inf-tile">
-            <strong>${group.category}</strong>
-            <p>${group.items.length} script${group.items.length === 1 ? '' : 's'}</p>
-            <a href="#download">Open</a>
-          </article>
-        `).join('')}
+    <section class="inf-category">
+      <div class="inf-category-head">
+        <h2>${label}</h2>
+        <span>${countLabel}</span>
+      </div>
+      <p class="inf-category-desc">${desc}${query ? ` • filtered by “${query}”` : ''}</p>
+      <div class="inf-cards-rail">
+        ${renderScriptCards(items)}
       </div>
     </section>
+  `;
+}
 
-    <section class="inf-page">
-      <h2>Rolling cards</h2>
-      ${renderScriptCards(scriptItems)}
+function renderHome(query = '') {
+  const groups = groupScriptsByCategory();
+  return `
+    <section class="inf-categories">
+      ${groups.map((group) => renderCategorySection(group.category, group.items, query)).join('')}
     </section>
   `;
 }
@@ -109,12 +138,26 @@ function attachFormBehavior(route) {
 
 function renderRoute(route) {
   const cleanRoute = normalizeRoute(route);
+  const query = layout.searchInput?.value || '';
   let html = '';
 
   if (cleanRoute === 'assistance') html = renderHome();
-  else if (cleanRoute === 'download') html = renderDownloadPage(scriptItems);
-  else if (cleanRoute === 'search') html = renderSearchPage(scriptItems, layout.searchInput?.value || '');
-  else if (cleanRoute === 'share') html = renderSharePage(formsConfig.forms?.share || {});
+  else if (cleanRoute === 'download') html = renderHome();
+  else if (cleanRoute === 'search') {
+    const visible = searchItems(scriptItems, query, { fields: indexFields });
+    html = `
+      <section class="inf-category">
+        <div class="inf-category-head">
+          <h2>SEARCH RESULTS</h2>
+          <span>${visible.length} result${visible.length === 1 ? '' : 's'}</span>
+        </div>
+        <p class="inf-category-desc">Search matches across names, authors, shells, languages, descriptions, dependencies, and install notes.</p>
+        <div class="inf-cards-rail">
+          ${renderScriptCards(visible)}
+        </div>
+      </section>
+    `;
+  } else if (cleanRoute === 'share') html = renderSharePage(formsConfig.forms?.share || {});
   else if (cleanRoute === 'upload') html = renderUploadPage(formsConfig.forms?.upload || {});
   else if (cleanRoute === 'request') html = renderRequestPage(formsConfig.forms?.request || {});
   else if (cleanRoute === 'review') html = renderReviewPage(formsConfig.forms?.review || {});
@@ -127,29 +170,22 @@ function renderRoute(route) {
   else if (cleanRoute === 'iwl') html = renderIwlPage(formsConfig.forms?.iwl || {});
   else html = renderHome();
 
-  layout.setPageContent(html);
   layout.setSummary(summaryHtml());
+  layout.setPageContent(html);
 
   const main = appRoot.querySelector('[data-inf-main]');
   if (!main) return;
 
-  if (cleanRoute === 'download' || cleanRoute === 'search' || cleanRoute === 'assistance') {
-    const visible = cleanRoute === 'search'
-      ? searchItems(scriptItems, layout.searchInput?.value || '', { fields: indexFields })
-      : scriptItems;
+  if (cleanRoute === 'assistance' || cleanRoute === 'download') {
+    main.innerHTML = renderHome(query);
+  }
 
-    if (cleanRoute === 'search') {
-      main.innerHTML = renderSearchPage(visible, layout.searchInput?.value || '');
-    } else if (cleanRoute === 'download') {
-      main.innerHTML = renderDownloadPage(visible);
-    } else {
-      main.innerHTML = renderHome();
-    }
+  if (cleanRoute === 'search') {
+    main.innerHTML = html;
+  }
 
-    const cardsHost = document.createElement('div');
-    cardsHost.innerHTML = renderScriptCards(visible);
-    main.appendChild(cardsHost);
-
+  const railCards = main.querySelectorAll('[data-script-card]');
+  if (railCards.length) {
     bindCardActions(main, {
       onExpand: (id, card) => {
         card.classList.toggle('is-expanded');
@@ -172,6 +208,12 @@ function renderRoute(route) {
 layout.searchInput?.addEventListener('input', () => {
   if (normalizeRoute(window.location.hash) === 'search') {
     renderRoute('search');
+  }
+});
+
+layout.searchInput?.addEventListener('keydown', (event) => {
+  if (event.key === 'Enter') {
+    window.location.hash = '#search';
   }
 });
 

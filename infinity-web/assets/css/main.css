@@ -68,7 +68,7 @@ button {
   top: 0;
   z-index: 40;
   display: grid;
-  grid-template-columns: 1fr auto 1fr;
+  grid-template-columns: auto 1fr auto;
   gap: 1rem;
   align-items: center;
   padding: 0.9rem 1rem;
@@ -107,11 +107,19 @@ button {
   justify-content: flex-end;
 }
 
-.inf-topbar-kicker {
-  padding: 0.35rem 0.8rem;
-  border: 1px solid var(--line);
+.inf-top-links {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.45rem;
+}
+
+.inf-top-links a {
+  padding: 0.45rem 0.7rem;
   border-radius: 999px;
+  border: 1px solid var(--line);
   background: rgba(255, 255, 255, 0.03);
+  font-size: 0.9rem;
 }
 
 .inf-logo,
@@ -133,11 +141,6 @@ button {
   min-height: 2.7rem;
   padding: 0.72rem 1rem;
   border-radius: 999px;
-}
-
-.inf-chip-accent {
-  background: rgba(56, 189, 248, 0.12);
-  border-color: rgba(56, 189, 248, 0.3);
 }
 
 .inf-floating-logo {
@@ -197,7 +200,7 @@ button {
 .inf-hero {
   position: relative;
   margin: 0.95rem 1rem 1rem;
-  min-height: 42vh;
+  min-height: 240px;
   overflow: hidden;
   border-radius: 36px;
   border: 1px solid var(--line);
@@ -351,12 +354,42 @@ button {
   box-shadow: var(--shadow);
 }
 
-.inf-grid,
-.inf-results,
-.inf-download-list,
-.inf-form-grid {
+.inf-categories {
   display: grid;
   gap: 1rem;
+}
+
+.inf-category {
+  display: grid;
+  gap: 0.8rem;
+  padding: 0.95rem;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--line);
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.inf-category-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.inf-category-head h2 {
+  margin: 0;
+  font-size: 1.1rem;
+}
+
+.inf-category-head span {
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.inf-category-desc {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.5;
 }
 
 .inf-cards-rail {
@@ -457,36 +490,60 @@ button {
   padding: 1rem;
 }
 
-.inf-searchbar,
-.inf-bottombar {
+.inf-searchdock {
   position: fixed;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 48;
-  backdrop-filter: blur(18px);
-}
-
-.inf-searchbar {
-  bottom: 4.95rem;
-  display: grid;
-  grid-template-columns: 1fr auto;
-  gap: 0.6rem;
-  padding: 0.55rem;
-  width: min(46vw, 420px);
+  right: 1rem;
+  bottom: 4.9rem;
+  z-index: 52;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  width: 56px;
+  height: 56px;
+  padding: 0.45rem;
   border-radius: 999px;
   border: 1px solid var(--line);
-  background: rgba(15, 23, 42, 0.74);
+  background: rgba(15, 23, 42, 0.84);
   box-shadow: var(--shadow);
-  transition: transform 0.25s ease, opacity 0.25s ease;
+  backdrop-filter: blur(18px);
+  overflow: hidden;
+  transition: width 0.25s ease, padding 0.25s ease;
 }
 
-.inf-searchbar.is-hidden {
-  transform: translateX(-50%) translateY(120%);
-  opacity: 0;
-  pointer-events: none;
+.inf-searchdock.is-open {
+  width: min(92vw, 420px);
+  padding-right: 0.6rem;
 }
 
-.inf-searchbar input {
+.inf-searchfab {
+  width: 46px;
+  height: 46px;
+  min-width: 46px;
+  border: 0;
+  border-radius: 999px;
+  background: rgba(124, 58, 237, 0.18);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.15rem;
+  flex: 0 0 auto;
+}
+
+.inf-searchpanel {
+  display: none;
+  align-items: center;
+  gap: 0.55rem;
+  min-width: 0;
+  flex: 1 1 auto;
+}
+
+.inf-searchdock.is-open .inf-searchpanel {
+  display: flex;
+}
+
+.inf-searchpanel input {
+  min-width: 0;
+  flex: 1 1 auto;
   border: 0;
   outline: 0;
   border-radius: 999px;
@@ -496,16 +553,21 @@ button {
 }
 
 .inf-bottombar {
+  position: fixed;
+  left: 50%;
+  transform: translateX(-50%);
   bottom: 0.8rem;
+  z-index: 48;
   display: flex;
   justify-content: space-between;
   gap: 0.6rem;
-  padding: 0.7rem;
   width: min(94vw, 920px);
+  padding: 0.7rem;
   border-radius: 999px;
   background: rgba(15, 23, 42, 0.82);
   border: 1px solid var(--line);
   box-shadow: var(--shadow);
+  backdrop-filter: blur(18px);
 }
 
 .inf-bottombar a {
@@ -592,15 +654,11 @@ button {
   .inf-topbar-right {
     justify-content: space-between;
   }
-
-  .inf-searchbar {
-    width: min(70vw, 420px);
-  }
 }
 
 @media (max-width: 720px) {
   .inf-hero {
-    min-height: 48vh;
+    min-height: 42vh;
     margin-inline: 0.75rem;
   }
 
@@ -614,9 +672,13 @@ button {
     flex-basis: 84vw;
   }
 
-  .inf-searchbar {
-    width: calc(100vw - 1rem);
-    bottom: 4.6rem;
+  .inf-searchdock {
+    right: 0.75rem;
+    bottom: 4.55rem;
+  }
+
+  .inf-searchdock.is-open {
+    width: calc(100vw - 1.5rem);
   }
 
   .inf-bottombar {
