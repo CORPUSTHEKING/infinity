@@ -60,26 +60,32 @@ button {
 
 .inf-shell {
   min-height: 100vh;
-  padding-bottom: 7.25rem;
+  padding-top: 7.2rem;
+  padding-bottom: 7.5rem;
 }
 
 .inf-topbar {
-  position: sticky;
-  top: 0;
+  position: fixed;
+  top: 0.85rem;
+  left: 50%;
+  transform: translateX(-50%);
   z-index: 40;
+  width: min(94vw, 980px);
   display: grid;
   grid-template-columns: auto 1fr auto;
   gap: 1rem;
   align-items: center;
   padding: 0.9rem 1rem;
+  border-radius: 28px;
+  border: 1px solid var(--line);
+  background: linear-gradient(to bottom, rgba(7, 11, 18, 0.92), rgba(7, 11, 18, 0.68));
   backdrop-filter: blur(18px);
-  background: linear-gradient(to bottom, rgba(7, 11, 18, 0.92), rgba(7, 11, 18, 0.5));
-  border-bottom: 1px solid var(--line);
+  box-shadow: var(--shadow);
   transition: transform 0.25s ease, opacity 0.25s ease;
 }
 
 .inf-topbar.is-hidden {
-  transform: translateY(-115%);
+  transform: translateX(-50%) translateY(-115%);
   opacity: 0;
   pointer-events: none;
 }
@@ -143,9 +149,14 @@ button {
   border-radius: 999px;
 }
 
+.inf-chip-accent {
+  background: rgba(56, 189, 248, 0.12);
+  border-color: rgba(56, 189, 248, 0.3);
+}
+
 .inf-floating-logo {
   position: fixed;
-  top: 0.85rem;
+  top: 0.9rem;
   left: 50%;
   transform: translateX(-50%);
   z-index: 45;
@@ -157,7 +168,7 @@ button {
 
 .inf-drawer {
   position: fixed;
-  top: 4.9rem;
+  top: 5.9rem;
   right: 0.8rem;
   z-index: 50;
   width: min(88vw, 340px);
@@ -256,29 +267,6 @@ button {
   max-width: 42rem;
   font-size: 1rem;
   line-height: 1.55;
-}
-
-.inf-hero-actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.75rem;
-  margin-top: 1.3rem;
-}
-
-.inf-hero-btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 2.9rem;
-  padding: 0.82rem 1.1rem;
-  border-radius: 999px;
-  background: rgba(124, 58, 237, 0.2);
-  border: 1px solid rgba(124, 58, 237, 0.36);
-  font-weight: 700;
-}
-
-.inf-hero-btn-soft {
-  background: rgba(255, 255, 255, 0.06);
 }
 
 .inf-hero-marquee {
@@ -588,6 +576,8 @@ button {
 }
 
 .inf-form-grid {
+  display: grid;
+  gap: 1rem;
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
 }
 
@@ -657,6 +647,10 @@ button {
 }
 
 @media (max-width: 720px) {
+  .inf-shell {
+    padding-top: 6.8rem;
+  }
+
   .inf-hero {
     min-height: 42vh;
     margin-inline: 0.75rem;

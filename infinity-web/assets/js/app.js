@@ -42,11 +42,6 @@ const [siteConfig, scriptsConfig, platformsConfig, devicesConfig, formsConfig] =
 const layout = mountLayout(appRoot, siteConfig);
 const scriptItems = Array.isArray(scriptsConfig.scripts) ? scriptsConfig.scripts : [];
 const indexFields = Array.isArray(scriptsConfig.index_fields) ? scriptsConfig.index_fields : [];
-const categoryDescriptions = {
-  terminal: 'Terminal helpers and shell utilities for workflows, recovery, and everyday command-line work.',
-  downloads: 'Immediate script bundles and helper flows ready for local or Git-backed delivery.',
-  helpers: 'Utility scripts that speed up repo checks, setup, and common maintenance tasks.'
-};
 
 function summaryHtml() {
   const live = scriptsConfig?.counts?.live ?? scriptItems.length;
@@ -96,7 +91,7 @@ function groupScriptsByCategory() {
 function renderCategorySection(category, items, query = '') {
   const title = String(category || 'uncategorized');
   const label = title.toUpperCase();
-  const desc = categoryDescriptions[title] || 'Scripts in this category are kept data-driven, so new items can be added by editing config only.';
+  const desc = 'Scripts in this category are kept data-driven, so new items can be added by editing config only.';
   const countLabel = `${items.length} script${items.length === 1 ? '' : 's'} loaded`;
 
   return `

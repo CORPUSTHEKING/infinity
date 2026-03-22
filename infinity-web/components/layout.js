@@ -7,11 +7,11 @@ export function createLayoutShell(config = {}) {
     <div class="inf-shell" data-inf-shell>
       <header class="inf-topbar" data-inf-topbar>
         <div class="inf-topbar-left">
-          <a class="inf-logo" href="#assistance" aria-label="${siteName} home">${siteName}</a>
+          <a class="inf-logo" href="#assistance" aria-label="${siteName} home">∞</a>
         </div>
 
         <div class="inf-topbar-center">
-          <nav class="inf-top-links" aria-label="Quick links">
+          <nav class="inf-top-links" aria-label="Quick actions">
             <a href="#download">scripts</a>
             <a href="#share">share</a>
             <a href="#request">request</a>
@@ -26,7 +26,7 @@ export function createLayoutShell(config = {}) {
       </header>
 
       <div class="inf-floating-logo" data-inf-floating-logo hidden>
-        <a href="#assistance">${siteName}</a>
+        <a href="#assistance">∞</a>
       </div>
 
       <aside class="inf-drawer" data-inf-drawer hidden>
@@ -43,19 +43,19 @@ export function createLayoutShell(config = {}) {
         <div class="inf-hero-media" aria-hidden="true"></div>
         <div class="inf-hero-overlay"></div>
         <div class="inf-hero-copy">
-          <p class="inf-hero-eyebrow">Infinity Terminal Helpers</p>
-          <h1>Portable workspace, script library, and community actions in one contained system.</h1>
+          <p class="inf-hero-eyebrow">LET’S ASSUME THIS IS AN ANDROID DEVICE</p>
+          <h1>${siteName}</h1>
           <p class="inf-hero-text">
-            Search, download, upload, request, review, report, and share from a single layout that stays fast on mobile.
+            Scripts, requests, uploads, sharing, and category browsing stay inside one compact layout.
           </p>
         </div>
 
         <div class="inf-hero-marquee" aria-hidden="true">
-          <span>Terminal helpers</span>
-          <span>Horizontal script rails</span>
-          <span>Fuzzy + regex search</span>
-          <span>Schema-driven forms</span>
-          <span>Add data, not code</span>
+          <span>scripts</span>
+          <span>share</span>
+          <span>request</span>
+          <span>configs</span>
+          <span>search</span>
         </div>
       </section>
 
@@ -100,10 +100,10 @@ export function mountLayout(root, config = {}) {
 
   const updateScrollUI = () => {
     const currentY = window.scrollY || 0;
-    const hideTop = currentY > 32;
+    const hideTop = currentY > 28;
     topbar?.classList.toggle('is-hidden', hideTop);
     floatingLogo.hidden = !hideTop;
-    shell?.classList.toggle('is-scrolled', currentY > 32);
+    shell?.classList.toggle('is-scrolled', currentY > 28);
   };
 
   const toggleSearchDock = () => {
@@ -120,8 +120,6 @@ export function mountLayout(root, config = {}) {
   });
 
   searchToggle?.addEventListener('click', toggleSearchDock);
-
-  searchDock?.querySelector('[data-inf-search-toggle]')?.addEventListener('click', toggleSearchDock);
 
   window.addEventListener('scroll', updateScrollUI, { passive: true });
   updateScrollUI();
