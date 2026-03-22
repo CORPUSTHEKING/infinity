@@ -1,6 +1,6 @@
 export function renderScriptCards(items = [], actions = {}) {
   return `
-    <section class="inf-cards-grid">
+    <section class="inf-cards-rail" aria-label="Scripts">
       ${items.map((item) => `
         <article class="inf-card" data-script-card data-script-id="${item.id || ''}">
           <header class="inf-card-head">

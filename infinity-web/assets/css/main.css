@@ -197,7 +197,7 @@ button {
 .inf-hero {
   position: relative;
   margin: 0.95rem 1rem 1rem;
-  min-height: 72vh;
+  min-height: 42vh;
   overflow: hidden;
   border-radius: 36px;
   border: 1px solid var(--line);
@@ -221,15 +221,15 @@ button {
 .inf-hero-overlay {
   position: absolute;
   inset: 0;
-  background: linear-gradient(180deg, rgba(7, 11, 18, 0.1), rgba(7, 11, 18, 0.72) 72%, rgba(7, 11, 18, 0.92));
+  background: linear-gradient(180deg, rgba(7, 11, 18, 0.08), rgba(7, 11, 18, 0.68) 70%, rgba(7, 11, 18, 0.9));
 }
 
 .inf-hero-copy {
   position: relative;
   z-index: 1;
   max-width: 54rem;
-  padding: clamp(1.2rem, 4vw, 3rem);
-  padding-top: clamp(3rem, 9vw, 5rem);
+  padding: clamp(1.1rem, 4vw, 2.2rem);
+  padding-top: clamp(2rem, 6vw, 3.2rem);
 }
 
 .inf-hero-eyebrow {
@@ -242,24 +242,24 @@ button {
 
 .inf-hero-copy h1 {
   margin: 0;
-  font-size: clamp(2.2rem, 5.6vw, 5rem);
+  font-size: clamp(2rem, 4.6vw, 4rem);
   line-height: 0.98;
-  max-width: 16ch;
+  max-width: 18ch;
 }
 
 .inf-hero-text {
   margin: 1rem 0 0;
   color: #dbeafe;
   max-width: 42rem;
-  font-size: 1.05rem;
-  line-height: 1.6;
+  font-size: 1rem;
+  line-height: 1.55;
 }
 
 .inf-hero-actions {
   display: flex;
   flex-wrap: wrap;
   gap: 0.75rem;
-  margin-top: 1.4rem;
+  margin-top: 1.3rem;
 }
 
 .inf-hero-btn {
@@ -352,7 +352,6 @@ button {
 }
 
 .inf-grid,
-.inf-cards-grid,
 .inf-results,
 .inf-download-list,
 .inf-form-grid {
@@ -360,23 +359,33 @@ button {
   gap: 1rem;
 }
 
-.inf-cards-grid {
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+.inf-cards-rail {
+  display: flex;
+  gap: 1rem;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 0.25rem 0.25rem 0.9rem;
+  scroll-snap-type: x mandatory;
+  scroll-padding-inline: 1rem;
+  -webkit-overflow-scrolling: touch;
 }
 
-.inf-card,
-.inf-tile,
-.inf-download-item,
-.inf-result {
+.inf-cards-rail::-webkit-scrollbar {
+  height: 10px;
+}
+
+.inf-cards-rail::-webkit-scrollbar-thumb {
+  background: rgba(148, 163, 184, 0.22);
+  border-radius: 999px;
+}
+
+.inf-card {
+  flex: 0 0 min(82vw, 340px);
+  scroll-snap-align: start;
   border-radius: 22px;
   border: 1px solid var(--line);
   background: rgba(255, 255, 255, 0.03);
   padding: 1rem;
-}
-
-.inf-card {
-  display: grid;
-  gap: 0.85rem;
   transition: transform 0.2s ease, border-color 0.2s ease;
 }
 
@@ -437,6 +446,15 @@ button {
   white-space: pre-wrap;
   color: #cbd5e1;
   font-size: 0.85rem;
+}
+
+.inf-download-item,
+.inf-result,
+.inf-tile {
+  border-radius: 22px;
+  border: 1px solid var(--line);
+  background: rgba(255, 255, 255, 0.03);
+  padding: 1rem;
 }
 
 .inf-searchbar,
@@ -582,7 +600,7 @@ button {
 
 @media (max-width: 720px) {
   .inf-hero {
-    min-height: 78vh;
+    min-height: 48vh;
     margin-inline: 0.75rem;
   }
 
@@ -590,6 +608,10 @@ button {
   .inf-main {
     padding-inline: 0.75rem;
     margin-inline: 0;
+  }
+
+  .inf-card {
+    flex-basis: 84vw;
   }
 
   .inf-searchbar {
