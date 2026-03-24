@@ -1,14 +1,27 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Infinity Terminal Helpers</title>
-  <meta name="description" content="Infinity Terminal Helpers web module." />
-  <link rel="stylesheet" href="./assets/css/main.css" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Infinity Terminal Helpers</title>
+    <link rel="stylesheet" href="assets/css/tokens.css">
+    <link rel="stylesheet" href="assets/css/base.css">
+    <link rel="stylesheet" href="assets/css/layout.css">
+    <link rel="stylesheet" href="assets/css/hero.css">
+    <link rel="stylesheet" href="assets/css/cards.css">
+    <link rel="stylesheet" href="assets/css/forms.css">
+    <link rel="stylesheet" href="assets/css/searchdock.css">
 </head>
-<body>
-  <div id="app"></div>
-  <script type="module" src="./assets/js/app.js"></script>
+<body class="theme-dark">
+    <div id="app">
+        <header id="topbar-container"></header>
+
+        <main id="view-port"></main>
+
+        <nav id="quickrail-container"></nav>
+        
+        <div id="searchdock-container" class="hidden"></div>
+    </div>
+    <script type="module" src="js/main.js"></script>
 </body>
 </html>

@@ -1,81 +1,18 @@
-const DEFAULT_ACTIONS = [
-  { key: 'download', label: 'scripts' },
-  { key: 'share', label: 'share' },
-  { key: 'request', label: 'request' },
-  { key: 'disclaimer', label: 'configs' }
-];
+export const QuickRail = {
+    init: (container) => {
+        const navItems = [
+            { label: 'Home', hash: '#download', icon: '󰋜' },
+            { label: 'Help', hash: '#assistance', icon: '󰘥' },
+            { label: 'Upload', hash: '#upload', icon: '󰛖' },
+            { label: 'IWL', hash: '#iwl', icon: '󰈙', highlight: true },
+            { label: 'Connect', hash: '#platforms', icon: '󰒄' }
+        ];
 
-export function renderQuickRail(config = {}) {
-  const actions = Array.isArray(config.quick_actions) && config.quick_actions.length
-    ? config.quick_actions
-    : DEFAULT_ACTIONS;
-
-  return `
-    <nav class="inf-quickrail" data-inf-quickrail aria-label="Quick actions">
-      <div class="inf-quickrail-scroll">
-        ${actions.map((item) => `
-          <a href="#${item.key}" data-route="${item.key}">${item.label}</a>
-        `).join('')}
-      </div>
-    </nav>
-  `;
-}
-
-export function bindQuickRail({ rail, shell, onOpen, onClose } = {}) {
-  if (!rail) {
-    return {
-      open() {},
-      close() {},
-      toggle() {},
-      isOpen() {
-        return false;
-      }
-    };
-  }
-
-  const open = () => {
-    rail.classList.remove('is-hidden');
-    rail.classList.remove('is-faded');
-    shell?.classList.remove('rail-hidden');
-    onOpen?.();
-  };
-
-  const close = () => {
-    rail.classList.add('is-hidden');
-    shell?.classList.add('rail-hidden');
-    onClose?.();
-  };
-
-  const toggle = () => {
-    if (rail.classList.contains('is-hidden')) open();
-    else close();
-  };
-
-  const updateFade = () => {
-    const scrolled = (window.scrollY || 0) > 18;
-    rail.classList.toggle('is-faded', scrolled && !rail.classList.contains('is-hidden'));
-  };
-
-  document.addEventListener(
-    'pointerdown',
-    (event) => {
-      if (rail.contains(event.target)) return;
-      close();
-    },
-    { capture: true }
-  );
-
-  window.addEventListener('scroll', updateFade, { passive: true });
-  updateFade();
-
-  open();
-
-  return {
-    open,
-    close,
-    toggle,
-    isOpen() {
-      return !rail.classList.contains('is-hidden');
+        container.innerHTML = navItems.map(item => `
+            <a href="${item.hash}" class="rail-item ${item.highlight ? 'rail-special' : ''}">
+                <span class="rail-icon">${item.icon}</span>
+                <span class="rail-label">${item.label}</span>
+            </a>
+        `).join('');
     }
-  };
-}
+};

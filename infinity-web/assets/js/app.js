@@ -180,7 +180,16 @@ function renderRoute(route, queryOverride = '') {
       onAction: (action, id) => {
         console.log(action, id);
         if (action === 'download') {
-          alert(`Download action is wired for script ${id || 'item'}.`);
+          const item = scriptItems.find(s => s.id === id);
+          if (item?.download_path) {
+            const link = document.createElement('a');
+            link.href = item.download_path;
+            link.download = item.download_path.split('/').pop();
+            link.click();
+          } else {
+            console.warn('No download path for:', id);
+          }
+        }
         }
       }
     });

@@ -1,0 +1,48 @@
+name: Infinity Web Production
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'infinity-web/**'
+      - 'pool/**'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Rebuild Scripts Manifest
+        run: |
+          cd infinity-web/tools
+          node generate-scripts-manifest.mjs
+          
+      - name: Commit Manifest
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add infinity-web/config/scripts.json
+          git diff-index --quiet HEAD || git commit -m "chore: auto-rebuild script manifest"
+          git push
+
+      - name: Upload Pages Artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: 'infinity-web'
+
+      - name: Deploy to GitHub Pages
+        uses: actions/deploy-pages@v4

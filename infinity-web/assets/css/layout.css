@@ -1,20 +1,67 @@
-.inf-shell {
-  min-height: 100vh;
-  padding-top: 8.2rem;
-  padding-bottom: 7.5rem;
+:root {
+    --max-content-width: 1400px;
 }
 
-.inf-main {
-  padding: 0 1rem 1rem;
+body {
+    background: var(--bg);
+    color: var(--text);
+    margin: 0;
+    font-family: 'JetBrains Mono', monospace;
+    overflow-x: hidden;
 }
 
-.inf-page {
-  display: grid;
-  gap: 1rem;
-  margin-bottom: 1rem;
-  padding: 1rem;
-  border-radius: var(--radius-lg);
-  border: 1px solid var(--line);
-  background: var(--panel);
-  box-shadow: var(--shadow);
+/* Container for Desktop Centering */
+.page-container {
+    max-width: var(--max-content-width);
+    margin: 0 auto;
+    padding: 40px 20px;
+    min-height: 100vh;
+}
+
+/* Panorama Adjustment for Large Screens */
+.hero-panorama-container {
+    height: 50vh; /* Taller on desktop */
+    border-bottom: 1px solid var(--accent-glow);
+}
+
+/* QuickRail Desktop Positioning */
+#quickrail-container {
+    position: fixed;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: fit-content;
+    min-width: 450px;
+    padding: 0 30px;
+    background: rgba(10, 10, 10, 0.8);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(0, 255, 204, 0.3);
+    border-radius: 50px;
+    height: 70px;
+    display: flex;
+    gap: 20px;
+    z-index: 1000;
+    transition: var(--transition);
+}
+
+/* Tablet/Desktop Grid for Scripts */
+.scripts-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 25px;
+    padding: 20px 0;
+}
+/* Exhaustive Desktop Balancing */
+@media (min-width: 1440px) {
+    .page-container {
+        display: grid;
+        grid-template-columns: 1fr;
+        justify-items: center;
+    }
+    
+    .scripts-grid {
+        grid-template-columns: repeat(4, 1fr); /* 4 cards wide on 4K/Desktop */
+        max-width: 1400px;
+        width: 100%;
+    }
 }
