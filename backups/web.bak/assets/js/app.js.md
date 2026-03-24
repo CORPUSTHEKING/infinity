@@ -25,11 +25,14 @@ import { renderTerminalPage } from '../../pages/terminal.js';
 import { renderIwlPage } from '../../pages/iwl.js';
 
 const appRoot = document.getElementById('app');
+
 const jsonUrl = (path) => new URL(`../../config/${path}`, import.meta.url);
 
 async function loadJson(path) {
   const response = await fetch(jsonUrl(path));
-  if (!response.ok) throw new Error(`Failed to load ${path}: ${response.status}`);
+  if (!response.ok) {
+    throw new Error(`Failed to load ${path}: ${response.status}`);
+  }
   return response.json();
 }
 
@@ -43,9 +46,9 @@ const [siteConfig, scriptsConfig, platformsConfig, devicesConfig, formsConfig] =
 
 const layout = mountLayout(appRoot, siteConfig);
 
-// Fix 1: Use the Recursive Tree from the new generator
-const scriptTree = scriptsConfig.tree || [];
-const indexFields = scriptsConfig.index_fields || ['name', 'path'];
+const scriptItems = Array.isArray(scriptsConfig.scripts) ? scriptsConfig.scripts : [];
+const configuredCategories = Array.isArray(scriptsConfig.categories) ? scriptsConfig.categories : [];
+const indexFields = Array.isArray(scriptsConfig.index_fields) ? scriptsConfig.index_fields : [];
 
 const quickRail = bindQuickRail({
   rail: layout.quickRail,
@@ -59,14 +62,14 @@ bindDrawerToggle({
   button: appRoot.querySelector('[data-inf-menu-toggle]')
 });
 
-bindScrollChrome({ shell: layout.shell, threshold: 18 });
+bindScrollChrome({
+  shell: layout.shell,
+  threshold: 18
+});
 
-// Fix 2: Simplified Brandbar reset
-layout.brandbar?.addEventListener('click', (e) => {
-  e.preventDefault();
+layout.brandbar?.addEventListener('click', () => {
   quickRail.open();
   window.location.hash = '#assistance';
-  window.scrollTo({ top: 0, behavior: 'smooth' });
 });
 
 const searchDock = bindSearchDock({
@@ -76,23 +79,31 @@ const searchDock = bindSearchDock({
   toggleButton: appRoot.querySelector('[data-inf-search-toggle]'),
   onChange: (value) => {
     setState({ query: value });
-    if (normalizeRoute(window.location.hash) === 'search') renderRoute('search', value);
+    if (normalizeRoute(window.location.hash) === 'search') {
+      renderRoute('search', value);
+    }
   },
   onOpen: () => setState({ searchOpen: true }),
   onClose: () => setState({ searchOpen: false })
 });
 
 function summaryHtml() {
-  const live = scriptsConfig?.metadata?.total_categories || 0;
+  const live = scriptsConfig?.counts?.live ?? scriptItems.length;
+  const total = scriptsConfig?.counts?.total ?? scriptItems.length;
+
   return `
     <div class="inf-summary-grid">
       <article class="inf-summary-card">
         <strong>${live}</strong>
-        <span>categories</span>
+        <span>live scripts</span>
+      </article>
+      <article class="inf-summary-card">
+        <strong>${total}</strong>
+        <span>total scripts</span>
       </article>
       <article class="inf-summary-card">
         <strong>${(platformsConfig.platforms || []).length}</strong>
-        <span>platforms</span>
+        <span>platform links</span>
       </article>
       <article class="inf-summary-card">
         <strong>${(devicesConfig.devices || []).length}</strong>
@@ -102,31 +113,34 @@ function summaryHtml() {
   `;
 }
 
+function attachFormBehavior(route) {
+  const main = appRoot.querySelector('[data-inf-main]');
+  const form = main?.querySelector('[data-inf-form]');
+  if (!form) return;
+
+  bindAutosave(main, `infinity:${route}`);
+  form.addEventListener('submit', (event) => {
+    event.preventDefault();
+    const payload = serializeForm(form);
+    console.log(`submitted:${route}`, payload);
+    alert(`${route} saved locally. Wire email/API routing next.`);
+  }, { once: true });
+}
+
 function renderRoute(route, queryOverride = '') {
   const cleanRoute = normalizeRoute(route);
-  const query = queryOverride || getState().query || '';
+  const query = queryOverride || getState().query || layout.searchInput?.value || '';
   let html = '';
 
   setState({ route: cleanRoute, query });
   layout.setSummary(summaryHtml());
 
-  // Fix 3: Handle Recursive Tree vs Flattened List
-  if (cleanRoute === 'assistance' || cleanRoute === 'home') {
-    html = renderCategoriesView(scriptTree, { query });
+  if (cleanRoute === 'assistance') {
+    html = renderCategoriesView(scriptItems, { configuredCategories, query });
   } else if (cleanRoute === 'download') {
-    const flatten = (nodes) => nodes.reduce((acc, n) => {
-      if (n.type === 'file') acc.push(n);
-      if (n.children) acc.push(...flatten(n.children));
-      return acc;
-    }, []);
-    html = renderDownloadPage(flatten(scriptTree));
+    html = renderDownloadPage(scriptItems);
   } else if (cleanRoute === 'search') {
-    const flatten = (nodes) => nodes.reduce((acc, n) => {
-        acc.push(n);
-        if (n.children) acc.push(...flatten(n.children));
-        return acc;
-    }, []);
-    const visible = searchItems(flatten(scriptTree), query, { fields: indexFields });
+    const visible = searchItems(scriptItems, query, { fields: indexFields });
     html = renderSearchResultsView(visible, query);
   } else if (cleanRoute === 'share') {
     html = renderSharePage(formsConfig.forms?.share || {});
@@ -134,35 +148,65 @@ function renderRoute(route, queryOverride = '') {
     html = renderUploadPage(formsConfig.forms?.upload || {});
   } else if (cleanRoute === 'request') {
     html = renderRequestPage(formsConfig.forms?.request || {});
+  } else if (cleanRoute === 'review') {
+    html = renderReviewPage(formsConfig.forms?.review || {});
+  } else if (cleanRoute === 'report') {
+    html = renderReportPage(formsConfig.forms?.report || {});
+  } else if (cleanRoute === 'sponsor') {
+    html = renderSponsorPage();
   } else if (cleanRoute === 'platforms') {
     html = renderPlatformsPage(platformsConfig.platforms || []);
   } else if (cleanRoute === 'devices') {
     html = renderDevicesPage(devicesConfig.devices || []);
+  } else if (cleanRoute === 'disclaimer') {
+    html = renderDisclaimerPage();
+  } else if (cleanRoute === 'terminal') {
+    html = renderTerminalPage();
+  } else if (cleanRoute === 'iwl') {
+    html = renderIwlPage(formsConfig.forms?.iwl || {});
   } else {
-    html = renderCategoriesView(scriptTree, { query });
+    html = renderCategoriesView(scriptItems, { configuredCategories, query });
   }
 
   layout.setPageContent(html);
 
-  // Fix 4: Real Action Binding
   const main = appRoot.querySelector('[data-inf-main]');
   if (main) {
     bindCardActions(main, {
-      onExpand: (id, card) => card.classList.toggle('is-expanded'),
+      onExpand: (id, card) => {
+        card.classList.toggle('is-expanded');
+        console.log('expand', id);
+      },
       onAction: (action, id) => {
-        const findInTree = (nodes) => {
-          for (const n of nodes) {
-            if (n.id === id) return n;
-            if (n.children) { const found = findInTree(n.children); if (found) return found; }
-          }
-        };
-        const item = findInTree(scriptTree);
-        if (action === 'download' && item) {
-          import('../../components/cardActions.js').then(m => m.handleDownload(item, siteConfig));
+        console.log(action, id);
+        if (action === 'download') {
+          alert(`Download action is wired for script ${id || 'item'}.`);
         }
       }
     });
   }
+
+  if (['share', 'upload', 'request', 'review', 'report', 'iwl'].includes(cleanRoute)) {
+    attachFormBehavior(cleanRoute);
+  }
+
+  if (cleanRoute === 'search') {
+    searchDock.open();
+  } else {
+    searchDock.close();
+  }
 }
+
+layout.searchInput?.addEventListener('input', () => {
+  if (normalizeRoute(window.location.hash) === 'search') {
+    renderRoute('search', layout.searchInput.value);
+  }
+});
+
+layout.searchInput?.addEventListener('keydown', (event) => {
+  if (event.key === 'Enter') {
+    window.location.hash = '#search';
+  }
+});
 
 onRouteChange(renderRoute);

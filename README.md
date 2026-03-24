@@ -1,6 +1,6 @@
 ## Features
  
- 
+[terminal helpers site url](https://corpustheking.github.io/infinity/)
 - **idoc (Instant Documentation):** Every tool included in Infinity has its own documentation. Access them instantly with `idoc <tool_name>`.
  
 - **Dynamic Aliasing:** Easily map tools to your preferred commands without modifying global files using `infinity-alias`.

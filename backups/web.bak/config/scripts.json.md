@@ -1,0 +1,78 @@
+{
+  "schema_version": 1,
+  "generated_at": "2026-03-24T03:58:46.196Z",
+  "counts": {
+    "live": 3,
+    "total": 3
+  },
+  "categories": [
+    "terminal",
+    "downloads",
+    "helpers"
+  ],
+  "scripts": [
+    {
+      "id": "inf-003",
+      "name": "download-mirror",
+      "title": "Download Mirror Helper",
+      "author": "Infinity",
+      "category": "downloads",
+      "shell": "bash",
+      "language": "sh",
+      "origin": "INFINITY",
+      "description": "Prepares a mirror-style download flow for script bundles.",
+      "note": "Designed for future archive expansion.",
+      "dependencies": [
+        "curl",
+        "tar"
+      ],
+      "install": "bash download-mirror.sh"
+    },
+    {
+      "id": "inf-002",
+      "name": "repo-status-scan",
+      "title": "Repo Status Scan",
+      "author": "Infinity",
+      "category": "helpers",
+      "shell": "bash",
+      "language": "sh",
+      "origin": "INFINITY",
+      "description": "Shows a fast status summary for the main Infinity repository.",
+      "note": "Useful before commit and push.",
+      "dependencies": [
+        "git"
+      ],
+      "install": "bash repo-status-scan.sh"
+    },
+    {
+      "id": "inf-001",
+      "name": "termux-clean-cache",
+      "title": "Termux Clean Cache",
+      "author": "Infinity",
+      "category": "terminal",
+      "shell": "bash",
+      "language": "sh",
+      "origin": "INFINITY",
+      "description": "Clears temporary cache paths safely for a cleaner Termux workspace.",
+      "note": "Run only after closing active package jobs.",
+      "dependencies": [
+        "bash",
+        "coreutils"
+      ],
+      "install": "bash install.sh"
+    }
+  ],
+  "index_fields": [
+    "name",
+    "title",
+    "author",
+    "description",
+    "category",
+    "shell",
+    "language",
+    "origin",
+    "note",
+    "dependencies",
+    "install"
+  ]
+}

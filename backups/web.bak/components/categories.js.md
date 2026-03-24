@@ -1,33 +1,47 @@
 import { renderScriptCards } from './cards.js';
 
+/**
+ * Recursive helper to render the tree.
+ * Directories become sections/headings, Files become cards.
+ */
 function renderTreeNodes(nodes, depth = 0, query = '') {
   return nodes.map(node => {
     if (node.type === 'directory') {
       return renderDirectoryNode(node, depth, query);
     } else {
+      // Wrap single file in an array for the existing card renderer
       return renderScriptCards([mapNodeToScript(node)]);
     }
   }).join('');
 }
 
+/**
+ * Maps a filesystem node to the object structure 
+ * expected by the existing renderScriptCards component.
+ */
 function mapNodeToScript(node) {
   return {
     id: node.id,
     name: node.name,
     title: node.name,
     author: 'Infinity Payload',
-    description: node.path,
+    description: node.path, // Show the path as the description
     category: node.extension || 'file',
     shell: node.extension === '.sh' ? 'bash' : '',
     language: node.extension?.replace('.', '') || 'bin'
   };
 }
 
+/**
+ * Renders a directory as a section. 
+ * Root-level (depth 0) uses the full 'inf-category' layout.
+ */
 function renderDirectoryNode(node, depth, query = '') {
   const isRoot = depth === 0;
   const containerClass = isRoot ? 'inf-category' : 'inf-subcategory';
   const label = node.name.toUpperCase();
   
+  // Use README content if available, otherwise a default description
   const description = node.readme 
     ? node.readme.substring(0, 160) + '...' 
     : `Contains ${node.children?.length || 0} items in /${node.path}`;
@@ -47,6 +61,9 @@ function renderDirectoryNode(node, depth, query = '') {
   `;
 }
 
+/**
+ * Primary Entry Point (Replaces original renderCategoriesView)
+ */
 export function renderCategoriesView(tree = [], { query = '' } = {}) {
   return `
     <div class="inf-categories">
@@ -55,6 +72,10 @@ export function renderCategoriesView(tree = [], { query = '' } = {}) {
   `;
 }
 
+/**
+ * Renders Search Results from a flat list of nodes 
+ * returned by the search utility.
+ */
 export function renderSearchResultsView(results = [], query = '') {
   const scripts = results.map(mapNodeToScript);
   
