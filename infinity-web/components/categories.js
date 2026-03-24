@@ -1,72 +1,45 @@
 import { renderScriptCards } from './cards.js';
 
-function renderTreeNodes(nodes, depth = 0, query = '') {
-  return nodes.map(node => {
-    if (node.type === 'directory') {
-      return renderDirectoryNode(node, depth, query);
-    } else {
-      return renderScriptCards([mapNodeToScript(node)]);
-    }
-  }).join('');
-}
-
-function mapNodeToScript(node) {
-  return {
-    id: node.id,
-    name: node.name,
-    title: node.name,
-    author: 'Infinity Payload',
-    description: node.path,
-    category: node.extension || 'file',
-    shell: node.extension === '.sh' ? 'bash' : '',
-    language: node.extension?.replace('.', '') || 'bin'
-  };
-}
-
-function renderDirectoryNode(node, depth, query = '') {
-  const isRoot = depth === 0;
-  const containerClass = isRoot ? 'inf-category' : 'inf-subcategory';
-  const label = node.name.toUpperCase();
-  
-  const description = node.readme 
-    ? node.readme.substring(0, 160) + '...' 
-    : `Contains ${node.children?.length || 0} items in /${node.path}`;
-
-  return `
-    <section class="${containerClass}" style="margin-left: ${depth * 0.5}rem; border-left: ${depth > 0 ? '2px solid var(--line)' : 'none'}; padding-left: ${depth > 0 ? '1rem' : '0'}">
-      <div class="inf-category-head">
-        <h2 style="font-size: ${isRoot ? '1.1rem' : '0.95rem'}">${label}</h2>
-        <span>${node.children?.length || 0} items</span>
-      </div>
-      <p class="inf-category-desc">${description}${query ? ` • matching “${query}”` : ''}</p>
-      
-      <div class="inf-category-content">
-        ${renderTreeNodes(node.children || [], depth + 1, query)}
-      </div>
-    </section>
-  `;
-}
-
 export function renderCategoriesView(tree = [], { query = '' } = {}) {
-  return `
+    const totalScripts = tree.reduce((acc, node) => acc + (node.children?.length || 0), 0);
+    
+    return `
     <div class="inf-categories">
-      ${renderTreeNodes(tree, 0, query)}
-    </div>
-  `;
+        <div class="inf-hero-panoramic">
+            <div class="pan-text-scroller">
+                <marquee scrollamount="5"> 🚀 SYSTEM READY... ${totalScripts} UTILITIES INDEXED... SELECT A CATEGORY TO BEGIN... </marquee>
+            </div>
+        </div>
+
+        ${tree.map(node => {
+            if (node.type !== 'directory') return '';
+            const files = node.children.filter(c => c.type === 'file');
+            return `
+            <section class="inf-category">
+                <div class="inf-category-head">
+                    <h2>${node.name.toUpperCase()}</h2>
+                    <span class="inf-badge">${files.length} ITEMS</span>
+                </div>
+                <div class="inf-cards-rail">
+                    ${renderScriptCards(files)}
+                </div>
+            </section>
+            `;
+        }).join('')}
+    </div>`;
 }
 
 export function renderSearchResultsView(results = [], query = '') {
-  const scripts = results.map(mapNodeToScript);
-  
-  return `
-    <section class="inf-category">
-      <div class="inf-category-head">
-        <h2>SEARCH RESULTS</h2>
-        <span>${results.length} match${results.length === 1 ? '' : 'es'}</span>
-      </div>
-      <p class="inf-category-desc">Matches found in filenames and directory paths for “${query}”.</p>
-      ${renderScriptCards(scripts)}
-      ${!results.length ? `<div class="inf-result">No matching payloads found.</div>` : ''}
-    </section>
-  `;
+    return `
+    <div class="inf-categories">
+        <section class="inf-category">
+            <div class="inf-category-head">
+                <h2>SEARCH RESULTS</h2>
+                <span class="inf-badge">${results.length} MATCHES</span>
+            </div>
+            <div class="inf-cards-rail">
+                ${renderScriptCards(results)}
+            </div>
+        </section>
+    </div>`;
 }

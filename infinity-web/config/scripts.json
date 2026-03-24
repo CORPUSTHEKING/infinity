@@ -1,49 +1,20 @@
 {
-  "schema_version": 2,
-  "generated_at": "2026-03-24T16:02:08.613Z",
-  "metadata": {
-    "total_categories": 2,
-    "scan_root": "/data/data/com.termux/files/home/INFINITY/infinity-web/assets/payloads"
-  },
+  "generated_at": "2026-03-24T16:52:53.064Z",
   "categories": [
-    {
-      "id": "DIRECTORIES",
-      "name": "DIRECTORIES",
-      "description": "Collection of DIRECTORIES resources.",
-      "path": "DIRECTORIES"
-    },
-    {
-      "id": "FILEOPS",
-      "name": "FILEOPS",
-      "description": "Collection of FILEOPS resources.",
-      "path": "FILEOPS"
-    }
-  ],
-  "tree": [
     {
       "type": "directory",
       "id": "DIRECTORIES",
       "name": "DIRECTORIES",
       "path": "DIRECTORIES",
-      "readme": null,
       "children": [
         {
           "type": "file",
           "id": "daudit",
           "name": "daudit",
           "path": "DIRECTORIES/daudit",
-          "extension": "",
-          "size": 676,
-          "last_modified": "2026-03-24T15:42:32.844Z"
-        },
-        {
-          "type": "file",
-          "id": "daudit",
-          "name": "daudit.json",
-          "path": "DIRECTORIES/daudit.json",
-          "extension": ".json",
-          "size": 1357,
-          "last_modified": "2026-03-24T16:00:26.372Z"
+          "description": "Grid-style directory audit utility providing recursive directory discovery and size reporting.",
+          "version": "0.01",
+          "author": "Infinity"
         }
       ]
     },
@@ -52,13 +23,38 @@
       "id": "FILEOPS",
       "name": "FILEOPS",
       "path": "FILEOPS",
-      "readme": null,
+      "children": []
+    }
+  ],
+  "tree": [
+    {
+      "type": "directory",
+      "id": "DIRECTORIES",
+      "name": "DIRECTORIES",
+      "path": "DIRECTORIES",
+      "children": [
+        {
+          "type": "file",
+          "id": "daudit",
+          "name": "daudit",
+          "path": "DIRECTORIES/daudit",
+          "description": "Grid-style directory audit utility providing recursive directory discovery and size reporting.",
+          "version": "0.01",
+          "author": "Infinity"
+        }
+      ]
+    },
+    {
+      "type": "directory",
+      "id": "FILEOPS",
+      "name": "FILEOPS",
+      "path": "FILEOPS",
       "children": []
     }
   ],
   "index_fields": [
     "name",
     "path",
-    "id"
+    "description"
   ]
 }
