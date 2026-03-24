@@ -10,8 +10,15 @@ permissions:
   pages: write
   id-token: write
 
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
 jobs:
   build-and-deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -25,18 +32,18 @@ jobs:
           node-version: '20'
 
       - name: Generate Manifest
+        working-directory: infinity-web
         run: |
-          # Use the path confirmed by your ls -aT command
-          if [ -f "infinity-web/tools/generate-scripts-manifest.mjs" ]; then
-            node infinity-web/tools/generate-scripts-manifest.mjs
-          else
-            echo "Warning: Manifest generator not found at expected path."
+          if [ -f "tools/generate-scripts-manifest.mjs" ]; then
+            node tools/generate-scripts-manifest.mjs
           fi
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
 
       - name: Upload Pages Artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          # This tells GitHub Pages that the 'infinity-web' folder IS the website root
           path: 'infinity-web'
 
       - name: Deploy to GitHub Pages
