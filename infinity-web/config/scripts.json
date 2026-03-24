@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-03-24T16:52:53.064Z",
+  "generated_at": "2026-03-24T23:29:45.045Z",
   "categories": [
     {
       "type": "directory",
@@ -23,7 +23,69 @@
       "id": "FILEOPS",
       "name": "FILEOPS",
       "path": "FILEOPS",
-      "children": []
+      "children": [
+        {
+          "type": "file",
+          "id": "faudit",
+          "name": "faudit",
+          "path": "FILEOPS/faudit",
+          "description": "Terminal utility",
+          "version": "0.01",
+          "author": "Infinity"
+        },
+        {
+          "type": "file",
+          "id": "termux-shell",
+          "name": "termux-shell",
+          "path": "FILEOPS/termux-shell",
+          "description": "Terminal utility",
+          "version": "0.01",
+          "author": "Infinity"
+        }
+      ]
+    },
+    {
+      "type": "directory",
+      "id": "SYSTEM",
+      "name": "SYSTEM",
+      "path": "SYSTEM",
+      "children": [
+        {
+          "type": "file",
+          "id": "regfind",
+          "name": "regfind",
+          "path": "SYSTEM/regfind",
+          "description": "Terminal utility",
+          "version": "0.01",
+          "author": "Infinity"
+        },
+        {
+          "type": "file",
+          "id": "startuplog",
+          "name": "startuplog",
+          "path": "SYSTEM/startuplog",
+          "description": "Terminal utility",
+          "version": "0.01",
+          "author": "Infinity"
+        }
+      ]
+    },
+    {
+      "type": "directory",
+      "id": "TEMPLATES",
+      "name": "TEMPLATES",
+      "path": "TEMPLATES",
+      "children": [
+        {
+          "type": "file",
+          "id": "renamd",
+          "name": "renamd",
+          "path": "TEMPLATES/renamd",
+          "description": "Terminal utility",
+          "version": "0.01",
+          "author": "Infinity"
+        }
+      ]
     }
   ],
   "tree": [
@@ -49,7 +111,69 @@
       "id": "FILEOPS",
       "name": "FILEOPS",
       "path": "FILEOPS",
-      "children": []
+      "children": [
+        {
+          "type": "file",
+          "id": "faudit",
+          "name": "faudit",
+          "path": "FILEOPS/faudit",
+          "description": "Terminal utility",
+          "version": "0.01",
+          "author": "Infinity"
+        },
+        {
+          "type": "file",
+          "id": "termux-shell",
+          "name": "termux-shell",
+          "path": "FILEOPS/termux-shell",
+          "description": "Terminal utility",
+          "version": "0.01",
+          "author": "Infinity"
+        }
+      ]
+    },
+    {
+      "type": "directory",
+      "id": "SYSTEM",
+      "name": "SYSTEM",
+      "path": "SYSTEM",
+      "children": [
+        {
+          "type": "file",
+          "id": "regfind",
+          "name": "regfind",
+          "path": "SYSTEM/regfind",
+          "description": "Terminal utility",
+          "version": "0.01",
+          "author": "Infinity"
+        },
+        {
+          "type": "file",
+          "id": "startuplog",
+          "name": "startuplog",
+          "path": "SYSTEM/startuplog",
+          "description": "Terminal utility",
+          "version": "0.01",
+          "author": "Infinity"
+        }
+      ]
+    },
+    {
+      "type": "directory",
+      "id": "TEMPLATES",
+      "name": "TEMPLATES",
+      "path": "TEMPLATES",
+      "children": [
+        {
+          "type": "file",
+          "id": "renamd",
+          "name": "renamd",
+          "path": "TEMPLATES/renamd",
+          "description": "Terminal utility",
+          "version": "0.01",
+          "author": "Infinity"
+        }
+      ]
     }
   ],
   "index_fields": [
