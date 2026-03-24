@@ -5,15 +5,24 @@ import { renderSearchDock } from './searchdock.js';
 import { renderSummary } from './summary.js';
 
 export function createLayoutShell(config = {}) {
-  const siteName = config.site_name || 'Infinity';
+  const siteName = config.site_name || 'INFINITY';
 
   return `
     <div class="inf-shell" data-inf-shell>
       <header class="inf-brandbar" data-inf-brandbar>
-        <button type="button" class="inf-brandbar-toggle" data-inf-brandbar-toggle aria-label="Open Infinity home">
-          <span class="inf-logo">∞</span>
+        <button type="button" class="inf-logo" data-inf-brandbar-toggle aria-label="Open Infinity menu">
+          <span class="inf-symbol">∞</span>
           <span class="inf-brand-word">${siteName}</span>
         </button>
+        
+        <nav class="inf-top-nav">
+          <a href="#scripts" class="nav-link">scripts</a>
+          <a href="#share" class="nav-link">share</a>
+          <a href="#request" class="nav-link">request</a>
+        </nav>
+        
+        <div class="inf-actions">
+           </div>
       </header>
 
       ${renderQuickRail(config)}
@@ -52,14 +61,7 @@ export function mountLayout(root, config = {}) {
   const searchInput = root.querySelector('[data-inf-search-input]');
 
   return {
-    root,
-    shell,
-    brandbar,
-    quickRail,
-    drawer,
-    searchDock,
-    searchPanel,
-    searchInput,
+    root, shell, brandbar, quickRail, drawer, searchDock, searchPanel, searchInput,
     setHero(html) {
       const hero = root.querySelector('[data-inf-hero]');
       if (hero) hero.innerHTML = html;
