@@ -1,5 +1,5 @@
-import { mountLayout } from '../components/layout.js';
-import { initRouter } from '../components/router.js';
+import { mountLayout } from '../../components/layout.js';
+import { initRouter } from '../../components/router.js';
 
 async function bootstrap() {
   const root = document.getElementById('app');
@@ -67,7 +67,7 @@ async function bootstrap() {
         if (query) {
           window.location.hash = `search?q=${encodeURIComponent(query)}`;
           ui.closeSearch();
-          ui.setSearchValue(''); // clear after search
+          if (ui.setSearchValue) ui.setSearchValue(''); 
         }
       }
     });

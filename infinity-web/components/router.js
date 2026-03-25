@@ -7,7 +7,7 @@ export function initRouter(ui, config) {
     const rawHash = window.location.hash.replace('#', '') || 'assistance';
     const [hashPath, queryString] = rawHash.split('?');
     const hash = hashPath || 'assistance';
-    
+
     const urlParams = new URLSearchParams(queryString || '');
 
     // Update active state in navigation links
@@ -58,7 +58,7 @@ export function initRouter(ui, config) {
         const titleText = isUpload ? 'Upload a Script' : 'Request a Script';
         const labelText = isUpload ? 'Script Content or Link' : 'Describe the tool you need';
         const ghLabel = isUpload ? 'submission' : 'enhancement';
-        
+
         ui.setPageContent(`
           <div class="inf-page">
             <h2>${titleText.toUpperCase()}</h2>
@@ -66,7 +66,7 @@ export function initRouter(ui, config) {
               Infinity is a decentralized static platform. Submissions are securely routed through GitHub Issues.
             </p>
             <form class="inf-form" onsubmit="
-              event.preventDefault(); 
+              event.preventDefault();
               const title = encodeURIComponent((document.getElementById('inf-f-title').value || '').trim());
               const body = encodeURIComponent((document.getElementById('inf-f-body').value || '').trim());
               const url = 'https://github.com/CORPUSTHEKING/infinity/issues/new?title=' + title + '&body=' + body + '&labels=${ghLabel}';
@@ -93,7 +93,7 @@ export function initRouter(ui, config) {
         `);
         break;
     }
-    
+
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
