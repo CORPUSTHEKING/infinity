@@ -1,56 +1,58 @@
 .inf-form {
-  display: grid;
-  gap: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+  margin-top: 1rem;
 }
 
-.inf-form-head h2 {
-  margin: 0;
-}
-
-.inf-form-grid {
-  display: grid;
-  gap: 1rem;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-}
-
-.inf-field {
-  display: grid;
-  gap: 0.45rem;
-}
-
-.inf-field span {
-  color: var(--muted);
-  font-size: 0.9rem;
-}
-
-.inf-field input,
-.inf-field textarea,
-.inf-field select {
+.inf-form-group input,
+.inf-form-group textarea {
   width: 100%;
-  border-radius: 18px;
+  padding: 1rem;
+  background: rgba(255, 255, 255, 0.05);
   border: 1px solid var(--line);
-  background: rgba(255, 255, 255, 0.03);
+  border-radius: 16px;
   color: var(--text);
-  padding: 0.9rem 1rem;
+  font-family: inherit;
+  font-size: 1rem;
+  transition: border-color 0.2s ease, background 0.2s ease;
 }
 
-.inf-field textarea {
-  min-height: 10rem;
-  resize: vertical;
+.inf-form-group input:focus,
+.inf-form-group textarea:focus {
+  outline: none;
+  border-color: var(--accent);
+  background: rgba(255, 255, 255, 0.08);
 }
 
-.inf-field-inline {
-  display: flex;
-  align-items: center;
-  gap: 0.65rem;
+.inf-btn-primary {
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  padding: 1rem 2rem;
+  border-radius: 999px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.2s ease, transform 0.1s ease;
+  align-self: flex-start;
 }
 
-.inf-radio-group {
-  display: grid;
-  gap: 0.45rem;
+.inf-btn-primary:hover {
+  opacity: 0.9;
 }
 
-.inf-form-actions {
-  display: flex;
-  justify-content: flex-end;
+.inf-btn-primary:active {
+  transform: scale(0.98);
+}
+
+.inf-loading {
+  color: var(--muted);
+  font-style: italic;
+  animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 0.6; }
+  50% { opacity: 1; }
 }

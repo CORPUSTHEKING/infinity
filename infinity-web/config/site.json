@@ -41,22 +41,5 @@
     "hero_style": "panning_panorama",
     "search_mode": ["fuzzy", "regex"],
     "default_theme": "dark"
-  },
-  "questions": ["what", "why", "where", "when", "who", "how"],
-  "choices": ["share", "request", "upload", "join", "query", "download", "search"],
-  "input_fields": [
-    "category",
-    "purpose",
-    "shell",
-    "language",
-    "origin",
-    "note",
-    "name",
-    "email",
-    "phone",
-    "address",
-    "personal_or_business",
-    "reason",
-    "review"
-  ]
+  }
 }

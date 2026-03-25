@@ -1,20 +1,9 @@
-export function renderHero(siteName = 'Infinity') {
+export function renderHero() {
   return `
-    <div class="inf-hero-media" aria-hidden="true"></div>
-    <div class="inf-hero-overlay" aria-hidden="true"></div>
-
-      <h1>${siteName}</h1>
-      <p class="inf-hero-text">
-        Scripts, requests, uploads, sharing, and category browsing stay inside one compact layout.
-      </p>
-    </div>
-
-    <div class="inf-hero-marquee" aria-hidden="true">
-      <span>scripts</span>
-      <span>share</span>
-      <span>request</span>
-      <span>configs</span>
-      <span>search</span>
+    <div class="inf-hero-panoramic">
+      <div class="pan-text-scroller">
+        <marquee scrollamount="5">this is where the panoramic image goes the image pans as texts autoscroll through this part's centre, not bottom</marquee>
+      </div>
     </div>
   `;
 }

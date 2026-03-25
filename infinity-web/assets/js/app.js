@@ -1,75 +1,93 @@
-import { mountLayout } from '../../components/layout.js';
-import { bindDrawerToggle } from '../../components/drawer.js';
-import { bindQuickRail } from '../../components/quickrail.js';
-import { normalizeRoute, onRouteChange } from '../../components/router.js';
-import { searchItems } from '../../components/search.js';
-import { renderCategoriesView, renderSearchResultsView } from '../../components/categories.js';
-import { bindCardActions } from '../../components/cardActions.js';
-import { bindSearchDock } from '../../components/searchdock.js';
-import { getState, setState } from '../../components/state.js';
+import { mountLayout } from '../components/layout.js';
+import { initRouter } from '../components/router.js';
 
-const appRoot = document.getElementById('app');
+async function bootstrap() {
+  const root = document.getElementById('app');
+  if (!root) return console.error('Root #app element not found');
 
-async function loadJson(path) {
+  let config = {};
   try {
-    const response = await fetch(`./config/${path}`);
-    return response.ok ? await response.json() : {};
-  } catch (e) { return {}; }
-}
+    const res = await fetch('./config/site.json');
+    config = await res.json();
+  } catch (err) {
+    console.warn('Could not load site.json, falling back to defaults.', err);
+  }
 
-const flattenTree = (nodes) => nodes.reduce((acc, n) => {
-  if (n.type === 'file') acc.push(n);
-  if (n.children) acc.push(...flattenTree(n.children));
-  return acc;
-}, []);
+  const ui = mountLayout(root, config);
 
-async function init() {
-  const [site, scripts, platforms, devices] = await Promise.all([
-    loadJson('site.json'), loadJson('scripts.json'), loadJson('platforms.json'), loadJson('devices.json')
-  ]);
+  // Centralized Event Delegation
+  document.addEventListener('click', (e) => {
+    // Menu Toggle
+    if (e.target.closest('[data-inf-menu-toggle]')) {
+      const drawer = document.querySelector('[data-inf-drawer]');
+      if (drawer) ui.setDrawerVisible(drawer.hasAttribute('hidden'));
+      return;
+    }
 
-  const layout = mountLayout(appRoot, site);
-  const scriptTree = scripts.tree || [];
-  const indexFields = scripts.index_fields || ['name', 'description'];
+    // Close Drawer when clicking outside or on a drawer link
+    const drawer = document.querySelector('[data-inf-drawer]');
+    if (drawer && !drawer.hasAttribute('hidden')) {
+      if (!e.target.closest('.inf-drawer-inner') || e.target.closest('a')) {
+        ui.setDrawerVisible(false);
+      }
+    }
 
-  bindDrawerToggle({ drawer: layout.drawer, button: appRoot.querySelector('[data-inf-menu-toggle]') });
+    // Search Dock Toggle
+    if (e.target.closest('.inf-searchfab')) {
+      const dock = document.querySelector('[data-inf-searchdock]');
+      if (dock && dock.classList.contains('is-open')) {
+        ui.closeSearch();
+      } else {
+        ui.openSearch();
+      }
+      return;
+    }
 
-  bindSearchDock({
-    dock: layout.searchDock,
-    input: layout.searchInput,
-    toggleButton: appRoot.querySelector('[data-inf-search-toggle]'),
-    onChange: (val) => {
-      setState({ query: val });
-      if (normalizeRoute(window.location.hash) === 'search') renderRoute('search', val);
+    // Quick Action Buttons
+    const actionBtn = e.target.closest('[data-action]');
+    if (actionBtn) {
+      const action = actionBtn.getAttribute('data-action');
+      if (action === 'share' && navigator.share) {
+        navigator.share({ title: config.site_name, url: window.location.href }).catch(console.error);
+      } else {
+        window.location.hash = action;
+      }
     }
   });
 
-  function renderRoute(route, queryOverride = '') {
-    const cleanRoute = normalizeRoute(route);
-    const query = queryOverride || getState().query || '';
-    let html = '';
-
-    layout.setSummary(`
-      <div class="inf-summary-grid">
-        <article class="inf-summary-card"><strong>${scripts.categories?.length || 0}</strong><span>categories</span></article>
-        <article class="inf-summary-card"><strong>${(platforms.platforms || []).length}</strong><span>platforms</span></article>
-        <article class="inf-summary-card"><strong>${(devices.devices || []).length}</strong><span>devices</span></article>
-      </div>
-    `);
-
-    if (cleanRoute === 'search') {
-      const visible = searchItems(flattenTree(scriptTree), query, { fields: indexFields });
-      html = renderSearchResultsView(visible, query);
-    } else {
-      html = renderCategoriesView(scriptTree);
-    }
-
-    layout.setPageContent(html);
-    bindCardActions(appRoot.querySelector('[data-inf-main]'), {
-      onAction: (action, id) => console.log(`Action ${action} on ${id}`)
+  // Handle Search Input 'Enter' and 'Escape'
+  const searchInput = document.querySelector('input[data-inf-search-input]');
+  if (searchInput) {
+    searchInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        ui.closeSearch();
+      } else if (e.key === 'Enter') {
+        e.preventDefault();
+        const query = e.target.value.trim();
+        if (query) {
+          window.location.hash = `search?q=${encodeURIComponent(query)}`;
+          ui.closeSearch();
+          ui.setSearchValue(''); // clear after search
+        }
+      }
     });
+  } else {
+      // Global fallback if input is dynamically rendered later
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') ui.closeSearch();
+        if (e.key === 'Enter' && e.target.matches('input[data-inf-search-input]')) {
+            e.preventDefault();
+            const query = e.target.value.trim();
+            if (query) {
+                window.location.hash = `search?q=${encodeURIComponent(query)}`;
+                ui.closeSearch();
+                e.target.value = '';
+            }
+        }
+      });
   }
 
-  onRouteChange(renderRoute);
+  initRouter(ui, config);
 }
-init();
+
+document.addEventListener('DOMContentLoaded', bootstrap);

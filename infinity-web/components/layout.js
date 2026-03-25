@@ -10,19 +10,12 @@ export function createLayoutShell(config = {}) {
   return `
     <div class="inf-shell" data-inf-shell>
       <header class="inf-brandbar" data-inf-brandbar>
-        <button type="button" class="inf-logo" data-inf-brandbar-toggle aria-label="Open Infinity menu">
+        <div class="inf-logo-wrapper">
           <span class="inf-symbol">∞</span>
-          <span class="inf-brand-word">${siteName}</span>
+        </div>
+        <button type="button" class="inf-menu-btn" data-inf-menu-toggle aria-label="Menu">
+          menu
         </button>
-        
-        <nav class="inf-top-nav">
-          <a href="#scripts" class="nav-link">scripts</a>
-          <a href="#share" class="nav-link">share</a>
-          <a href="#request" class="nav-link">request</a>
-        </nav>
-        
-        <div class="inf-actions">
-           </div>
       </header>
 
       ${renderQuickRail(config)}
@@ -32,7 +25,7 @@ export function createLayoutShell(config = {}) {
         ${renderHero(siteName)}
       </section>
 
-      <section class="inf-summary" data-inf-summary>
+      <section class="inf-summary" data-inf-summary style="display: none;">
         ${renderSummary()}
       </section>
 
@@ -40,10 +33,12 @@ export function createLayoutShell(config = {}) {
 
       ${renderSearchDock()}
 
-      <footer class="inf-bottombar" data-inf-bottombar>
-        <a href="#assistance">home</a>
-        <a href="#upload">upload</a>
-        <a href="#download">downloads</a>
+      <footer class="inf-bottombar curved" data-inf-bottombar>
+        <div class="inf-bottombar-inner">
+          <a href="#assistance">home</a>
+          <a href="#upload">upload</a>
+          <a href="#download">downloads</a>
+        </div>
       </footer>
     </div>
   `;
@@ -53,7 +48,7 @@ export function mountLayout(root, config = {}) {
   root.innerHTML = createLayoutShell(config);
 
   const shell = root.querySelector('[data-inf-shell]');
-  const brandbar = root.querySelector('[data-inf-brandbar-toggle]');
+  const brandbar = root.querySelector('[data-inf-brandbar]');
   const quickRail = root.querySelector('[data-inf-quickrail]');
   const drawer = root.querySelector('[data-inf-drawer]');
   const searchDock = root.querySelector('[data-inf-searchdock]');
