@@ -1,4 +1,21 @@
-build_tmp/
+# Node noise
+node_modules/
+.pnpm-store/
 .DS_Store
-*.deb
-backup
+
+# Astro/Build outputs
+dist/
+.astro/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Environment / Secret files
+.env
+.env.production
+.env.local
+
+# Legacy backups
+*.bak
+migrate-infinity*.sh
+fix-git-integrity.sh

@@ -1,0 +1,1168 @@
+cat > migrate-infinity.sh <<'EOF'
+#!/usr/bin/env bash
+set -euo pipefail
+
+ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+LEGACY="$ROOT/../infinity-web-legacy"
+TARGET="$ROOT"
+
+mkdir -p "$TARGET/src/pages"
+mkdir -p "$TARGET/public/infinity/css"
+mkdir -p "$TARGET/public/infinity/js/components"
+mkdir -p "$TARGET/public/infinity/js/pages"
+mkdir -p "$TARGET/public/infinity/data"
+mkdir -p "$TARGET/public/infinity/payloads"
+mkdir -p "$TARGET/public/infinity/media"
+mkdir -p "$TARGET/tools"
+
+cat > "$TARGET/src/pages/index.astro" <<'EOF_ASTRO'
+---
+const title = 'Infinity Terminal Helpers';
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content="Infinity Terminal Helpers" />
+    <link rel="stylesheet" href="infinity/css/main.css" />
+  </head>
+  <body>
+    <div id="app">
+      <div style="min-height:100vh;display:grid;place-items:center;color:#94a3b8;font-family:system-ui,sans-serif;">
+        Loading Infinity...
+      </div>
+    </div>
+    <script type="module" src="infinity/js/app.js"></script>
+  </body>
+</html>
+EOF_ASTRO
+
+cat > "$TARGET/public/infinity/css/main.css" <<'EOF_CSS'
+@import url("./tokens.css");
+@import url("./base.css");
+@import url("./layout.css");
+@import url("./topbar.css");
+@import url("./hero.css");
+@import url("./categories.css");
+@import url("./cards.css");
+@import url("./searchdock.css");
+@import url("./forms.css");
+@import url("./responsive.css");
+EOF_CSS
+
+cp "$LEGACY/assets/css/tokens.css" "$TARGET/public/infinity/css/tokens.css"
+cp "$LEGACY/assets/css/base.css" "$TARGET/public/infinity/css/base.css"
+cp "$LEGACY/assets/css/layout.css" "$TARGET/public/infinity/css/layout.css"
+cp "$LEGACY/assets/css/topbar.css" "$TARGET/public/infinity/css/topbar.css"
+cp "$LEGACY/assets/css/categories.css" "$TARGET/public/infinity/css/categories.css"
+cp "$LEGACY/assets/css/cards.css" "$TARGET/public/infinity/css/cards.css"
+cp "$LEGACY/assets/css/searchdock.css" "$TARGET/public/infinity/css/searchdock.css"
+cp "$LEGACY/assets/css/forms.css" "$TARGET/public/infinity/css/forms.css"
+cp "$LEGACY/assets/css/responsive.css" "$TARGET/public/infinity/css/responsive.css"
+
+cat > "$TARGET/public/infinity/css/hero.css" <<'EOF_CSS'
+.inf-hero {
+  margin: 0 1rem 1rem;
+  padding-top: 1rem;
+}
+
+.inf-hero-panoramic {
+  position: relative;
+  width: 100%;
+  height: 240px;
+  overflow: hidden;
+  border-radius: 24px;
+  border: 1px solid rgba(124, 58, 237, 0.3);
+  box-shadow: 0 0 20px rgba(124, 58, 237, 0.15) inset;
+  background:
+    radial-gradient(circle at top, rgba(124, 58, 237, 0.18), transparent 32%),
+    linear-gradient(135deg, #070b12 0%, #1a1a2e 50%, #070b12 100%);
+}
+
+.inf-hero-image {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.pan-text-scroller {
+  position: absolute;
+  inset-inline: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 2;
+  background: rgba(7, 11, 18, 0.85);
+  color: var(--text);
+  padding: 1.2rem 2rem;
+  font-family: var(--font-mono, monospace);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  white-space: nowrap;
+  border-top: 1px solid rgba(124, 58, 237, 0.5);
+  border-bottom: 1px solid rgba(124, 58, 237, 0.5);
+  width: 100%;
+  text-align: center;
+  backdrop-filter: blur(5px);
+}
+EOF_CSS
+
+cp "$LEGACY/components/"*.js "$TARGET/public/infinity/js/components/"
+cp "$LEGACY/pages/"*.js "$TARGET/public/infinity/js/pages/"
+
+cat > "$TARGET/public/infinity/js/components/hero.js" <<'EOF_JS'
+export function renderHero() {
+  return `
+    <div class="inf-hero-panoramic">
+      <img
+        class="inf-hero-image"
+        src="infinity/media/panoramic.jpg"
+        alt="Infinity panoramic backdrop"
+        loading="eager"
+        decoding="async"
+        onerror="this.style.display='none'"
+      />
+      <div class="pan-text-scroller">
+        <span>Infinity Terminal Helpers</span>
+      </div>
+    </div>
+  `;
+}
+EOF_JS
+
+cat > "$TARGET/public/infinity/js/components/layout.js" <<'EOF_JS'
+import { renderDrawer } from './drawer.js';
+import { renderHero } from './hero.js';
+import { renderQuickRail } from './quickrail.js';
+import { renderSearchDock } from './searchdock.js';
+import { renderSummary } from './summary.js';
+
+export function createLayoutShell(config = {}) {
+  const siteName = config.site_name || 'INFINITY';
+
+  return `
+    <div class="inf-shell" data-inf-shell>
+      <header class="inf-brandbar" data-inf-brandbar>
+        <div class="inf-logo-wrapper">
+          <span class="inf-symbol">∞</span>
+        </div>
+        <button type="button" class="inf-menu-btn" data-inf-menu-toggle aria-label="Menu">
+          menu
+        </button>
+      </header>
+
+      ${renderQuickRail(config)}
+      ${renderDrawer(config)}
+
+      <section class="inf-hero" data-inf-hero>
+        ${renderHero(siteName)}
+      </section>
+
+      <section class="inf-summary" data-inf-summary style="display: none;">
+        ${renderSummary()}
+      </section>
+
+      <main class="inf-main" data-inf-main></main>
+
+      ${renderSearchDock()}
+
+      <footer class="inf-bottombar curved" data-inf-bottombar>
+        <div class="inf-bottombar-inner">
+          <a href="#assistance">home</a>
+          <a href="#upload">upload</a>
+          <a href="#download">downloads</a>
+        </div>
+      </footer>
+    </div>
+  `;
+}
+
+export function mountLayout(root, config = {}) {
+  root.innerHTML = createLayoutShell(config);
+
+  const shell = root.querySelector('[data-inf-shell]');
+  const brandbar = root.querySelector('[data-inf-brandbar]');
+  const quickRail = root.querySelector('[data-inf-quickrail]');
+  const drawer = root.querySelector('[data-inf-drawer]');
+  const searchDock = root.querySelector('[data-inf-searchdock]');
+  const searchPanel = root.querySelector('[data-inf-searchpanel]');
+  const searchInput = root.querySelector('[data-inf-search-input]');
+
+  return {
+    root,
+    shell,
+    brandbar,
+    quickRail,
+    drawer,
+    searchDock,
+    searchPanel,
+    searchInput,
+    setHero(html) {
+      const hero = root.querySelector('[data-inf-hero]');
+      if (hero) hero.innerHTML = html;
+    },
+    setSummary(html) {
+      const summary = root.querySelector('[data-inf-summary]');
+      if (summary) summary.innerHTML = html;
+    },
+    setPageContent(html) {
+      const main = root.querySelector('[data-inf-main]');
+      if (main) main.innerHTML = html;
+    },
+    setDrawerVisible(visible) {
+      if (drawer) drawer.hidden = !visible;
+    },
+    setSearchValue(value = '') {
+      if (searchInput) searchInput.value = value;
+    },
+    openSearch() {
+      if (searchDock) searchDock.classList.add('is-open');
+      if (searchPanel) searchPanel.hidden = false;
+      searchInput?.focus();
+    },
+    closeSearch() {
+      if (searchDock) searchDock.classList.remove('is-open');
+      if (searchPanel) searchPanel.hidden = true;
+    }
+  };
+}
+EOF_JS
+
+cat > "$TARGET/public/infinity/js/components/cards.js" <<'EOF_JS'
+export function renderScriptCards(items = []) {
+  return `
+    <div class="inf-cards-rail" aria-label="Scripts">
+      ${items.length ? items.map((item) => `
+        <article class="inf-card" data-script-card data-script-id="${item.id || ''}" data-script-path="${item.path || ''}">
+          <header class="inf-card-head">
+            <div class="inf-card-author">${item.author || item.owner || 'Unknown author'}</div>
+            <h3 class="inf-card-title">${item.name || item.title || 'Untitled script'}</h3>
+          </header>
+
+          <button type="button" class="inf-card-body" data-script-expand>
+            <p>${item.description || item.summary || 'No description provided.'}</p>
+          </button>
+
+          <footer class="inf-card-foot">
+            <div class="inf-card-meta">
+              <span>${item.shell || ''}</span>
+              <span>${item.language || ''}</span>
+              <span>${item.category || ''}</span>
+            </div>
+
+            <div class="inf-card-actions">
+              <button type="button" data-action="download">Download</button>
+              <button type="button" data-action="share">Share</button>
+              <button type="button" data-action="request">Request</button>
+              <button type="button" data-action="report">Report</button>
+            </div>
+
+            <pre class="inf-card-deps">${Array.isArray(item.dependencies) ? item.dependencies.join('\n') : (item.dependencies || '')}</pre>
+          </footer>
+        </article>
+      `).join('') : '<div class="inf-result">No scripts loaded yet.</div>'}
+    </div>
+  `;
+}
+EOF_JS
+
+cat > "$TARGET/public/infinity/js/components/categories.js" <<'EOF_JS'
+import { renderScriptCards } from './cards.js';
+
+export function renderCategoriesView(tree = []) {
+  return `
+    <div class="inf-categories">
+      ${tree.map((node) => {
+        if (node.type !== 'directory') return '';
+        const files = Array.isArray(node.children) ? node.children.filter((c) => c.type === 'file') : [];
+        return `
+          <section class="inf-category">
+            <div class="inf-category-head">
+              <h2>${node.name.toUpperCase()}</h2>
+              <span class="inf-badge">${files.length} SCRIPTS LOADED</span>
+            </div>
+            <p class="inf-category-desc">browse the category, then slide through the scripts horizontally</p>
+            ${renderScriptCards(files)}
+          </section>
+        `;
+      }).join('')}
+    </div>
+  `;
+}
+
+export function renderSearchResultsView(results = [], query = '') {
+  return `
+    <div class="inf-categories">
+      <section class="inf-category">
+        <div class="inf-category-head">
+          <h2>SEARCH RESULTS</h2>
+          <span class="inf-badge">${results.length} MATCHES</span>
+        </div>
+        <p class="inf-category-desc">Matching scripts for "${query}".</p>
+        ${renderScriptCards(results)}
+      </section>
+    </div>
+  `;
+}
+EOF_JS
+
+cat > "$TARGET/public/infinity/js/components/cardActions.js" <<'EOF_JS'
+export function handleDownload(itemPath, fileName = '') {
+  if (!itemPath) return;
+
+  const href = new URL(itemPath, window.location.href).href;
+  const link = document.createElement('a');
+  link.href = href;
+  if (fileName) link.download = fileName;
+  link.rel = 'noopener noreferrer';
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+}
+
+export function bindCardActions(root, handlers = {}) {
+  if (!root) return () => {};
+
+  const onClick = (event) => {
+    const expandButton = event.target.closest('[data-script-expand]');
+    const actionButton = event.target.closest('[data-action]');
+    const card = event.target.closest('[data-script-card]');
+
+    if (!card) return;
+
+    const itemId = card.getAttribute('data-script-id') || '';
+    const itemPath = card.getAttribute('data-script-path') || '';
+
+    if (expandButton) {
+      card.classList.toggle('is-expanded');
+      handlers.onExpand?.(itemId, card);
+      return;
+    }
+
+    if (actionButton) {
+      const action = actionButton.getAttribute('data-action') || '';
+      handlers.onAction?.(action, itemId, card);
+
+      if (action === 'download') {
+        handlers.onDownload?.(itemPath, card);
+      }
+    }
+  };
+
+  root.addEventListener('click', onClick);
+
+  return () => root.removeEventListener('click', onClick);
+}
+EOF_JS
+
+cat > "$TARGET/public/infinity/js/components/forms.js" <<'EOF_JS'
+function fieldLabel(field) {
+  return field.label || field.title || field.name || 'Field';
+}
+
+function fieldOptions(field = {}) {
+  const raw = field.options || field.choices || [];
+  return Array.isArray(raw) ? raw : [];
+}
+
+export function renderForm(schema = {}, values = {}) {
+  const fields = Array.isArray(schema.fields) ? schema.fields : [];
+
+  return `
+    <form class="inf-form" data-inf-form>
+      <header class="inf-form-head">
+        <h2>${schema.title || 'Form'}</h2>
+      </header>
+      <div class="inf-form-grid">
+        ${fields.map((field) => {
+          const value = values[field.name] ?? '';
+          const required = field.required ? 'required' : '';
+          const label = fieldLabel(field);
+
+          if (field.type === 'textarea') {
+            return `
+              <label class="inf-field">
+                <span>${label}</span>
+                <textarea name="${field.name}" ${required}>${String(value)}</textarea>
+              </label>
+            `;
+          }
+
+          if (field.type === 'select') {
+            const options = fieldOptions(field);
+            return `
+              <label class="inf-field">
+                <span>${label}</span>
+                <select name="${field.name}" ${required}>
+                  <option value="">Select ${label}</option>
+                  ${options.map((option) => {
+                    const optionValue = typeof option === 'object' ? option.value : option;
+                    const optionLabel = typeof option === 'object' ? (option.label || option.value) : option;
+                    return `<option value="${String(optionValue)}" ${String(value) === String(optionValue) ? 'selected' : ''}>${optionLabel}</option>`;
+                  }).join('')}
+                </select>
+              </label>
+            `;
+          }
+
+          if (field.type === 'radio') {
+            const options = fieldOptions(field);
+            return `
+              <fieldset class="inf-field">
+                <span>${label}</span>
+                <div class="inf-radio-group">
+                  ${options.map((option) => {
+                    const optionValue = typeof option === 'object' ? option.value : option;
+                    const optionLabel = typeof option === 'object' ? (option.label || option.value) : option;
+                    return `
+                      <label class="inf-field-inline">
+                        <input type="radio" name="${field.name}" value="${String(optionValue)}" ${String(value) === String(optionValue) ? 'checked' : ''} ${required} />
+                        <span>${optionLabel}</span>
+                      </label>
+                    `;
+                  }).join('')}
+                </div>
+              </fieldset>
+            `;
+          }
+
+          if (field.type === 'checkbox') {
+            return `
+              <label class="inf-field inf-field-inline">
+                <input type="checkbox" name="${field.name}" ${value ? 'checked' : ''} />
+                <span>${label}</span>
+              </label>
+            `;
+          }
+
+          return `
+            <label class="inf-field">
+              <span>${label}</span>
+              <input type="${field.type || 'text'}" name="${field.name}" value="${String(value)}" ${required} />
+            </label>
+          `;
+        }).join('')}
+      </div>
+      <footer class="inf-form-actions">
+        <button type="submit">Send</button>
+      </footer>
+    </form>
+  `;
+}
+
+export function serializeForm(form) {
+  const data = {};
+  const fd = new FormData(form);
+
+  for (const [key, value] of fd.entries()) {
+    if (data[key] !== undefined) {
+      if (!Array.isArray(data[key])) data[key] = [data[key]];
+      data[key].push(value);
+    } else {
+      data[key] = value;
+    }
+  }
+
+  form.querySelectorAll('input[type="checkbox"]').forEach((input) => {
+    if (input.name && !fd.has(input.name)) data[input.name] = false;
+  });
+
+  return data;
+}
+EOF_JS
+
+cat > "$TARGET/public/infinity/js/components/drawer.js" <<'EOF_JS'
+export function renderDrawer(config = {}) {
+  const nav = Array.isArray(config.navigation) ? config.navigation : [];
+  const admin = config.admin_contacts || {};
+  const siteName = config.site_name || 'Infinity';
+
+  return `
+    <aside class="inf-drawer" data-inf-drawer hidden>
+      <div class="inf-drawer-head">
+        <strong>${siteName}</strong>
+        <span>Admin: ${admin.primary_email || ''}</span>
+      </div>
+      <nav class="inf-drawer-nav" aria-label="Primary">
+        ${nav.map((item) => `<a href="#${item.key}" data-route="${item.key}">${item.label}</a>`).join('')}
+      </nav>
+    </aside>
+  `;
+}
+EOF_JS
+
+cat > "$TARGET/public/infinity/js/components/quickrail.js" <<'EOF_JS'
+const DEFAULT_ACTIONS = [
+  { key: 'download', label: 'scripts' },
+  { key: 'share', label: 'share' },
+  { key: 'request', label: 'request' },
+  { key: 'disclaimer', label: 'configs' }
+];
+
+export function renderQuickRail(config = {}) {
+  const actions = Array.isArray(config.quick_actions) && config.quick_actions.length
+    ? config.quick_actions
+    : DEFAULT_ACTIONS;
+
+  return `
+    <nav class="inf-quickrail" data-inf-quickrail aria-label="Quick actions">
+      <div class="inf-quickrail-scroll">
+        ${actions.map((item) => `
+          <a href="#${item.key}" data-route="${item.key}">${item.label}</a>
+        `).join('')}
+      </div>
+    </nav>
+  `;
+}
+EOF_JS
+
+cat > "$TARGET/public/infinity/js/components/searchdock.js" <<'EOF_JS'
+export function renderSearchDock() {
+  return `
+    <div class="inf-searchdock" data-inf-searchdock>
+      <button type="button" class="inf-searchfab" data-inf-search-toggle aria-label="Open search">⌕</button>
+      <div class="inf-searchpanel" data-inf-searchpanel hidden>
+        <input type="search" data-inf-search-input placeholder="Search scripts, authors, shells, descriptions..." />
+        <button type="button" data-inf-search-filters>filters</button>
+      </div>
+    </div>
+  `;
+}
+EOF_JS
+
+cat > "$TARGET/public/infinity/js/components/summary.js" <<'EOF_JS'
+export function renderSummary({
+  live = 0,
+  total = 0,
+  platforms = 0,
+  devices = 0
+} = {}) {
+  return `
+    <div class="inf-summary-grid">
+      <article class="inf-summary-card">
+        <strong>${live}</strong>
+        <span>live scripts</span>
+      </article>
+      <article class="inf-summary-card">
+        <strong>${total}</strong>
+        <span>total scripts</span>
+      </article>
+      <article class="inf-summary-card">
+        <strong>${platforms}</strong>
+        <span>platform links</span>
+      </article>
+      <article class="inf-summary-card">
+        <strong>${devices}</strong>
+        <span>devices</span>
+      </article>
+    </div>
+  `;
+}
+EOF_JS
+
+cat > "$TARGET/public/infinity/js/data.js" <<'EOF_JS'
+let cachedSite = null;
+let cachedForms = null;
+let cachedPlatforms = null;
+let cachedDevices = null;
+let cachedScriptTree = null;
+
+function jsonURL(relativePath) {
+  return new URL(relativePath, import.meta.url).href;
+}
+
+async function loadJSON(relativePath, fallback = null) {
+  try {
+    const res = await fetch(jsonURL(relativePath));
+    if (!res.ok) return fallback;
+    return await res.json();
+  } catch {
+    return fallback;
+  }
+}
+
+function walkTree(nodes = [], out = []) {
+  for (const node of nodes) {
+    if (!node) continue;
+    if (node.type === 'file') {
+      out.push(node);
+      continue;
+    }
+    if (node.type === 'directory' && Array.isArray(node.children)) {
+      walkTree(node.children, out);
+    }
+  }
+  return out;
+}
+
+function normalizePayloadPath(path = '') {
+  const value = String(path || '').replace(/^\/+/, '');
+
+  if (!value) return '';
+  if (value.startsWith('infinity/payloads/')) return value;
+  if (value.startsWith('assets/payloads/')) return value.replace(/^assets\/payloads\//, 'infinity/payloads/');
+  if (value.startsWith('payloads/')) return `infinity/${value}`;
+  return `infinity/payloads/${value.replace(/^.*?payloads\//, '')}`;
+}
+
+function normalizeNode(node) {
+  if (!node || typeof node !== 'object') return node;
+
+  if (node.type === 'file') {
+    return {
+      ...node,
+      path: normalizePayloadPath(node.path || node.name)
+    };
+  }
+
+  if (node.type === 'directory' && Array.isArray(node.children)) {
+    return {
+      ...node,
+      children: node.children.map(normalizeNode)
+    };
+  }
+
+  return node;
+}
+
+function normalizeTree(tree = []) {
+  return tree.map(normalizeNode);
+}
+
+export async function getSiteConfig() {
+  if (cachedSite) return cachedSite;
+  cachedSite = await loadJSON('../data/site.json', {});
+  return cachedSite;
+}
+
+export async function getForms() {
+  if (cachedForms) return cachedForms;
+  const data = await loadJSON('../data/forms.json', {});
+  cachedForms = data.forms || {};
+  return cachedForms;
+}
+
+export async function getPlatforms() {
+  if (cachedPlatforms) return cachedPlatforms;
+  const data = await loadJSON('../data/platforms.json', {});
+  cachedPlatforms = data.platforms || [];
+  return cachedPlatforms;
+}
+
+export async function getDevices() {
+  if (cachedDevices) return cachedDevices;
+  const data = await loadJSON('../data/devices.json', {});
+  cachedDevices = data.devices || [];
+  return cachedDevices;
+}
+
+export async function getScriptTree() {
+  if (cachedScriptTree) return cachedScriptTree;
+  const data = await loadJSON('../data/scripts.json', {});
+  const raw = data.tree || data.categories || [];
+  cachedScriptTree = normalizeTree(raw);
+  return cachedScriptTree;
+}
+
+export async function getManifest() {
+  return getScriptTree();
+}
+
+export async function getScripts() {
+  return walkTree(await getScriptTree(), []);
+}
+
+export async function searchScripts(query = '') {
+  const q = String(query).trim().toLowerCase();
+  if (!q) return [];
+
+  const scripts = await getScripts();
+  return scripts.filter((item) => {
+    const blob = [
+      item.id,
+      item.name,
+      item.title,
+      item.author,
+      item.category,
+      item.path,
+      item.description,
+      item.note
+    ]
+      .filter(Boolean)
+      .join(' ')
+      .toLowerCase();
+
+    return blob.includes(q);
+  });
+}
+EOF_JS
+
+cat > "$TARGET/public/infinity/js/router.js" <<'EOF_JS'
+import { renderCategoriesView, renderSearchResultsView } from './components/categories.js';
+import { getManifest, getForms, getPlatforms, getDevices, getSiteConfig, searchScripts } from './data.js';
+
+import { renderAssistancePage } from './pages/assistance.js';
+import { renderSearchPage } from './pages/search.js';
+import { renderSharePage } from './pages/share.js';
+import { renderUploadPage, bindUploadEvents } from './pages/upload.js';
+import { renderRequestPage } from './pages/request.js';
+import { renderReviewPage } from './pages/review.js';
+import { renderReportPage } from './pages/report.js';
+import { renderSponsorPage } from './pages/sponsor.js';
+import { renderPlatformsPage } from './pages/platforms.js';
+import { renderDevicesPage } from './pages/devices.js';
+import { renderDisclaimerPage } from './pages/disclaimer.js';
+import { renderTerminalPage } from './pages/terminal.js';
+import { renderIwlPage } from './pages/iwl.js';
+
+function setActiveLinks(hash) {
+  document.querySelectorAll('.inf-bottombar a, .inf-drawer a, .inf-quickrail a').forEach((link) => {
+    link.classList.remove('active');
+    const href = link.getAttribute('href')?.replace('#', '') || '';
+    if (href.split('?')[0] === hash) link.classList.add('active');
+  });
+}
+
+export async function initRouter(ui) {
+  const siteConfig = await getSiteConfig();
+
+  async function handleRoute() {
+    const rawHash = window.location.hash.replace('#', '') || 'assistance';
+    const [hashPath, queryString = ''] = rawHash.split('?');
+    const hash = hashPath || 'assistance';
+    const params = new URLSearchParams(queryString);
+
+    setActiveLinks(hash);
+
+    switch (hash) {
+      case 'assistance':
+      case 'home':
+        ui.setPageContent(renderAssistancePage());
+        break;
+
+      case 'download': {
+        ui.setPageContent('<div class="inf-page"><p class="inf-loading">Loading script manifest...</p></div>');
+        const manifest = await getManifest();
+        ui.setPageContent(renderCategoriesView(manifest));
+        break;
+      }
+
+      case 'search': {
+        const query = params.get('q') || '';
+        if (!query) {
+          ui.setPageContent(renderSearchPage([], ''));
+          break;
+        }
+        ui.setPageContent(`<div class="inf-page"><p class="inf-loading">Searching for "${query}"...</p></div>`);
+        const results = await searchScripts(query);
+        ui.setPageContent(renderSearchResultsView(results, query));
+        break;
+      }
+
+      case 'upload': {
+        const forms = await getForms();
+        ui.setPageContent(renderUploadPage(forms.upload || {}));
+        bindUploadEvents(siteConfig);
+        break;
+      }
+
+      case 'share': {
+        const forms = await getForms();
+        ui.setPageContent(renderSharePage(forms.share || {}));
+        break;
+      }
+
+      case 'request': {
+        const forms = await getForms();
+        ui.setPageContent(renderRequestPage(forms.request || {}));
+        break;
+      }
+
+      case 'review': {
+        const forms = await getForms();
+        ui.setPageContent(renderReviewPage(forms.review || {}));
+        break;
+      }
+
+      case 'report': {
+        const forms = await getForms();
+        ui.setPageContent(renderReportPage(forms.report || {}));
+        break;
+      }
+
+      case 'platforms':
+        ui.setPageContent(renderPlatformsPage(await getPlatforms()));
+        break;
+
+      case 'devices':
+        ui.setPageContent(renderDevicesPage(await getDevices()));
+        break;
+
+      case 'sponsor':
+        ui.setPageContent(renderSponsorPage());
+        break;
+
+      case 'disclaimer':
+        ui.setPageContent(renderDisclaimerPage());
+        break;
+
+      case 'terminal':
+        ui.setPageContent(renderTerminalPage());
+        break;
+
+      case 'iwl': {
+        const forms = await getForms();
+        ui.setPageContent(renderIwlPage(forms.iwl || {}));
+        break;
+      }
+
+      default:
+        ui.setPageContent(`
+          <div class="inf-page">
+            <h2>${hash.toUpperCase()}</h2>
+            <p>Information regarding ${hash} is currently being updated.</p>
+          </div>
+        `);
+        break;
+    }
+
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  window.addEventListener('hashchange', handleRoute);
+  await handleRoute();
+}
+EOF_JS
+
+cat > "$TARGET/public/infinity/js/app.js" <<'EOF_JS'
+import { mountLayout } from './components/layout.js';
+import { bindCardActions, handleDownload } from './components/cardActions.js';
+import { initRouter } from './router.js';
+
+function ready(fn) {
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', fn, { once: true });
+  } else {
+    fn();
+  }
+}
+
+async function bootstrap() {
+  const root = document.getElementById('app');
+  if (!root) return console.error('Root #app element not found');
+
+  let config = {};
+  try {
+    const res = await fetch(new URL('../data/site.json', import.meta.url).href);
+    config = await res.json();
+  } catch (err) {
+    console.warn('Could not load site.json, falling back to defaults.', err);
+  }
+
+  const ui = mountLayout(root, config);
+
+  bindCardActions(root, {
+    onAction(action) {
+      if (action === 'share' && navigator.share) {
+        navigator.share({ title: config.site_name || 'Infinity', url: window.location.href }).catch(() => {});
+        return;
+      }
+      if (action === 'request' || action === 'report') {
+        window.location.hash = action;
+      }
+    },
+    onDownload(itemPath, card) {
+      const fileName = card?.getAttribute('data-script-id') || '';
+      handleDownload(itemPath, fileName);
+    }
+  });
+
+  document.addEventListener('click', (e) => {
+    if (e.target.closest('[data-inf-menu-toggle]')) {
+      const drawer = document.querySelector('[data-inf-drawer]');
+      if (drawer) ui.setDrawerVisible(drawer.hasAttribute('hidden'));
+      return;
+    }
+
+    if (e.target.closest('[data-inf-search-toggle]')) {
+      if (ui.searchDock?.classList.contains('is-open')) ui.closeSearch();
+      else ui.openSearch();
+      return;
+    }
+  });
+
+  const searchInput = document.querySelector('[data-inf-search-input]');
+  if (searchInput) {
+    searchInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        ui.closeSearch();
+        return;
+      }
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        const query = e.target.value.trim();
+        if (query) {
+          window.location.hash = `search?q=${encodeURIComponent(query)}`;
+          ui.closeSearch();
+          ui.setSearchValue('');
+        }
+      }
+    });
+  }
+
+  initRouter(ui, config);
+}
+
+ready(bootstrap);
+EOF_JS
+
+cat > "$TARGET/public/infinity/js/pages/upload.js" <<'EOF_JS'
+import { renderForm, serializeForm } from '../components/forms.js';
+
+const defaultSchema = {
+  title: 'Upload a Script',
+  fields: [
+    { name: 'script_id', label: 'Script/Engine ID', type: 'text', required: true },
+    { name: 'author', label: 'Author', type: 'text', required: false },
+    { name: 'category', label: 'Target Category', type: 'select', required: true, options: ['terminal', 'downloads', 'helpers'] },
+    { name: 'description', label: 'Description', type: 'textarea', required: true },
+    { name: 'code', label: 'Source Code / Content', type: 'textarea', required: true }
+  ]
+};
+
+function mergeUploadSchema(schema = {}) {
+  const fields = Array.isArray(schema.fields) ? schema.fields : [];
+  const hasScriptId = fields.some((field) => field.name === 'script_id');
+
+  return {
+    ...schema,
+    title: schema.title || defaultSchema.title,
+    fields: hasScriptId ? fields : [defaultSchema.fields[0], ...fields]
+  };
+}
+
+function adminRecipients(siteConfig = {}) {
+  const admin = siteConfig.admin_contacts || {};
+  const recipients = [admin.primary_email, ...(admin.cc_emails || [])].filter(Boolean);
+  return recipients.length ? recipients.join(',') : 'corpustheking@gmail.com,mikewebah@gmail.com';
+}
+
+export function renderUploadPage(schema = {}) {
+  const finalSchema = mergeUploadSchema(schema);
+
+  return `
+    <section class="inf-page">
+      <h2>Upload a Script</h2>
+      <p>Submit a script or engine for review.</p>
+      ${renderForm(finalSchema, {})}
+    </section>
+  `;
+}
+
+export function bindUploadEvents(siteConfig = {}) {
+  const form = document.querySelector('[data-inf-form]');
+  if (!form) return () => {};
+
+  const onSubmit = (e) => {
+    e.preventDefault();
+
+    const formData = serializeForm(form);
+    const scriptId = String(formData.script_id || formData.id || formData.purpose || 'untitled').trim();
+    const author = String(formData.author || formData.name || 'Anonymous').trim();
+    const category = String(formData.category || 'General').trim();
+    const description = String(formData.description || formData.note || formData.reason || '').trim();
+    const code = String(formData.code || formData.review || '').trim();
+
+    const payloadText = `### 🚀 New Script Submission: ${scriptId}
+**Author:** ${author}
+**Category:** ${category}
+
+**Description:**
+${description}
+
+**Code:**
+\`\`\`bash
+${code}
+\`\`\`
+
+---
+*Submitted via Infinity Web Engine Interface*`;
+
+    const repo = siteConfig.repoUrl || 'https://github.com/CORPUSTHEKING/infinity';
+    const issueUrl = `${repo}/issues/new?title=${encodeURIComponent('New Script: ' + scriptId)}&labels=community-submission&body=${encodeURIComponent(payloadText)}`;
+
+    const recipients = adminRecipients(siteConfig);
+    const subject = `Infinity Script Submission: ${scriptId}`;
+    const mailtoUrl = `mailto:${recipients}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(payloadText)}`;
+
+    const issueLink = document.createElement('a');
+    issueLink.href = issueUrl;
+    issueLink.target = '_blank';
+    issueLink.rel = 'noopener noreferrer';
+    document.body.appendChild(issueLink);
+    issueLink.click();
+    issueLink.remove();
+
+    const mailLink = document.createElement('a');
+    mailLink.href = mailtoUrl;
+    mailLink.rel = 'noopener noreferrer';
+    document.body.appendChild(mailLink);
+    mailLink.click();
+    mailLink.remove();
+
+    form.reset();
+  };
+
+  form.addEventListener('submit', onSubmit);
+  return () => form.removeEventListener('submit', onSubmit);
+}
+EOF_JS
+
+cat > "$TARGET/public/infinity/js/pages/search.js" <<'EOF_JS'
+export function renderSearchPage(results = [], query = '') {
+  return `
+    <section class="inf-page">
+      <h2>Search</h2>
+      <p>Search query: ${query || 'none'}</p>
+      <div class="inf-results">
+        ${results.map(item => `
+          <article class="inf-result">
+            <strong>${item.name || item.title || 'Untitled'}</strong>
+            <span>${item.author || ''}</span>
+            <p>${item.description || ''}</p>
+          </article>
+        `).join('')}
+      </div>
+    </section>
+  `;
+}
+EOF_JS
+
+cat > "$TARGET/public/infinity/js/components/cardActions.js" <<'EOF_JS'
+export function handleDownload(itemPath, fileName = '') {
+  if (!itemPath) return;
+
+  const href = new URL(itemPath, window.location.href).href;
+  const link = document.createElement('a');
+  link.href = href;
+  if (fileName) link.download = fileName;
+  link.rel = 'noopener noreferrer';
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+}
+
+export function bindCardActions(root, handlers = {}) {
+  if (!root) return () => {};
+
+  const onClick = (event) => {
+    const expandButton = event.target.closest('[data-script-expand]');
+    const actionButton = event.target.closest('[data-action]');
+    const card = event.target.closest('[data-script-card]');
+
+    if (!card) return;
+
+    const itemId = card.getAttribute('data-script-id') || '';
+    const itemPath = card.getAttribute('data-script-path') || '';
+
+    if (expandButton) {
+      card.classList.toggle('is-expanded');
+      handlers.onExpand?.(itemId, card);
+      return;
+    }
+
+    if (actionButton) {
+      const action = actionButton.getAttribute('data-action') || '';
+      handlers.onAction?.(action, itemId, card);
+
+      if (action === 'download') {
+        handlers.onDownload?.(itemPath, card);
+      }
+    }
+  };
+
+  root.addEventListener('click', onClick);
+
+  return () => root.removeEventListener('click', onClick);
+}
+EOF_JS
+
+cp "$LEGACY/config/site.json" "$TARGET/public/infinity/data/site.json"
+cp "$LEGACY/config/forms.json" "$TARGET/public/infinity/data/forms.json"
+cp "$LEGACY/config/platforms.json" "$TARGET/public/infinity/data/platforms.json"
+cp "$LEGACY/config/devices.json" "$TARGET/public/infinity/data/devices.json"
+cp "$LEGACY/config/scripts.json" "$TARGET/public/infinity/data/scripts.json"
+cp "$LEGACY/data/categories.json" "$TARGET/public/infinity/data/categories.json"
+
+cp -R "$LEGACY/assets/payloads/"* "$TARGET/public/infinity/payloads/"
+
+cat > "$TARGET/tools/generate-scripts-manifest.mjs" <<'EOF_JS'
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const payloadsDir = path.join(__dirname, '../public/infinity/payloads');
+const outputFile = path.join(payloadsDir, 'manifest.json');
+
+function buildTree(dirPath, basePath = '') {
+  const tree = [];
+  const items = fs.readdirSync(dirPath);
+
+  for (const item of items) {
+    if (item === 'manifest.json' || item.startsWith('.')) continue;
+
+    const fullPath = path.join(dirPath, item);
+    const relativePath = path.join(basePath, item).replace(/\\/g, '/');
+    const stat = fs.statSync(fullPath);
+
+    if (stat.isDirectory()) {
+      tree.push({
+        type: 'directory',
+        name: item,
+        children: buildTree(fullPath, relativePath),
+      });
+    } else {
+      tree.push({
+        type: 'file',
+        name: item,
+        path: `infinity/payloads/${relativePath}`,
+        size: stat.size,
+        modified: stat.mtime,
+      });
+    }
+  }
+
+  return tree;
+}
+
+const manifest = buildTree(payloadsDir);
+fs.writeFileSync(outputFile, JSON.stringify(manifest, null, 2));
+console.log(`Manifest written to ${outputFile}`);
+EOF_JS
+
+cat > "$TARGET/tools/rebuild-scripts.sh" <<'EOF_SH'
+#!/usr/bin/env bash
+set -euo pipefail
+cd "$(dirname "$0")/.."
+node tools/generate-scripts-manifest.mjs
+EOF_SH
+
+chmod +x "$TARGET/tools/rebuild-scripts.sh"
+
+echo "Infinity migration files written."
+echo "Place your panoramic image here:"
+echo "  public/infinity/media/panoramic.jpg"
+echo "Then run:"
+echo "  ./tools/rebuild-scripts.sh"
+echo "  pnpm build"
+EOF
+
+chmod +x migrate-infinity.sh
+./migrate-infinity.sh
