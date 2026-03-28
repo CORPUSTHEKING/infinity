@@ -33,7 +33,7 @@ jobs:
         uses: actions/upload-pages-artifact@v3
         with:
           # Deploys the infinity-web directory as the site root
-          path: 'infinity-web'
+          path: 'infinity-web/public'
 
       - name: Deploy to GitHub Pages
         id: deployment
