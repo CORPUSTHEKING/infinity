@@ -1,0 +1,4 @@
+body, button, input, textarea, select {
+  font-family: var(--base-font-stack);
+  font-size: inherit;
+}

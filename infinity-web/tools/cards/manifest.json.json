@@ -1,0 +1,26 @@
+[
+  {
+    "type": "directory",
+    "name": "DIRECTORIES",
+    "path": "DIRECTORIES",
+    "children": []
+  },
+  {
+    "type": "directory",
+    "name": "FILEOPS",
+    "path": "FILEOPS",
+    "children": []
+  },
+  {
+    "type": "directory",
+    "name": "SYSTEM",
+    "path": "SYSTEM",
+    "children": []
+  },
+  {
+    "type": "directory",
+    "name": "TEMPLATES",
+    "path": "TEMPLATES",
+    "children": []
+  }
+]

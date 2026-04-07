@@ -1,0 +1,9 @@
+button {
+  padding: var(--base-btn-padding);
+  color: var(--tokens-text);
+  cursor: pointer;
+  background: var(--base-btn-bg);
+  border: 1px solid var(--tokens-line);
+  border-radius: var(--base-btn-radius);
+  transition: var(--base-btn-transition);
+}

@@ -1,90 +1,82 @@
 [
   {
-    "type": "directory",
-    "name": "DIRECTORIES",
-    "children": [
-      {
-        "type": "file",
-        "id": "daudit",
-        "name": "daudit",
-        "path": "DIRECTORIES/daudit",
-        "size": 676,
-        "modified": "2026-03-25T23:27:40.829Z"
-      },
-      {
-        "type": "file",
-        "id": "daudit",
-        "name": "daudit.json",
-        "path": "DIRECTORIES/daudit.json",
-        "size": 1357,
-        "modified": "2026-03-25T23:27:40.829Z"
-      }
-    ]
-  },
-  {
-    "type": "directory",
-    "name": "FILEOPS",
-    "children": [
-      {
-        "type": "file",
-        "id": "faudit",
-        "name": "faudit",
-        "path": "FILEOPS/faudit",
-        "size": 915,
-        "modified": "2026-03-25T23:27:40.829Z"
-      },
-      {
-        "type": "file",
-        "id": "termux-shell",
-        "name": "termux-shell",
-        "path": "FILEOPS/termux-shell",
-        "size": 813,
-        "modified": "2026-03-25T23:27:40.825Z"
-      }
-    ]
-  },
-  {
-    "type": "directory",
-    "name": "SYSTEM",
-    "children": [
-      {
-        "type": "file",
-        "id": "regfind",
-        "name": "regfind",
-        "path": "SYSTEM/regfind",
-        "size": 350,
-        "modified": "2026-03-25T23:27:40.829Z"
-      },
-      {
-        "type": "file",
-        "id": "startuplog",
-        "name": "startuplog",
-        "path": "SYSTEM/startuplog",
-        "size": 946,
-        "modified": "2026-03-25T23:27:40.829Z"
-      }
-    ]
-  },
-  {
-    "type": "directory",
-    "name": "TEMPLATES",
-    "children": [
-      {
-        "type": "file",
-        "id": "renamd",
-        "name": "renamd",
-        "path": "TEMPLATES/renamd",
-        "size": 279,
-        "modified": "2026-03-25T23:27:40.829Z"
-      }
-    ]
-  },
-  {
+    "author": "Infinity System",
+    "version": "1.0.0",
+    "description": "No description provided for this tool.",
+    "deps": [
+      "none"
+    ],
+    "images": [],
+    "videos": [],
+    "pages": [],
+    "thumbnail": "assets/images/default-card-bg.jpg",
     "type": "file",
-    "id": "download-mirror",
-    "name": "download-mirror.sh",
-    "path": "download-mirror.sh",
-    "size": 0,
-    "modified": "2026-04-03T01:44:01.397Z"
+    "id": "DIRECTORIES",
+    "name": "DIRECTORIES",
+    "category": "General",
+    "modified": "2026-04-07T01:11:22.301Z",
+    "links": {
+      "source": "assets/payloads/DIRECTORIES"
+    }
+  },
+  {
+    "author": "Infinity System",
+    "version": "1.0.0",
+    "description": "No description provided for this tool.",
+    "deps": [
+      "none"
+    ],
+    "images": [],
+    "videos": [],
+    "pages": [],
+    "thumbnail": "assets/images/default-card-bg.jpg",
+    "type": "file",
+    "id": "FILEOPS",
+    "name": "FILEOPS",
+    "category": "General",
+    "modified": "2026-04-07T01:11:22.297Z",
+    "links": {
+      "source": "assets/payloads/FILEOPS"
+    }
+  },
+  {
+    "author": "Infinity System",
+    "version": "1.0.0",
+    "description": "No description provided for this tool.",
+    "deps": [
+      "none"
+    ],
+    "images": [],
+    "videos": [],
+    "pages": [],
+    "thumbnail": "assets/images/default-card-bg.jpg",
+    "type": "file",
+    "id": "SYSTEM",
+    "name": "SYSTEM",
+    "category": "General",
+    "modified": "2026-04-07T01:11:22.309Z",
+    "links": {
+      "source": "assets/payloads/SYSTEM"
+    }
+  },
+  {
+    "author": "Infinity System",
+    "version": "1.0.0",
+    "description": "No description provided for this tool.",
+    "deps": [
+      "none"
+    ],
+    "images": [],
+    "videos": [],
+    "pages": [],
+    "thumbnail": "assets/images/default-card-bg.jpg",
+    "type": "file",
+    "id": "TEMPLATES",
+    "name": "TEMPLATES",
+    "category": "General",
+    "modified": "2026-04-07T01:11:22.305Z",
+    "links": {
+      "source": "assets/payloads/TEMPLATES"
+    }
   }
 ]

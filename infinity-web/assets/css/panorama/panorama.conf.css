@@ -1,0 +1,7 @@
+:root {
+  /* Panorama Tokens */
+  --tokens-pano-img: url("../../img/huge-panorama.jpg");
+  --tokens-pano-height: 400px; /* Or 100vh if it's a full background */
+  --tokens-pano-speed: 60s;
+  --tokens-pano-overlay: linear-gradient(0deg, rgb(7 11 18 / 90%) 0%, transparent 50%);
+}

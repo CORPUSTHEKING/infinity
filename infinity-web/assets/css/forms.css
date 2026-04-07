@@ -9,37 +9,37 @@
 .inf-form-group textarea {
   width: 100%;
   padding: 1rem;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid var(--line);
-  border-radius: 16px;
-  color: var(--text);
   font-family: inherit;
   font-size: 1rem;
+  color: var(--text);
+  background: rgb(255 255 255 / 5%);
+  border: 1px solid var(--line);
+  border-radius: 16px;
   transition: border-color 0.2s ease, background 0.2s ease;
 }
 
 .inf-form-group input:focus,
 .inf-form-group textarea:focus {
   outline: none;
+  background: rgb(255 255 255 / 8%);
   border-color: var(--accent);
-  background: rgba(255, 255, 255, 0.08);
 }
 
 .inf-btn-primary {
-  background: var(--accent);
-  color: #fff;
-  border: none;
+  align-self: flex-start;
   padding: 1rem 2rem;
-  border-radius: 999px;
   font-size: 1rem;
   font-weight: 600;
+  color: #fff;
   cursor: pointer;
+  background: var(--accent);
+  border: none;
+  border-radius: 999px;
   transition: opacity 0.2s ease, transform 0.1s ease;
-  align-self: flex-start;
 }
 
 .inf-btn-primary:hover {
-  opacity: 0.9;
+  opacity: 90%;
 }
 
 .inf-btn-primary:active {
@@ -47,12 +47,12 @@
 }
 
 .inf-loading {
-  color: var(--muted);
   font-style: italic;
+  color: var(--muted);
   animation: pulse 1.5s infinite;
 }
 
 @keyframes pulse {
-  0%, 100% { opacity: 0.6; }
-  50% { opacity: 1; }
+  0%, 100% { opacity: 60%; }
+  50% { opacity: 100%; }
 }

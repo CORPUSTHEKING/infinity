@@ -1,0 +1,30 @@
+@keyframes inf-spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.inf-btn-loading {
+  position: relative !important;
+  color: transparent !important;
+  pointer-events: none;
+  transition: var(--tokens-int-trans-fast);
+}
+
+.inf-btn-loading svg {
+  opacity: 0%;
+  transform: scale(0.8);
+}
+
+.inf-btn-loading::after {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: var(--tokens-int-spinner-size);
+  height: var(--tokens-int-spinner-size);
+  margin: calc(var(--tokens-int-spinner-size) / -2) 0 0 calc(var(--tokens-int-spinner-size) / -2);
+  content: "";
+  border: 2px solid var(--tokens-int-spinner-track);
+  border-top-color: var(--tokens-int-spinner-head);
+  border-radius: 50%;
+  animation: inf-spin var(--tokens-int-spinner-speed) cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}

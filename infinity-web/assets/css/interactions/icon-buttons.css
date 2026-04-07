@@ -1,0 +1,24 @@
+.inf-btn-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--tokens-int-icon-size);
+  height: var(--tokens-int-icon-size);
+  padding: 0;
+  color: inherit;
+  cursor: pointer;
+  background: transparent;
+  border: 1px solid rgb(255 255 255 / 15%);
+  border-radius: var(--tokens-int-icon-radius);
+  transition: var(--tokens-int-spring);
+}
+
+.inf-btn-icon:hover {
+  background: var(--tokens-int-icon-hover-bg);
+  transform: translateY(-1px);
+}
+
+.inf-btn-icon:active {
+  transform: scale(var(--tokens-int-click-scale));
+  transition: var(--tokens-int-trans-fast);
+}

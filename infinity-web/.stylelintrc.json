@@ -1,0 +1,27 @@
+{
+  "extends": [
+    "stylelint-config-standard",
+    "stylelint-config-recess-order"
+  ],
+  "plugins": [
+    "stylelint-order"
+  ],
+  "rules": {
+    "import-notation": "string",
+    "color-function-notation": "modern",
+    "alpha-value-notation": "percentage",
+    "color-hex-length": "short",
+    "selector-class-pattern": [
+      "^(inf-|is-|has-)[a-z0-9-]+$",
+      {
+        "message": "Class names must be BEM-lite and prefixed with 'inf-', 'is-', or 'has-' (e.g., .inf-card, .is-active)"
+      }
+    ],
+    "custom-property-pattern": "^base-|layout-|tokens-",
+    "declaration-empty-line-before": "never",
+    "max-nesting-depth": 3,
+    "number-max-precision": 4,
+    "shorthand-property-no-redundant-values": true,
+    "declaration-block-no-redundant-longhand-properties": true
+  }
+}

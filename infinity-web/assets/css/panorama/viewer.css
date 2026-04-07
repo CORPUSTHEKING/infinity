@@ -1,0 +1,29 @@
+@keyframes inf-pan-x {
+  0% {
+    background-position: 0% 50%;
+  }
+  100% {
+    background-position: 100% 50%;
+  }
+}
+
+.inf-panorama {
+  position: relative;
+  width: 100%;
+  height: var(--tokens-pano-height);
+  overflow: hidden;
+  background-image: var(--tokens-pano-img);
+  /* 'auto 100%' ensures the image height fits, but width scales naturally */
+  background-size: auto 100%; 
+  background-repeat: repeat-x;
+  animation: inf-pan-x var(--tokens-pano-speed) linear infinite;
+}
+
+/* Optional: Premium dark fade at the bottom to blend into your #070b12 background */
+.inf-panorama::after {
+  position: absolute;
+  inset: 0;
+  content: "";
+  background: var(--tokens-pano-overlay);
+  pointer-events: none;
+}

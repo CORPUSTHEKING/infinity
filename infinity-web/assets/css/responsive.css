@@ -3,10 +3,10 @@
   to { transform: scale(1.2) translate3d(-1.4%, 1.1%, 0); }
 }
 
-@media (max-width: 920px) {
+@media (width <= 920px) {
   .inf-brandbar {
-    left: 0.65rem;
     top: 0.72rem;
+    left: 0.65rem;
   }
 
   .inf-quickrail {
@@ -14,7 +14,7 @@
   }
 }
 
-@media (max-width: 720px) {
+@media (width <= 720px) {
   .inf-shell {
     padding-top: 7.6rem;
   }
@@ -52,8 +52,8 @@
   *,
   *::before,
   *::after {
-    animation: none !important;
-    transition: none !important;
     scroll-behavior: auto !important;
+    transition: none !important;
+    animation: none !important;
   }
 }
