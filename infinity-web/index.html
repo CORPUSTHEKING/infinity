@@ -8,21 +8,21 @@
   <link rel="stylesheet" href="assets/css/main.css">
   <link rel="stylesheet" href="assets/css/panoramic.css">
 </head>
-<body style="background: #070b12; margin: 0; overflow: hidden;">
+<body style="background: #070b12; margin: 0; overflow-x: hidden;">
 
-  <div id="app">
-    <header style="position: absolute; top: 0; left: 0; right: 0; padding: 1.5rem; display: flex; justify-content: flex-end; z-index: 100;">
-      <button class="inf-btn-icon" aria-label="Open Menu" data-inf-menu-toggle style="background: none; border: none; color: #7c3aed; cursor: pointer;">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <line x1="3" y1="12" x2="21" y2="12"></line>
-          <line x1="3" y1="6" x2="21" y2="6"></line>
-          <line x1="3" y1="18" x2="21" y2="18"></line>
-        </svg>
-      </button>
-    </header>
+  <div class="inf-panorama"></div>
 
-    <div class="inf-panorama"></div>
-  </div>
+  <header style="position: absolute; top: 0; left: 0; right: 0; padding: 1.5rem; display: flex; justify-content: flex-end; z-index: 100; pointer-events: none;">
+    <button class="inf-btn-icon" aria-label="Open Menu" data-inf-menu-toggle style="background: none; border: none; color: #7c3aed; cursor: pointer; pointer-events: auto;">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="3" y1="12" x2="21" y2="12"></line>
+        <line x1="3" y1="6" x2="21" y2="6"></line>
+        <line x1="3" y1="18" x2="21" y2="18"></line>
+      </svg>
+    </button>
+  </header>
+
+  <div id="app" style="position: relative; z-index: 10;"></div>
 
   <script type="module" src="assets/js/app.js"></script>
 
