@@ -1,0 +1,90 @@
+[
+  {
+    "type": "directory",
+    "name": "DIRECTORIES",
+    "children": [
+      {
+        "type": "file",
+        "id": "daudit",
+        "name": "daudit",
+        "path": "DIRECTORIES/daudit",
+        "size": 676,
+        "modified": "2026-03-25T23:27:40.829Z"
+      },
+      {
+        "type": "file",
+        "id": "daudit",
+        "name": "daudit.json",
+        "path": "DIRECTORIES/daudit.json",
+        "size": 1357,
+        "modified": "2026-03-25T23:27:40.829Z"
+      }
+    ]
+  },
+  {
+    "type": "directory",
+    "name": "FILEOPS",
+    "children": [
+      {
+        "type": "file",
+        "id": "faudit",
+        "name": "faudit",
+        "path": "FILEOPS/faudit",
+        "size": 915,
+        "modified": "2026-03-25T23:27:40.829Z"
+      },
+      {
+        "type": "file",
+        "id": "termux-shell",
+        "name": "termux-shell",
+        "path": "FILEOPS/termux-shell",
+        "size": 813,
+        "modified": "2026-03-25T23:27:40.825Z"
+      }
+    ]
+  },
+  {
+    "type": "directory",
+    "name": "SYSTEM",
+    "children": [
+      {
+        "type": "file",
+        "id": "regfind",
+        "name": "regfind",
+        "path": "SYSTEM/regfind",
+        "size": 350,
+        "modified": "2026-03-25T23:27:40.829Z"
+      },
+      {
+        "type": "file",
+        "id": "startuplog",
+        "name": "startuplog",
+        "path": "SYSTEM/startuplog",
+        "size": 946,
+        "modified": "2026-03-25T23:27:40.829Z"
+      }
+    ]
+  },
+  {
+    "type": "directory",
+    "name": "TEMPLATES",
+    "children": [
+      {
+        "type": "file",
+        "id": "renamd",
+        "name": "renamd",
+        "path": "TEMPLATES/renamd",
+        "size": 279,
+        "modified": "2026-03-25T23:27:40.829Z"
+      }
+    ]
+  },
+  {
+    "type": "file",
+    "id": "download-mirror",
+    "name": "download-mirror.sh",
+    "path": "download-mirror.sh",
+    "size": 0,
+    "modified": "2026-04-03T01:44:01.397Z"
+  }
+]
