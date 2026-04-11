@@ -88,7 +88,6 @@ async function bootstrap() {
   }
 
   initRouter(ui, config);
-}
 
 // ... existing code (initRouter)
 
