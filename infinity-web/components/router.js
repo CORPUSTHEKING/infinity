@@ -1,7 +1,8 @@
 import { renderCategoriesView, renderSearchResultsView } from './categories.js';
 import { getManifest, searchScripts } from '../assets/js/data.js';
 import { handleDownloadPageRoute } from './router/download.js';
-
+import { handleDocsPageRoute } from './router/docs.js';
+import { dynamicRoutes } from './router/scan.js'; 
 export function initRouter(ui, config) {
   async function handleRoute() {
     // Extract hash and potential query parameters (e.g., #search?q=term)
@@ -21,6 +22,10 @@ export function initRouter(ui, config) {
     });
 
     switch (hash) {
+      case 'docs':
+        await handleDocsPageRoute(ui, urlParams);
+        break;
+
       case 'assistance':
       case 'home':
         ui.setPageContent(`
@@ -81,13 +86,25 @@ export function initRouter(ui, config) {
         break;
 
       default:
-        ui.setPageContent(`
-          <div class="inf-page">
-            <h2>${hash.toUpperCase()}</h2>
-            <p>Information regarding ${hash} is currently being updated.</p>
-          </div>
-        `);
+        // Check if the route exists in our dynamic scanner first
+        if (dynamicRoutes[hash]) {
+            try {
+                await dynamicRoutes[hash](ui, urlParams, config);
+            } catch (err) {
+                console.error(`[Router] Failed to load dynamic route: ${hash}`, err);
+                ui.setPageContent('<div class="inf-page"><h2>Execution Error</h2></div>');
+            }
+        } else {
+            // Fallback to your "being updated" message if no file exists in router/scan/
+            ui.setPageContent(`
+              <div class="inf-page">
+                <h2>${hash.toUpperCase()}</h2>
+                <p>Information regarding ${hash} is currently being updated.</p>
+              </div>
+            `);
+        }
         break;
+
     }
 
     window.scrollTo({ top: 0, behavior: 'smooth' });

@@ -1,0 +1,38 @@
+[
+  {
+    "title": "Append Tool",
+    "preview": "Safely append content...",
+    "link": "#docs?id=append",
+    "slug": "append"
+  },
+  {
+    "title": "Cat-Append",
+    "preview": "Interactive stdin capture...",
+    "link": "#docs?id=catappend",
+    "slug": "catappend"
+  },
+  {
+    "title": "Directory Auditor (daudit)",
+    "preview": "Audit directory sizes...",
+    "link": "#docs?id=daudit",
+    "slug": "daudit"
+  },
+  {
+    "title": "File Auditor (faudit)",
+    "preview": "Scan files with icons...",
+    "link": "#docs?id=faudit",
+    "slug": "faudit"
+  },
+  {
+    "title": "Termux Shell Environment",
+    "preview": "Force-load login semantics...",
+    "link": "#docs?id=termux-shell",
+    "slug": "termux-shell"
+  },
+  {
+    "title": "Welcome to Infinity",
+    "preview": "Learn how to use terminal helpers effectively.",
+    "link": "#docs?id=welcome",
+    "slug": "welcome"
+  }
+]
