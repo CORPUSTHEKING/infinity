@@ -9,6 +9,7 @@
 
 .inf-panorama {
   position: relative;
+  margin-top: 5rem;
   width: 100%;
   height: var(--tokens-pano-height);
   overflow: hidden;

@@ -89,21 +89,7 @@ async function bootstrap() {
 
   initRouter(ui, config);
 
-// ... existing code (initRouter)
-
-  // 🚀 DISMISS THE LOADING SCREEN
-  const loader = document.querySelector('.inf-loading-screen');
-  if (loader) {
-    // Optional: Add a slight delay for a "Premium" feel
-    setTimeout(() => {
-      loader.style.opacity = '0';
-      loader.style.transition = 'opacity 0.5s ease';
-
-      // Remove from DOM after fade-out
-      setTimeout(() => loader.remove(), 500);
-    }, 400);
-  }
-} // End of bootstrap function
+} // <--- THIS is the mandatory closing brace for bootstrap()
 
 document.addEventListener('DOMContentLoaded', bootstrap);
-  // ... existing code (initRouter)
+
