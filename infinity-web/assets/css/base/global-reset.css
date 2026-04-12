@@ -2,7 +2,7 @@ html, body {
   min-height: 100%;
   margin: 0;
   overflow-x: hidden;
-  color: var(--tokens-text);
+  color: var(--text);
   background:
     var(--base-bg-grad-1),
     var(--base-bg-grad-2),

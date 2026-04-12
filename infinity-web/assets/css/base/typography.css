@@ -2,3 +2,10 @@ body, button, input, textarea, select {
   font-family: var(--base-font-stack);
   font-size: inherit;
 }
+/* base/typography.css */
+h1, h2, h3, h4, h5, h6 {
+    color: var(--text); /* Or use a brighter token like #ffffff */
+    font-weight: 700;
+    line-height: 1.2;
+    margin-bottom: 0.5rem;
+}

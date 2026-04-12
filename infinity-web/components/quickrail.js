@@ -1,3 +1,5 @@
+import { escapeHTML } from './utils/html.js';
+
 const DEFAULT_ACTIONS = [
   { key: 'download', label: 'scripts' },
   { key: 'share', label: 'share' },
@@ -13,9 +15,13 @@ export function renderQuickRail(config = {}) {
   return `
     <nav class="inf-quickrail" data-inf-quickrail aria-label="Quick actions">
       <div class="inf-quickrail-scroll">
-        ${actions.map((item) => `
-          <a href="#${item.key}" data-route="${item.key}">${item.label}</a>
-        `).join('')}
+        ${actions
+          .map((item) => {
+            const key = escapeHTML(item.key || '');
+            const label = escapeHTML(item.label || item.key || '');
+            return `<a href="#${key}" data-route="${key}">${label}</a>`;
+          })
+          .join('')}
       </div>
     </nav>
   `;
@@ -67,7 +73,6 @@ export function bindQuickRail({ rail, shell, onOpen, onClose } = {}) {
 
   window.addEventListener('scroll', updateFade, { passive: true });
   updateFade();
-
   open();
 
   return {

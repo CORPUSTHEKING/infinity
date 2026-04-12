@@ -15,3 +15,9 @@
   --radius: 24px;
   --radius-lg: 34px;
 }
+/* tokens.css */
+:root {
+  --text: #e5e7eb;         /* Paragraphs/General */
+  --text-bright: #ffffff;  /* Headings/Emphasis */
+  --accent-3: #38bdf8;     /* The Cyan/Sky blue for sub-headings */
+}

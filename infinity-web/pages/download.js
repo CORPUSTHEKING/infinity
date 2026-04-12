@@ -1,11 +1,11 @@
-import { renderScriptCards } from '../components/cards.js';
+import { renderCategoriesView } from '../components/categories.js';
 
-export function renderDownloadPage(items = []) {
+export function renderDownloadPage(tree = []) {
   return `
     <section class="inf-page">
       <h2>Downloads</h2>
       <p>Immediate download actions for scripts and sections.</p>
-      ${renderScriptCards(items)}
+      ${renderCategoriesView(tree)}
     </section>
   `;
 }

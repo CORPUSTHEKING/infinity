@@ -1,40 +1,53 @@
 import { mountLayout } from '../../components/layout.js';
 import { initRouter } from '../../components/router.js';
+import { getManifest } from './data.js';
 
-async function bootstrap() {
-  const root = document.getElementById('app');
-  if (!root) return console.error('Root #app element not found');
+async function fetchJson(path) {
+  const res = await fetch(path, { cache: 'force-cache' });
+  if (!res.ok) throw new Error(`Failed to load ${path}`);
+  return res.json();
+}
 
-  let config = {};
-  try {
-    const res = await fetch('./config/site.json');
-    config = await res.json();
-  } catch (err) {
-    console.warn('Could not load site.json, falling back to defaults.', err);
-  }
+async function loadConfig() {
+  const [siteRes, formsRes, platformsRes, devicesRes] = await Promise.allSettled([
+    fetchJson('./config/site.json'),
+    fetchJson('./config/forms.json'),
+    fetchJson('./config/platforms.json'),
+    fetchJson('./config/devices.json')
+  ]);
 
-  const ui = mountLayout(root, config);
+  const site = siteRes.status === 'fulfilled' ? siteRes.value : {};
+  const forms = formsRes.status === 'fulfilled' ? formsRes.value.forms || {} : {};
+  const platforms = platformsRes.status === 'fulfilled' ? platformsRes.value.platforms || [] : [];
+  const devices = devicesRes.status === 'fulfilled' ? devicesRes.value.devices || [] : [];
 
-  // Centralized Event Delegation
+  return {
+    ...site,
+    forms,
+    platforms,
+    devices
+  };
+}
+
+function bindGlobalEvents(ui, config) {
   document.addEventListener('click', (e) => {
-    // Menu Toggle
-    if (e.target.closest('[data-inf-menu-toggle]')) {
-      const drawer = document.querySelector('[data-inf-drawer]');
+    const target = e.target;
+
+    if (target.closest('[data-inf-menu-toggle]')) {
+      const drawer = ui.root?.querySelector('[data-inf-drawer]') || document.querySelector('[data-inf-drawer]');
       if (drawer) ui.setDrawerVisible(drawer.hasAttribute('hidden'));
       return;
     }
 
-    // Close Drawer when clicking outside or on a drawer link
-    const drawer = document.querySelector('[data-inf-drawer]');
+    const drawer = ui.root?.querySelector('[data-inf-drawer]') || document.querySelector('[data-inf-drawer]');
     if (drawer && !drawer.hasAttribute('hidden')) {
-      if (!e.target.closest('.inf-drawer-inner') || e.target.closest('a')) {
+      if (!target.closest('.inf-drawer-inner') || target.closest('a')) {
         ui.setDrawerVisible(false);
       }
     }
 
-    // Search Dock Toggle
-    if (e.target.closest('.inf-searchfab')) {
-      const dock = document.querySelector('[data-inf-searchdock]');
+    if (target.closest('[data-inf-search-toggle], .inf-searchfab')) {
+      const dock = ui.root?.querySelector('[data-inf-searchdock]') || document.querySelector('[data-inf-searchdock]');
       if (dock && dock.classList.contains('is-open')) {
         ui.closeSearch();
       } else {
@@ -43,53 +56,70 @@ async function bootstrap() {
       return;
     }
 
-    // Quick Action Buttons
-    const actionBtn = e.target.closest('[data-action]');
+    const actionBtn = target.closest('[data-action]');
     if (actionBtn) {
       const action = actionBtn.getAttribute('data-action');
+      const inCard = Boolean(actionBtn.closest('[data-script-card]'));
+
+      if (inCard && action === 'download') {
+        return;
+      }
+
       if (action === 'share' && navigator.share) {
-        navigator.share({ title: config.site_name, url: window.location.href }).catch(console.error);
-      } else {
+        navigator.share({
+          title: config.site_name || 'Infinity',
+          url: window.location.href
+        }).catch(() => {});
+        return;
+      }
+
+      if (action) {
         window.location.hash = action;
       }
     }
   });
 
-  // Handle Search Input 'Enter' and 'Escape'
-  const searchInput = document.querySelector('input[data-inf-search-input]');
-  if (searchInput) {
-    searchInput.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape') {
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      ui.closeSearch();
+    }
+
+    if (e.key === 'Enter' && e.target.matches('input[data-inf-search-input]')) {
+      e.preventDefault();
+      const query = e.target.value.trim();
+
+      if (query) {
+        window.location.hash = `search?q=${encodeURIComponent(query)}`;
         ui.closeSearch();
-      } else if (e.key === 'Enter') {
-        e.preventDefault();
-        const query = e.target.value.trim();
-        if (query) {
-          window.location.hash = `search?q=${encodeURIComponent(query)}`;
-          ui.closeSearch();
-          if (ui.setSearchValue) ui.setSearchValue(''); 
-        }
+        ui.setSearchValue('');
       }
-    });
-  } else {
-      // Global fallback if input is dynamically rendered later
-      document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape') ui.closeSearch();
-        if (e.key === 'Enter' && e.target.matches('input[data-inf-search-input]')) {
-            e.preventDefault();
-            const query = e.target.value.trim();
-            if (query) {
-                window.location.hash = `search?q=${encodeURIComponent(query)}`;
-                ui.closeSearch();
-                e.target.value = '';
-            }
-        }
-      });
+    }
+  });
+}
+
+async function bootstrap() {
+  const root = document.getElementById('app');
+  if (!root) {
+    console.error('Root #app element not found');
+    return;
   }
 
+  const configPromise = loadConfig();
+  void getManifest();
+
+  const config = await configPromise;
+  const ui = mountLayout(root, config);
+
+  bindGlobalEvents(ui, config);
   initRouter(ui, config);
+}
 
-} // <--- THIS is the mandatory closing brace for bootstrap()
+function start() {
+  void bootstrap();
+}
 
-document.addEventListener('DOMContentLoaded', bootstrap);
-
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', start, { once: true });
+} else {
+  start();
+}

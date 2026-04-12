@@ -1,5 +1,11 @@
+import { escapeHTML } from './utils/html.js';
+
 function fieldLabel(field) {
-  return field.label || field.title || field.name || 'Field';
+  return field?.label || field?.title || field?.name || 'Field';
+}
+
+function fieldId(field) {
+  return field?.id || field?.name || `field-${Math.random().toString(36).slice(2, 8)}`;
 }
 
 function fieldOptions(field = {}) {
@@ -7,40 +13,51 @@ function fieldOptions(field = {}) {
   return Array.isArray(raw) ? raw : [];
 }
 
-export function renderForm(schema = {}, values = {}) {
+export function renderForm(schema = {}, values = {}, options = {}) {
   const fields = Array.isArray(schema.fields) ? schema.fields : [];
+  const formId = options.formId || schema.formId || schema.id || '';
 
   return `
-    <form class="inf-form" data-inf-form>
+    <form class="inf-form" data-inf-form ${formId ? `id="${escapeHTML(formId)}"` : ''}>
       <header class="inf-form-head">
-        <h2>${schema.title || 'Form'}</h2>
+        <h2>${escapeHTML(schema.title || 'Form')}</h2>
       </header>
+
       <div class="inf-form-grid">
         ${fields.map((field) => {
+          const name = String(field.name || '');
+          const id = escapeHTML(fieldId(field));
+          const label = escapeHTML(fieldLabel(field));
           const value = values[field.name] ?? '';
           const required = field.required ? 'required' : '';
-          const label = fieldLabel(field);
+          const placeholder = field.placeholder ? `placeholder="${escapeHTML(field.placeholder)}"` : '';
 
           if (field.type === 'textarea') {
             return `
-              <label class="inf-field">
+              <label class="inf-field" for="${id}">
                 <span>${label}</span>
-                <textarea name="${field.name}" ${required}>${String(value)}</textarea>
+                <textarea
+                  id="${id}"
+                  name="${escapeHTML(name)}"
+                  ${placeholder}
+                  ${required}
+                >${escapeHTML(String(value))}</textarea>
               </label>
             `;
           }
 
           if (field.type === 'select') {
-            const options = fieldOptions(field);
+            const optionsList = fieldOptions(field);
             return `
-              <label class="inf-field">
+              <label class="inf-field" for="${id}">
                 <span>${label}</span>
-                <select name="${field.name}" ${required}>
+                <select id="${id}" name="${escapeHTML(name)}" ${required}>
                   <option value="">Select ${label}</option>
-                  ${options.map((option) => {
+                  ${optionsList.map((option) => {
                     const optionValue = typeof option === 'object' ? option.value : option;
                     const optionLabel = typeof option === 'object' ? (option.label || option.value) : option;
-                    return `<option value="${String(optionValue)}" ${String(value) === String(optionValue) ? 'selected' : ''}>${optionLabel}</option>`;
+                    const selected = String(value) === String(optionValue) ? 'selected' : '';
+                    return `<option value="${escapeHTML(String(optionValue))}" ${selected}>${escapeHTML(String(optionLabel))}</option>`;
                   }).join('')}
                 </select>
               </label>
@@ -48,18 +65,25 @@ export function renderForm(schema = {}, values = {}) {
           }
 
           if (field.type === 'radio') {
-            const options = fieldOptions(field);
+            const optionsList = fieldOptions(field);
             return `
               <fieldset class="inf-field">
                 <span>${label}</span>
                 <div class="inf-radio-group">
-                  ${options.map((option) => {
+                  ${optionsList.map((option) => {
                     const optionValue = typeof option === 'object' ? option.value : option;
                     const optionLabel = typeof option === 'object' ? (option.label || option.value) : option;
+                    const checked = String(value) === String(optionValue) ? 'checked' : '';
                     return `
                       <label class="inf-field-inline">
-                        <input type="radio" name="${field.name}" value="${String(optionValue)}" ${String(value) === String(optionValue) ? 'checked' : ''} ${required} />
-                        <span>${optionLabel}</span>
+                        <input
+                          type="radio"
+                          name="${escapeHTML(name)}"
+                          value="${escapeHTML(String(optionValue))}"
+                          ${checked}
+                          ${required}
+                        />
+                        <span>${escapeHTML(String(optionLabel))}</span>
                       </label>
                     `;
                   }).join('')}
@@ -70,21 +94,34 @@ export function renderForm(schema = {}, values = {}) {
 
           if (field.type === 'checkbox') {
             return `
-              <label class="inf-field inf-field-inline">
-                <input type="checkbox" name="${field.name}" ${value ? 'checked' : ''} />
+              <label class="inf-field inf-field-inline" for="${id}">
+                <input
+                  id="${id}"
+                  type="checkbox"
+                  name="${escapeHTML(name)}"
+                  ${value ? 'checked' : ''}
+                />
                 <span>${label}</span>
               </label>
             `;
           }
 
           return `
-            <label class="inf-field">
+            <label class="inf-field" for="${id}">
               <span>${label}</span>
-              <input type="${field.type || 'text'}" name="${field.name}" value="${String(value)}" ${required} />
+              <input
+                id="${id}"
+                type="${escapeHTML(field.type || 'text')}"
+                name="${escapeHTML(name)}"
+                value="${escapeHTML(String(value))}"
+                ${placeholder}
+                ${required}
+              />
             </label>
           `;
         }).join('')}
       </div>
+
       <footer class="inf-form-actions">
         <button type="submit">Send</button>
       </footer>
@@ -104,8 +141,7 @@ export function bindAutosave(formRoot, storageKey) {
       const data = JSON.parse(raw);
 
       Object.entries(data).forEach(([name, value]) => {
-        const escaped = CSS.escape(name);
-        const inputs = form.querySelectorAll(`[name="${escaped}"]`);
+        const inputs = form.querySelectorAll(`[name="${CSS.escape(name)}"]`);
         if (!inputs.length) return;
 
         inputs.forEach((input) => {

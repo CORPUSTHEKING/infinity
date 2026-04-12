@@ -1,12 +1,29 @@
+import { escapeHTML } from './utils/html.js';
 import { renderHeroOverlay } from './hero/overlay/text.js';
 
-export function renderHero(config = {}) {
-  // Use config to decide if overlay should show
-  const overlay = config.showOverlay !== false ? renderHeroOverlay(config.content, config.subtext) : '';
+export function renderHero(input = {}) {
+  const config = typeof input === 'string' ? { siteName: input } : (input || {});
+
+  const siteName =
+    config.site_name ||
+    config.siteName ||
+    config.title ||
+    'Infinity Terminal Helpers';
+
+  const showOverlay = config.showOverlay !== false;
+  const overlayContent =
+    config.content ??
+    config.hero_content ??
+    siteName;
+
+  const overlaySubtext =
+    config.subtext ??
+    config.hero_subtext ??
+    '';
 
   return `
     <div class="inf-hero-panoramic">
-      ${overlay}
+      ${showOverlay ? renderHeroOverlay(escapeHTML(overlayContent), escapeHTML(overlaySubtext)) : ''}
     </div>
   `;
 }

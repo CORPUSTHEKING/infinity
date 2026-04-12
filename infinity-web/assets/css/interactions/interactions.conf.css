@@ -14,6 +14,6 @@
   /* Spinners & Loading */
   --tokens-int-spinner-size: 1.1rem;
   --tokens-int-spinner-track: rgb(255 255 255 / 10%);
-  --tokens-int-spinner-head: var(--tokens-text-bright, #fff);
+  --tokens-int-spinner-head: var(--text-bright, #fff);
   --tokens-int-spinner-speed: 0.8s;
 }

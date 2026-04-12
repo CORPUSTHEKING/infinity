@@ -6,6 +6,9 @@ import { renderSummary } from './summary.js';
 
 export function createLayoutShell(config = {}) {
   const siteName = config.site_name || 'INFINITY';
+  const ui = config.ui || {};
+  const showBottomBar = ui.show_bottom_bar !== false;
+  const showBottomSearch = ui.show_bottom_search !== false;
 
   return `
     <div class="inf-shell" data-inf-shell>
@@ -22,24 +25,26 @@ export function createLayoutShell(config = {}) {
       ${renderDrawer(config)}
 
       <section class="inf-hero" data-inf-hero>
-        ${renderHero(siteName)}
+        ${renderHero(config)}
       </section>
 
       <section class="inf-summary" data-inf-summary style="display: none;">
-        ${renderSummary()}
+        ${renderSummary(config.summary || {})}
       </section>
 
       <main class="inf-main" data-inf-main></main>
 
-      ${renderSearchDock()}
+      ${showBottomSearch ? renderSearchDock() : ''}
 
-      <footer class="inf-bottombar curved" data-inf-bottombar>
-        <div class="inf-bottombar-inner">
-          <a href="#assistance">home</a>
-          <a href="#upload">upload</a>
-          <a href="#download">downloads</a>
-        </div>
-      </footer>
+      ${showBottomBar ? `
+        <footer class="inf-bottombar curved" data-inf-bottombar>
+          <div class="inf-bottombar-inner">
+            <a href="#assistance">home</a>
+            <a href="#upload">upload</a>
+            <a href="#download">downloads</a>
+          </div>
+        </footer>
+      ` : ''}
     </div>
   `;
 }
@@ -54,9 +59,18 @@ export function mountLayout(root, config = {}) {
   const searchDock = root.querySelector('[data-inf-searchdock]');
   const searchPanel = root.querySelector('[data-inf-searchpanel]');
   const searchInput = root.querySelector('[data-inf-search-input]');
+  const main = root.querySelector('[data-inf-main]');
 
   return {
-    root, shell, brandbar, quickRail, drawer, searchDock, searchPanel, searchInput,
+    root,
+    shell,
+    brandbar,
+    quickRail,
+    drawer,
+    searchDock,
+    searchPanel,
+    searchInput,
+    main,
     setHero(html) {
       const hero = root.querySelector('[data-inf-hero]');
       if (hero) hero.innerHTML = html;
@@ -66,25 +80,28 @@ export function mountLayout(root, config = {}) {
       if (summary) summary.innerHTML = html;
     },
     setPageContent(html) {
-      const main = root.querySelector('[data-inf-main]');
-      if (main) main.innerHTML = html;
+      const target = main || root.querySelector('[data-inf-main]');
+      if (target) target.innerHTML = html;
     },
     setDrawerVisible(visible) {
-      if (drawer) drawer.hidden = !visible;
+      if (drawer) {
+        drawer.hidden = !visible;
+        drawer.classList.toggle('is-open', Boolean(visible));
+      }
     },
     setSearchValue(value = '') {
       if (searchInput) searchInput.value = value;
     },
     openSearch() {
-      const dock = root.querySelector('[data-inf-searchdock]');
-      const panel = root.querySelector('[data-inf-searchpanel]');
+      const dock = searchDock || root.querySelector('[data-inf-searchdock]');
+      const panel = searchPanel || root.querySelector('[data-inf-searchpanel]');
       if (dock) dock.classList.add('is-open');
       if (panel) panel.hidden = false;
-      searchInput?.focus();
+      searchInput?.focus({ preventScroll: true });
     },
     closeSearch() {
-      const dock = root.querySelector('[data-inf-searchdock]');
-      const panel = root.querySelector('[data-inf-searchpanel]');
+      const dock = searchDock || root.querySelector('[data-inf-searchdock]');
+      const panel = searchPanel || root.querySelector('[data-inf-searchpanel]');
       if (dock) dock.classList.remove('is-open');
       if (panel) panel.hidden = true;
     }
