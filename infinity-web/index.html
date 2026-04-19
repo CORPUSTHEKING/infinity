@@ -2,36 +2,717 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <meta name="theme-color" content="#070b12">
-  <title>Infinity | Terminal Helpers</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Documentation Architecture Breakdown</title>
+  <style>
+    /* ==========================================================================
+       constants.js & page.module.css (Global Variables & Page Structure)
+       ========================================================================== */
+    :root {
+      --header-height: 56px;
+      --header-bar: 10px;
+      --full-header-height: 66px;
+      --scroll-margin-top: 90px;
+      --z-index-header: 10;
+      --z-index-search-overlay: 25;
+      
+      /* theme.js (NPM Theme overrides & Dark/Light modes) */
+      --npm-red: #cb3837;
+      --bgColor-default: #ffffff;
+      --fgColor-default: #1f2328;
+      --borderColor-default: #d0d7de;
+      
+      /* Dark Dimmed */
+      --bg-dark: #333333;
+      --fg-dark: #E1E4E8;
+      --border-dark: #444D56;
+      
+      /* MDX Colors */
+      --bgColor-neutral-muted: #afb8c133;
+      --fontStack-monospace: ui-monospace, SFMono-Regular, SF Mono, Menlo, Consolas, Liberation Mono, monospace;
+    }
 
-  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
-  <link rel="preload" as="image" href="assets/img/huge-panorama.png">
-  <link rel="stylesheet" href="assets/css/main.css">
-  <link rel="stylesheet" href="assets/css/panoramic.css">
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+      color: var(--fgColor-default);
+      background-color: var(--bgColor-default);
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
 
-  <script defer src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    .Box_Page {
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    .Box_MainLayout {
+      z-index: 0;
+      display: flex;
+      flex: 1 1 auto;
+      flex-direction: row;
+    }
+
+    /* ==========================================================================
+       skip-nav.js
+       ========================================================================== */
+    .SkipBox {
+      display: inline-flex;
+      z-index: 20;
+      left: 10px;
+      gap: 3px;
+      position: absolute;
+      transform: translateY(-100%);
+      transition: transform 0.3s;
+      padding: 8px;
+      background-color: var(--bgColor-default);
+      border: 1px solid var(--npm-red);
+      border-top: 0;
+      font-size: 12px;
+      border-radius: 0 0 6px 6px;
+    }
+    .SkipBox:focus-within {
+      transform: translateY(0%);
+    }
+    .SkipLink {
+      color: var(--npm-red);
+      padding: 4px;
+      text-decoration: none;
+    }
+
+    /* ==========================================================================
+       header.module.css & site-title.module.css
+       ========================================================================== */
+    .stickyHeader {
+      top: 0;
+      position: sticky;
+      z-index: var(--z-index-header);
+    }
+    .NpmHeaderBar {
+      height: var(--header-bar);
+      background-image: linear-gradient(139deg, #fb8817, #ff4b01, #c12127, #e02aff);
+    }
+    .headerBox {
+      display: flex;
+      height: var(--header-height);
+      padding: 0 16px;
+      align-items: center;
+      justify-content: space-between;
+      background-color: var(--bg-dark);
+      border-bottom: 1px solid var(--border-dark);
+      color: var(--fg-dark);
+    }
+    @media (min-width: 1012px) { .headerBox { padding: 0 24px; } }
+    
+    .HeaderFlex { display: flex; align-items: center; }
+    .SiteTitle {
+      font-weight: bold;
+      font-size: 16px;
+      color: var(--fg-dark);
+      display: flex;
+      align-items: center;
+      text-decoration: none;
+      margin-right: 24px;
+    }
+    .SiteTitle svg { margin-right: 16px; color: var(--npm-red); }
+
+    /* ==========================================================================
+       search.module.css & text-input.js
+       ========================================================================== */
+    .TextInput {
+      font-size: 16px;
+      padding: 6px 12px;
+      border-radius: 6px;
+      border: 1px solid var(--border-dark);
+      background: #24292e;
+      color: var(--fg-dark);
+      width: 240px;
+    }
+    .searchDesktop { display: none; margin-left: 24px; }
+    @media (min-width: 1012px) { .searchDesktop { display: block; } }
+
+    /* ==========================================================================
+       sidebar.module.css & nav-items.module.css
+       ========================================================================== */
+    .sidebarContainer { display: none; }
+    @media (min-width: 1012px) { .sidebarContainer { display: block; } }
+    
+    .SidebarBox {
+      position: sticky;
+      top: var(--full-header-height);
+      height: calc(100vh - var(--full-header-height));
+      width: 270px;
+    }
+    .SidebarInner {
+      overflow: auto;
+      border-right: 1px solid var(--borderColor-default);
+      height: 100%;
+      padding: 16px;
+    }
+    .NavList_Item {
+      display: block;
+      padding: 8px 0;
+      color: var(--fgColor-default);
+      text-decoration: none;
+      font-size: 16px;
+    }
+    .NavList_Item:hover { text-decoration: underline; }
+
+    /* ==========================================================================
+       layout.module.css & breadcrumbs.module.css
+       ========================================================================== */
+    .LayoutContainer {
+      justify-content: center;
+      display: flex;
+      max-width: 1200px;
+      margin: 0 auto;
+      width: 100%;
+      padding: 24px;
+      box-sizing: border-box;
+    }
+    .MainContent {
+      width: 100%;
+      max-width: 960px;
+    }
+    .PrimerBreadcrumbs { margin-bottom: 24px; font-size: 14px; color: #656d76; }
+    .PrimerBreadcrumbs span::after { content: " / "; margin: 0 8px; }
+    .PrimerBreadcrumbs span:last-child::after { content: ""; }
+
+    /* ==========================================================================
+       table-of-contents.module.css
+       ========================================================================== */
+    .tocDesktop {
+      width: 220px;
+      flex: 0 0 auto;
+      margin-left: 48px;
+      display: none;
+      position: sticky;
+      top: var(--scroll-margin-top);
+      max-height: calc(100vh - var(--scroll-margin-top));
+    }
+    @media (min-width: 768px) { .tocDesktop { display: block; } }
+    .tocDesktop h2 { font-size: 14px; margin-top: 0; }
+    .tocDesktop ul { list-style: none; padding-left: 0; font-size: 14px; }
+    .tocDesktop li { margin-bottom: 8px; }
+    .tocDesktop a { color: var(--fgColor-default); text-decoration: none; }
+    .tocDesktop a:hover { text-decoration: underline; }
+
+    /* ==========================================================================
+       mdx/components.module.css & page-footer.module.css
+       ========================================================================== */
+    h1 { font-size: 32px; border-bottom: 1px solid var(--borderColor-default); padding-bottom: 8px; margin-top: 0; }
+    h2 { font-size: 24px; border-bottom: 1px solid var(--borderColor-default); padding-bottom: 8px; margin-top: 24px; scroll-margin-top: var(--scroll-margin-top); }
+    h3 { font-size: 18px; margin-top: 24px; }
+    
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 16px 0;
+      font-size: 14px;
+    }
+    th { background-color: var(--bgColor-neutral-muted); font-weight: 600; text-align: left; }
+    th, td {
+      padding: 8px 16px;
+      border: 1px solid var(--borderColor-default);
+    }
+    code {
+      font-family: var(--fontStack-monospace);
+      background-color: var(--bgColor-neutral-muted);
+      padding: 2px 6px;
+      border-radius: 6px;
+      font-size: 85%;
+    }
+    
+    .Note {
+      padding: 16px;
+      margin-bottom: 16px;
+      border-radius: 6px;
+      border-left: 6px solid var(--npm-red);
+      background-color: var(--bgColor-neutral-muted);
+    }
+
+    .PageFooter {
+      border-top: 1px solid var(--borderColor-default);
+      margin-top: 64px;
+      padding: 32px 0;
+      font-size: 14px;
+      display: flex;
+      justify-content: space-between;
+      color: #656d76;
+    }
+    
+    /* ==========================================================================
+       nav-drawer.module.css (Mobile Menu Overlays)
+       ========================================================================== */
+    .NavDrawerOverlay {
+      position: fixed; top: 0; right: 0; bottom: 0; left: 0;
+      background: rgba(140, 149, 159, 0.15);
+      z-index: 20;
+      display: none;
+    }
+    .NavDrawerPanel {
+      position: fixed; right: 0; bottom: 0; top: var(--header-bar);
+      width: 300px;
+      background: var(--bg-dark);
+      color: var(--fg-dark);
+      z-index: 21;
+      transform: translateX(100%);
+      transition: transform 0.2s ease-out;
+      display: none;
+      padding: 16px;
+    }
+    .MobileMenuBtn { background: none; border: none; color: var(--fg-dark); font-size: 24px; cursor: pointer;}
+    @media (min-width: 1012px) { .navMobile { display: none; } }
+  </style>
 </head>
-<body style="background: #070b12; margin: 0; overflow-x: hidden;">
+<body>
 
-  <div class="inf-panorama" style="margin-top: 5rem;"></div>
+  <div class="SkipBox" id="skip-nav-box">
+    <a href="#search-box-input" class="SkipLink">Skip to search</a>
+    <a href="#skip-to-content" class="SkipLink">Skip to content</a>
+  </div>
 
-  <header style="position: absolute; top: 0; left: 0; right: 0; padding: 1.5rem; display: flex; justify-content: flex-end; z-index: 100; pointer-events: none;">
-    <button class="inf-btn-icon" aria-label="Open Menu" data-inf-menu-toggle style="background: none; border: none; color: #7c3aed; cursor: pointer; pointer-events: auto;">
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <line x1="3" y1="12" x2="21" y2="12"></line>
-        <line x1="3" y1="6" x2="21" y2="6"></line>
-        <line x1="3" y1="18" x2="21" y2="18"></line>
-      </svg>
-    </button>
-  </header>
+  <div class="stickyHeader" id="main-header">
+    <div class="NpmHeaderBar"></div>
+    <header class="headerBox">
+      <div class="HeaderFlex">
+        <a href="/" class="SiteTitle">
+          <svg height="32" width="32" viewBox="0 0 700 700" fill="currentColor" aria-hidden="true">
+            <polygon fill="currentColor" points="0,700 700,700 700,0 0,0" />
+            <polygon fill="#ffffff" points="150,550 350,550 350,250 450,250 450,550 550,550 550,150 150,150 " />
+          </svg>
+          Documentation Site
+        </a>
+        <div class="searchDesktop">
+          <input type="text" class="TextInput" id="search-box-input" placeholder="Search Documentation" aria-label="Search Documentation" />
+        </div>
+      </div>
+      <div class="navMobile HeaderFlex">
+        <button class="MobileMenuBtn" id="mobile-menu-btn" aria-label="Menu">☰</button>
+      </div>
+    </header>
+  </div>
 
-  <div id="app"></div>
+  <div class="NavDrawerOverlay" id="nav-overlay"></div>
+  <div class="NavDrawerPanel" id="nav-panel">
+    <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-dark); padding-bottom: 16px; margin-bottom: 16px;">
+      <b>Menu</b>
+      <button class="MobileMenuBtn" id="mobile-menu-close">✕</button>
+    </div>
+    <div id="mobile-nav-items"></div>
+  </div>
 
-  <script defer src="assets/vendor/lucide.min.js"></script>
-  <script type="module" src="assets/js/app.js"></script>
-  <script type="module" src="components/docs/injector.js"></script>
+  <div class="Box_MainLayout">
+    
+    <div class="sidebarContainer">
+      <nav class="SidebarBox">
+        <div class="SidebarInner" id="desktop-nav-items">
+          </div>
+      </nav>
+    </div>
 
+    <div class="LayoutContainer">
+      <main class="MainContent" id="skip-to-content">
+        
+        <div class="PrimerBreadcrumbs" id="breadcrumbs-container">
+          <span>Home</span><span>Architecture Breakdown</span>
+        </div>
+
+        <h1 id="title-heading">Documentation Architecture Breakdown</h1>
+        <p style="font-size: 20px; color: #57606a; margin-bottom: 24px;">Comprehensive analysis of variables, functions, stylings, and usage guidelines captured inside the srcdir.md file.</p>
+        
+        <div style="margin-bottom: 32px;">
+          <label for="variant-select" style="font-size: 14px; display: block; margin-bottom: 4px;">Select CLI Version:</label>
+          <select id="variant-select" class="TextInput" style="background: var(--bgColor-default); color: var(--fgColor-default);">
+            <option>v9 (Latest)</option>
+            <option>v8 (Legacy)</option>
+          </select>
+        </div>
+
+        <div id="mdx-content">
+          <div class="Note">
+            The codebase represents a sophisticated Gatsby/React documentation site (likely for npm, given the branding and text) utilizing @primer/react for its design system, framer-motion for animations, and MDX for content rendering.
+          </div>
+
+          <h2 id="core-ui">1. Core UI Components (./components/)</h2>
+          <p>These files handle the structural and interactive user interface elements of the site. They primarily use CSS Modules (<code>.module.css</code>) for scoped styling, with occasional styled-components.</p>
+          <table>
+            <thead>
+              <tr><th>File</th><th>Variables & Functions</th><th>Styling</th><th>Usage / How to Use</th></tr>
+            </thead>
+            <tbody>
+              <tr><td><b>breadcrumbs.js</b></td><td><code>Breadcrumbs()</code>, <code>BreadcrumbItem({item, path})</code></td><td><code>.PrimerBreadcrumbs</code> (margin).</td><td>Render at the top of a page layout. Auto-generates navigation trails using <code>usePage()</code> and <code>getNav</code>.</td></tr>
+              <tr><td><b>header.js</b></td><td><code>Header()</code>, <code>NpmHeaderBar</code></td><td>styled-components for gradients, CSS modules for sticky positioning and flexbox layouts.</td><td>Place at the top of the app tree. Provides desktop/mobile navigation and search inputs.</td></tr>
+              <tr><td><b>link.js</b></td><td><code>getLocalPath(href)</code>, <code>Link()</code>, <code>LinkNoUnderline()</code>, <code>GatsbyLinkWithoutSxProps()</code></td><td>Uses <code>clsx</code> to conditionally apply <code>.showUnderline</code>.</td><td>Use as a drop-in replacement for <code>&lt;a&gt;</code> or <code>&lt;Link&gt;</code>. Automatically handles internal Gatsby routing vs. external URLs.</td></tr>
+              <tr><td><b>nav-drawer.js</b></td><td><code>NavDrawer()</code>, <code>Drawer({isOpen, onDismiss})</code></td><td>Fixed positioning, full-screen overlays, scrollable dark-themed inner boxes.</td><td>Mobile slide-out menu. Handles its own open/close state and traps focus using react-focus-on.</td></tr>
+              <tr><td><b>nav-items.js</b></td><td><code>NavItem()</code>, <code>NavItems()</code>, <code>ExternalNavItem()</code>, <code>Navigation()</code></td><td>Font-sizing based on depth (<code>.NavList_Item_depth1</code>, etc.), hidden on desktop using media queries.</td><td>Renders hierarchical sidebar links. Pass items (from getNav) to build nested accordions.</td></tr>
+              <tr><td><b>page-footer.js</b></td><td><code>format(date)</code>, <code>pluralize()</code>, <code>Contributors()</code>, <code>PageFooter()</code></td><td>Flexbox grids, user avatar grids, borders, and tooltip margins.</td><td>Render at the bottom of markdown pages. Auto-pulls editUrl and GitHub commit data from page context.</td></tr>
+              <tr><td><b>search.js</b></td><td><code>SearchResults()</code>, <code>Desktop()</code>, <code>Mobile()</code></td><td>Complex z-indexing, absolute overlays, absolute widths, and Framer Motion logic.</td><td>Use <code>&lt;Search.Desktop&gt;</code> or <code>&lt;Search.Mobile&gt;</code> in headers. Takes props injected by the useSearch hook.</td></tr>
+              <tr><td><b>sidebar.js</b></td><td><code>usePersistentScroll(id)</code>, <code>Sidebar()</code></td><td>Sticky positioning, fixed width (270px), calc(100vh - header).</td><td>Place next to the main content area. Retains scroll position across page loads via sessionStorage.</td></tr>
+              <tr><td><b>site-title.js</b></td><td><code>NpmLogo({size})</code>, <code>SiteTitle({logo})</code></td><td>Flexbox alignment, SVG polygon colors (#cb3837).</td><td>Renders the site name and optional npm logo. Clickable link to /.</td></tr>
+              <tr><td><b>skip-nav.js</b></td><td><code>SkipLink</code>, <code>SkipBox</code>, <code>SkipNav</code></td><td>styled-components. Visually hidden via transform until focus.</td><td>Accessibility feature. Place near the top of the DOM to allow keyboard users to skip to main content/search.</td></tr>
+              <tr><td><b>table-of-contents.js</b></td><td><code>TableOfContentsItems()</code>, <code>TableOfContents()</code>, <code>withTableOfContents()</code>, <code>Mobile()</code>, <code>Desktop()</code></td><td>Sticky desktop sidebars, rounded bordered boxes, hidden/shown via media queries.</td><td>Generates jump-links for headers. Renders differently based on viewport.</td></tr>
+              <tr><td><b>text-input.js</b></td><td><code>TextInput</code></td><td>styled-components overriding @primer/react. Forces 16px.</td><td>Use for any text inputs (like search) to ensure mobile compatibility.</td></tr>
+              <tr><td><b>variant-select.js</b></td><td><code>VariantItem()</code>, <code>useVariantFocus()</code>, <code>VariantMenu()</code>, <code>useVariants()</code>, <code>VariantSelect()</code></td><td>100% width on mobile, auto on desktop.</td><td>Use on pages that have multiple versions (e.g., CLI v8 vs v9). Builds a dropdown to switch paths.</td></tr>
+              <tr><td><b>visually-hidden.js</b></td><td><code>VisuallyHidden</code></td><td>clip: rect(0,0,0,0), 1px height/width.</td><td>Wrap text meant strictly for screen readers.</td></tr>
+            </tbody>
+          </table>
+
+          <h2 id="layouts-pages">2. Layouts, Pages, & Root Files</h2>
+          <p>These files form the structural foundation and entry points of the application.</p>
+          <table>
+            <thead>
+              <tr><th>File</th><th>Variables & Functions</th><th>Styling</th><th>Usage / How to Use</th></tr>
+            </thead>
+            <tbody>
+              <tr><td><b>layout.js</b></td><td><code>Container()</code>, <code>HeroLayout()</code>, <code>DefaultLayout()</code>, <code>Layout()</code></td><td>Max-widths, dynamic padding, CSS Grid/Flexbox for sidebars.</td><td>Wraps all MDX content. Automatically switches between layouts.</td></tr>
+              <tr><td><b>page.js</b></td><td><code>GlobalStyles</code>, <code>PageElement()</code></td><td>CSS Variables, global body styling, flex layout.</td><td>Gatsby wrapPageElement. Injects global CSS, SkipNav, Header, Sidebar.</td></tr>
+              <tr><td><b>root.js</b></td><td><code>RootElement()</code></td><td>N/A</td><td>Gatsby wrapRootElement. Wraps the entire app in MDXProvider and ThemeProvider.</td></tr>
+              <tr><td><b>head.js</b></td><td><code>buildTitle()</code>, <code>Head()</code>, <code>PassThrough()</code></td><td>N/A</td><td>Gatsby Head API. Generates SEO metadata.</td></tr>
+            </tbody>
+          </table>
+
+          <h2 id="state-hooks">3. State Management & Hooks (./hooks/)</h2>
+          <p>Custom React hooks encapsulating logic for routing, layout states, and search.</p>
+          <table>
+            <thead>
+              <tr><th>File</th><th>Variables & Functions</th><th>Returns</th><th>Usage / How to Use</th></tr>
+            </thead>
+            <tbody>
+              <tr><td><b>use-breakpoint.js</b></td><td><code>getMatches()</code>, <code>useMediaQuery(query)</code>, <code>useBreakpoint(bp, minMax)</code>, <code>useIsMobile()</code></td><td>boolean</td><td>Use to conditionally render React components based on viewport.</td></tr>
+              <tr><td><b>use-location-change.js</b></td><td><code>useLocationChange()</code></td><td>{ change: bool, current: string, previous: string }</td><td>Use to trigger side effects when the user navigates to a new page.</td></tr>
+              <tr><td><b>use-page.js</b></td><td><code>PageProvider</code>, <code>usePage()</code></td><td>Context object</td><td>Call anywhere inside a page to access the current markdown file's metadata.</td></tr>
+              <tr><td><b>use-search.js</b></td><td><code>useSearchData()</code>, <code>useCliVersion()</code>, <code>useSearchCombobox()</code>, <code>useSearch()</code></td><td>Combobox state</td><td>Spawns a Web Worker, sends it GraphQL node data, and manages the Downshift UI state.</td></tr>
+              <tr><td><b>use-site-metadata.js</b></td><td><code>useSiteMetadata()</code></td><td>Object</td><td>Call to retrieve global config data defined in gatsby-config.js.</td></tr>
+            </tbody>
+          </table>
+
+          <h2 id="mdx-overrides">4. Markdown/MDX Overrides (./mdx/)</h2>
+          <p>These files intercept standard Markdown elements (like # or ```) and render them using custom React/Primer components.</p>
+          <table>
+            <thead>
+              <tr><th>File</th><th>Variables & Functions</th><th>Styling</th><th>Usage / How to Use</th></tr>
+            </thead>
+            <tbody>
+              <tr><td><b>code.js</b></td><td><code>ClipboardCopy()</code>, <code>InlineCode</code>, <code>CodeBlock()</code>, <code>Code()</code></td><td>Prism.js syntax highlighting, absolute positioned copy buttons.</td><td>Used automatically by MDX for code blocks.</td></tr>
+              <tr><td><b>components.js</b></td><td><code>Headings.wrap()</code>, <code>Blockquote</code>, <code>DescriptionList</code>, <code>Table</code>, <code>Note</code>, <code>Screenshot</code>, <code>YouTube</code>, <code>DataTable</code></td><td>styled-components. Re-styles native HTML tags with Primer design tokens.</td><td>Exported directly to index.js. Use explicitly in MDX files.</td></tr>
+              <tr><td><b>nav-hierarchy.js</b></td><td><code>HierarchyItem()</code>, <code>Hierarchy()</code>, <code>NavHierarchy()</code></td><td>Simple list indentation and sub-text font sizing.</td><td>Use <code>&lt;Index depth={2} /&gt;</code> in MDX files to auto-generate a list of child pages.</td></tr>
+              <tr><td><b>index.js</b></td><td>Re-exports all components mapped to HTML tags (h1, p, a, pre).</td><td>N/A</td><td>Injected into the MDXProvider in root.js.</td></tr>
+            </tbody>
+          </table>
+
+          <h2 id="utils-constants">5. Utilities, Configurations, & Constants</h2>
+          <p>Helper functions and static values supporting the rest of the application.</p>
+          <table>
+            <thead>
+              <tr><th>File</th><th>Variables & Functions</th><th>Concept / Styling</th><th>Usage / How to Use</th></tr>
+            </thead>
+            <tbody>
+              <tr><td><b>constants.js</b></td><td><code>HEADER_HEIGHT</code>, <code>Z_INDEX</code>, <code>CLI_PATH</code>, <code>SCROLL_MARGIN_TOP</code></td><td>Hardcoded integers / strings.</td><td>Import anywhere to maintain visual consistency.</td></tr>
+              <tr><td><b>shared.js</b></td><td><code>shared</code></td><td>Uses MDX components (<code>&lt;Screenshot&gt;</code>).</td><td>Import into MDX files to reuse standardized instructions across pages.</td></tr>
+              <tr><td><b>theme.js</b></td><td><code>npmTheme</code>, <code>ThemeProvider</code>, <code>Theme</code>, <code>LightTheme</code>, <code>DarkTheme</code></td><td>Primer theme deeply merged with npm specific colors.</td><td>Wrap sections of the UI to force specific color palettes contextually.</td></tr>
+              <tr><td><b>util/aria-live.js</b></td><td><code>announce(message)</code>, <code>setContainerContent()</code>, <code>createNoticeContainer()</code></td><td>Creates an invisible DOM node (clip: rect(0,0,0,0)).</td><td>Call <code>announce("Loading complete")</code> to imperatively force screen readers to read a message aloud.</td></tr>
+              <tr><td><b>util/get-nav.js</b></td><td><code>getItemBreadcrumbs()</code>, <code>getVariantRoot()</code>, <code>getItem()</code>, <code>getHierarchy()</code>, <code>isActiveUrl()</code></td><td>Pure logic functions parsing nav.yml.</td><td>Used extensively by sidebars, breadcrumbs, and variant selectors.</td></tr>
+              <tr><td><b>util/omit.js</b></td><td><code>omit(obj, ...keys)</code></td><td>Pure logic function.</td><td>Use to strip specific props before passing them down to DOM elements.</td></tr>
+              <tr><td><b>util/search.worker.js</b></td><td><code>Fuse class</code>, <code>onmessage listener</code>.</td><td>Web worker logic using fuse.js.</td><td>Runs in a separate thread. Send it { items } to index, and { query } to search.</td></tr>
+            </tbody>
+          </table>
+
+        </div>
+
+        <footer class="PageFooter" id="page-footer">
+          <div>
+            <a href="#" style="color: inherit; text-decoration: none;">✎ Edit this page on GitHub</a>
+          </div>
+          <div id="contributors-box">
+            </div>
+        </footer>
+
+      </main>
+
+      <aside class="tocDesktop">
+        <h2 id="toc-heading">Table of contents</h2>
+        <nav aria-labelledby="toc-heading" id="toc-container">
+          <ul>
+            <li><a href="#core-ui">1. Core UI Components</a></li>
+            <li><a href="#layouts-pages">2. Layouts, Pages, & Root Files</a></li>
+            <li><a href="#state-hooks">3. State Management & Hooks</a></li>
+            <li><a href="#mdx-overrides">4. Markdown/MDX Overrides</a></li>
+            <li><a href="#utils-constants">5. Utilities, Configurations, & Constants</a></li>
+          </ul>
+        </nav>
+      </aside>
+
+    </div>
+  </div>
+
+  <script>
+    // =========================================================================
+    // 5. Utilities, Configurations, & Constants Emulation
+    // =========================================================================
+    
+    // constants.js
+    const HEADER_HEIGHT = 56;
+    const HEADER_BAR = 10;
+    const FULL_HEADER_HEIGHT = HEADER_HEIGHT + HEADER_BAR;
+    const SCROLL_MARGIN_TOP = FULL_HEADER_HEIGHT + 24;
+    const Z_INDEX = { HEADER: 10, SEARCH_OVERLAY: 25 };
+    const CLI_PATH = '/cli';
+
+    // util/aria-live.js
+    let ariaContainer;
+    function createNoticeContainer() {
+      ariaContainer = document.createElement('div');
+      ariaContainer.setAttribute('aria-live', 'polite');
+      ariaContainer.style.cssText = 'position: absolute; width: 1px; height: 1px; padding: 0; overflow: hidden; clip: rect(0,0,0,0); border: 0;';
+      document.body.append(ariaContainer);
+    }
+    function setContainerContent(message) {
+      if (!ariaContainer) return;
+      ariaContainer.textContent = ariaContainer.textContent === message ? `${message}\u00A0` : message;
+    }
+    function announce(message) {
+      if (!ariaContainer) {
+        createNoticeContainer();
+        setTimeout(() => setContainerContent(message), 200);
+      } else {
+        setContainerContent(message);
+      }
+    }
+    document.addEventListener('DOMContentLoaded', createNoticeContainer);
+
+    // util/omit.js
+    function omit(obj, ...keys) {
+      const res = {};
+      for (const k of Object.keys(obj)) {
+        if (!keys.includes(k)) res[k] = obj[k];
+      }
+      return res;
+    }
+
+    // util/get-nav.js (Mock Implementation)
+    function getItemBreadcrumbs(path) { return ['Home', 'Documentation']; }
+    function getVariantRoot(path) { return '/docs'; }
+    function getItem(path) { return { title: 'Doc' }; }
+    function getHierarchy(root, path) { 
+      return [
+        { title: 'Core UI Components', url: '#core-ui' },
+        { title: 'Layouts & Pages', url: '#layouts-pages' },
+        { title: 'State & Hooks', url: '#state-hooks' }
+      ];
+    }
+    function isActiveUrl(currentPath, linkPath) { return currentPath === linkPath; }
+
+    // util/search.worker.js (Mock Implementation)
+    class MockFuse {
+      constructor() { this.search = this.search.bind(this); }
+      search(query) { console.log(`Worker searching for: ${query}`); }
+    }
+
+    // =========================================================================
+    // 3. State Management & Hooks Emulation
+    // =========================================================================
+    
+    // hooks/use-breakpoint.js
+    function getMatches(query) { return window.matchMedia(query).matches; }
+    function useMediaQuery(query) { return getMatches(query); }
+    function useBreakpoint(bp, minMax = 'min') { return useMediaQuery(`(${minMax}-width: ${bp}px)`); }
+    function useIsMobile() { return useBreakpoint(1012, 'max'); } // Mobile threshold
+
+    // hooks/use-location-change.js
+    function useLocationChange() { return { change: false, current: window.location.pathname, previous: '' }; }
+
+    // hooks/use-page.js
+    const PageProvider = { frontmatter: { title: "Architecture Breakdown", description: "Docs" } };
+    function usePage() { return PageProvider; }
+
+    // hooks/use-search.js
+    function useSearchData() { return []; }
+    function useCliVersion() { return 'v9'; }
+    function useSearchCombobox() { /* Returns combobox UI state handlers */ }
+    function useSearch() {
+      const searchInput = document.getElementById('search-box-input');
+      if (searchInput) {
+        searchInput.addEventListener('input', (e) => {
+          if (e.target.value.length > 2) announce(`Searching for ${e.target.value}`);
+        });
+      }
+    }
+
+    // hooks/use-site-metadata.js
+    function useSiteMetadata() {
+      return { title: "Docs", shortName: "Docs", description: "Site Docs", lang: "en" };
+    }
+
+    // =========================================================================
+    // 1. Core UI Components Emulation (DOM Interactions)
+    // =========================================================================
+
+    // sidebar.js & nav-items.js
+    function usePersistentScroll(id, element) {
+      const saved = window.sessionStorage.getItem(id);
+      if (saved && element) element.scrollTop = saved;
+      if (element) {
+        element.addEventListener('scroll', (e) => window.sessionStorage.setItem(id, e.target.scrollTop));
+      }
+    }
+    function NavItem(item) { return `<a href="${item.url}" class="NavList_Item">${item.title}</a>`; }
+    function NavItems(containerId) {
+      const container = document.getElementById(containerId);
+      if (!container) return;
+      const items = getHierarchy();
+      container.innerHTML = items.map(NavItem).join('');
+    }
+    function Sidebar() {
+      NavItems('desktop-nav-items');
+      usePersistentScroll('sidebar-scroll', document.querySelector('.SidebarInner'));
+    }
+
+    // nav-drawer.js
+    function Drawer(isOpen) {
+      const overlay = document.getElementById('nav-overlay');
+      const panel = document.getElementById('nav-panel');
+      if (isOpen) {
+        overlay.style.display = 'block';
+        panel.style.display = 'block';
+        setTimeout(() => panel.style.transform = 'translateX(0)', 10);
+      } else {
+        panel.style.transform = 'translateX(100%)';
+        setTimeout(() => {
+          overlay.style.display = 'none';
+          panel.style.display = 'none';
+        }, 200);
+      }
+    }
+    function NavDrawer() {
+      const openBtn = document.getElementById('mobile-menu-btn');
+      const closeBtn = document.getElementById('mobile-menu-close');
+      const overlay = document.getElementById('nav-overlay');
+      
+      openBtn.addEventListener('click', () => Drawer(true));
+      closeBtn.addEventListener('click', () => Drawer(false));
+      overlay.addEventListener('click', () => Drawer(false));
+      NavItems('mobile-nav-items');
+    }
+
+    // header.js & site-title.js
+    function NpmLogo() { /* Defined in HTML inline SVG */ }
+    function SiteTitle() { /* Defined in HTML */ }
+    function Header() {
+      useSearch();
+      NavDrawer();
+    }
+
+    // breadcrumbs.js
+    function BreadcrumbItem(item) { return `<span>${item}</span>`; }
+    function Breadcrumbs() {
+      const container = document.getElementById('breadcrumbs-container');
+      const trail = getItemBreadcrumbs();
+      if(container) container.innerHTML = trail.map(BreadcrumbItem).join('');
+    }
+
+    // page-footer.js
+    function format(date) { return new Date(date).toLocaleDateString(); }
+    function pluralize(word, count) { return count === 1 ? word : word + 's'; }
+    function Contributors(count) {
+      return `<span>${count} ${pluralize('contributor', count)}</span>`;
+    }
+    function PageFooter() {
+      const box = document.getElementById('contributors-box');
+      if(box) box.innerHTML = Contributors(4);
+    }
+
+    // search.js
+    function SearchResults() { /* Handles Dropdown injection */ }
+    function Desktop() { /* Mounted in Header */ }
+    function Mobile() { /* Mounted in NavDrawer */ }
+
+    // link.js
+    function getLocalPath(href) { return href; }
+    function Link() { /* Represented natively by <a> tags */ }
+    function LinkNoUnderline() { /* Handled via CSS overrides */ }
+    function GatsbyLinkWithoutSxProps() { /* Framework abstraction */ }
+
+    // skip-nav.js
+    function SkipNav() {
+      const box = document.getElementById('skip-nav-box');
+      if(box) {
+        box.addEventListener('focusin', () => box.style.transform = 'translateY(0%)');
+        box.addEventListener('focusout', () => box.style.transform = 'translateY(-100%)');
+      }
+    }
+
+    // table-of-contents.js
+    function TableOfContentsItems() { /* Defined natively in aside block */ }
+    function TableOfContents() { /* Renders tree */ }
+    function withTableOfContents() { /* HOC emulation */ }
+
+    // text-input.js
+    function TextInput() { /* Styled via .TextInput CSS */ }
+
+    // variant-select.js
+    function VariantItem() { /* Option tag */ }
+    function useVariantFocus() { /* Focus management */ }
+    function VariantMenu() { /* Select element mapping */ }
+    function useVariants() { /* Determines visible versions */ }
+    function VariantSelect() {
+      const select = document.getElementById('variant-select');
+      if(select) select.addEventListener('change', (e) => announce(`Switched CLI context to ${e.target.value}`));
+    }
+
+    // visually-hidden.js
+    function VisuallyHidden() { /* Handled by screen reader only CSS class */ }
+
+    // =========================================================================
+    // 2. Layouts, Pages, & Root Files Emulation
+    // =========================================================================
+
+    function Container() { /* Mapped to .LayoutContainer */ }
+    function HeroLayout() { /* Logic switch */ }
+    function DefaultLayout() { /* Current active layout */ }
+    function Layout() { /* Determines layout */ }
+    function GlobalStyles() { /* Root CSS vars */ }
+    function PageElement() { /* Main wrapper */ }
+    function RootElement() { /* Provider Wrapper */ }
+    function buildTitle(a, b) { return `${a} | ${b}`; }
+    function Head() { document.title = buildTitle("Architecture", "Docs"); }
+    function PassThrough() { /* Utility */ }
+
+    // =========================================================================
+    // 4. Markdown/MDX Overrides Emulation
+    // =========================================================================
+
+    function ClipboardCopy() { /* Implements copy to clipboard logic */ }
+    function InlineCode() { /* Styled via CSS code block */ }
+    function CodeBlock() { /* Wraps pre tags */ }
+    function Code() { /* Syntax highlighting root */ }
+    const Headings = { wrap: function() { /* Emulates anchor links on hover */ }};
+    function Blockquote() {}
+    function DescriptionList() {}
+    function Table() {}
+    function Note() {}
+    function Screenshot() {}
+    function YouTube() {}
+    function DataTable() {}
+    function HierarchyItem() {}
+    function Hierarchy() {}
+    function NavHierarchy() {}
+
+    // Initialize the Vanilla JS "React" App
+    function initializeApp() {
+      Head();
+      SkipNav();
+      Header();
+      Sidebar();
+      Breadcrumbs();
+      VariantSelect();
+      PageFooter();
+    }
+
+    // Bootstrap execution
+    initializeApp();
+  </script>
 </body>
 </html>
