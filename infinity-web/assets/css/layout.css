@@ -1,18 +1,18 @@
 .inf-shell {
   min-height: 100vh;
-  padding-top: 7.2rem;
+  padding-top: 0;
   padding-bottom: 8.5rem; /* Extra padding for curved bottom bar */
 }
 
 .inf-main {
-  padding: 0 1rem 1rem;
+  padding: 0;
 }
 
 .inf-page {
   display: grid;
   gap: 1rem;
   margin-bottom: 1rem;
-  padding: 1rem;
+  padding: 0;
   border-radius: var(--radius-lg);
   border: 1px solid var(--line);
   background: var(--panel);
