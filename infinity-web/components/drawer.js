@@ -1,5 +1,3 @@
-import { escapeHTML } from './utils/html.js';
-
 export function renderDrawer(config = {}) {
   const nav = Array.isArray(config.navigation) ? config.navigation : [];
   const admin = config.admin_contacts || {};
@@ -7,22 +5,13 @@ export function renderDrawer(config = {}) {
 
   return `
     <aside class="inf-drawer" data-inf-drawer hidden>
-      <div class="inf-drawer-inner">
-        <div class="inf-drawer-head">
-          <strong>${escapeHTML(siteName)}</strong>
-          <span>Admin: ${escapeHTML(admin.primary_email || '')}</span>
-        </div>
-
-        <nav class="inf-drawer-nav" aria-label="Primary">
-          ${nav
-            .map((item) => {
-              const key = escapeHTML(item.key || '');
-              const label = escapeHTML(item.label || item.key || '');
-              return `<a href="#${key}" data-route="${key}">${label}</a>`;
-            })
-            .join('')}
-        </nav>
+      <div class="inf-drawer-head">
+        <strong>${siteName}</strong>
+        <span>Admin: ${admin.primary_email || ''}</span>
       </div>
+      <nav class="inf-drawer-nav" aria-label="Primary">
+        ${nav.map((item) => `<a href="#${item.key}" data-route="${item.key}">${item.label}</a>`).join('')}
+      </nav>
     </aside>
   `;
 }
@@ -38,10 +27,6 @@ export function bindDrawerToggle({ drawer, button } = {}) {
       }
     };
   }
-
-  const sync = () => {
-    drawer.hidden = Boolean(drawer.hidden);
-  };
 
   const open = () => {
     drawer.hidden = false;
@@ -70,8 +55,6 @@ export function bindDrawerToggle({ drawer, button } = {}) {
   document.addEventListener('keydown', (event) => {
     if (event.key === 'Escape') close();
   });
-
-  sync();
 
   return {
     open,
