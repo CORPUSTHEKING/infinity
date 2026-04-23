@@ -13,9 +13,7 @@ export function bindScrollChrome({ shell, threshold = 18, onChange } = {}) {
 
 export function bindHeroParallax(root, options = {}) {
   const hero = root?.querySelector?.('[data-hero-parallax]');
-  if (!hero) {
-    return () => {};
-  }
+  if (!hero) return () => {};
 
   const layers = [
     hero.querySelector('.inf-hero-layer-back'),
@@ -23,15 +21,22 @@ export function bindHeroParallax(root, options = {}) {
     hero.querySelector('.inf-hero-layer-front')
   ].filter(Boolean);
 
-  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  if (reduceMotion || layers.length === 0) {
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches || layers.length === 0) {
     return () => {};
   }
 
-  const amplitudes = options.amplitudes || [140, 80, 36];
-  const speeds = options.speeds || [0.18, 0.26, 0.36];
-  const scrollWeights = options.scrollWeights || [0.030, 0.055, 0.085];
-  const yWeights = options.yWeights || [8, 5, 3];
+  // Drone Rig Configuration (The Cinematic Setup)
+  // [driftX_Amp, driftY_Amp, driftX_Freq, driftY_Freq, scrollParallaxX, scrollParallaxY]
+  const droneRig = options.droneRig || [
+    [140, 16, 0.00012, 0.00018, 0.035, 0.012], // Back (distant, slow)
+    [80,  10, 0.00018, 0.00025, 0.065, 0.025], // Mid (fog/clouds)
+    [36,   6, 0.00028, 0.00035, 0.110, 0.045]  // Front (close, agile)
+  ];
+
+  const INERTIA = 0.045; // Camera rig weight (lower = heavier/smoother)
+
+  // State holds actual rendered positions for Linear Interpolation (Lerp)
+  const state = layers.map(() => ({ x: 0, y: 0 }));
 
   let rafId = 0;
   let active = true;
@@ -39,31 +44,42 @@ export function bindHeroParallax(root, options = {}) {
   const frame = (now) => {
     if (!active) return;
 
-    const t = now * 0.001;
     const scrollY = window.scrollY || 0;
 
     layers.forEach((layer, i) => {
-      const x = Math.sin(t * speeds[i]) * amplitudes[i] - scrollY * scrollWeights[i];
-      const y = Math.cos(t * (speeds[i] * 0.85)) * yWeights[i];
-      layer.style.backgroundPosition = `${x}px calc(50% + ${y}px)`;
+      const [xAmp, yAmp, xFreq, yFreq, pxX, pxY] = droneRig[i];
+
+      // 1. Organic Drone Drift (Lissajous curves remove the "mathy" predictable loop)
+      const driftX = Math.sin(now * xFreq) * xAmp + Math.cos(now * xFreq * 0.45) * (xAmp * 0.25);
+      const driftY = Math.cos(now * yFreq) * yAmp + Math.sin(now * yFreq * 0.65) * (yAmp * 0.25);
+
+      // 2. Target Coordinates (Drift + Scroll Momentum)
+      const targetX = driftX - (scrollY * pxX);
+      const targetY = driftY - (scrollY * pxY);
+
+      // 3. Cinematic Inertia (Lerp smoothly towards the target to create weight)
+      state[i].x += (targetX - state[i].x) * INERTIA;
+      state[i].y += (targetY - state[i].y) * INERTIA;
+
+      // 4. Paint to DOM with subpixel precision
+      layer.style.backgroundPosition = `${state[i].x.toFixed(3)}px calc(50% + ${state[i].y.toFixed(3)}px)`;
     });
 
     rafId = requestAnimationFrame(frame);
   };
 
   const start = () => {
-    cancelAnimationFrame(rafId);
-    rafId = requestAnimationFrame(frame);
+    if (!rafId) rafId = requestAnimationFrame(frame);
   };
 
   const stop = () => {
-    cancelAnimationFrame(rafId);
+    if (rafId) {
+      cancelAnimationFrame(rafId);
+      rafId = 0;
+    }
   };
 
-  const onVisibilityChange = () => {
-    if (document.hidden) stop();
-    else start();
-  };
+  const onVisibilityChange = () => document.hidden ? stop() : start();
 
   document.addEventListener('visibilitychange', onVisibilityChange);
   start();
