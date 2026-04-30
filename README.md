@@ -1,13 +1,13 @@
 ## Features
  
 [terminal helpers site url](https://corpustheking.github.io/infinity/)
-- **idoc (Instant Documentation):** Every tool included in Infinity has its own documentation. Access them instantly with `idoc <tool_name>`.
+- **idoc (Instant Documentation):** Every tool included in Infinity has its own documentation. Access them instantly with .
  
-- **Dynamic Aliasing:** Easily map tools to your preferred commands without modifying global files using `infinity-alias`.
+- **Dynamic Aliasing:** Easily map tools to your preferred commands without modifying global files.
  
 - **Transparent Logging:** Nothing is hidden or suppressed. See every step of your environment loading process for total transparency.
  
-- **Health Monitoring:** Use `infinity-check` to verify symlinks, environment variables, and shell loader integrity.
+- **Health Monitoring:** verify symlinks, environment variables, and shell loader integrity.
  
 
  
