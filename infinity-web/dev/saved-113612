@@ -1,0 +1,47 @@
+"There isn't a single "Swiss Army Knife" CLI that handles all three formats perfectly, because converting code to JSON usually involves generating an **Abstract Syntax Tree (AST)**. Each language requires a specific parser to represent its structure accurately.
+## 1. HTML to JSON: himalaya
+**Himalaya** is the most popular CLI tool for turning HTML into a clean, recursive JSON structure. It accounts for tags, attributes, and text nodes.
+ * **Installation:** npm install -g himalaya
+ * **Usage:**
+   ```bash
+   himalaya index.html > output.json
+   # Or via pipe
+   echo "<div><p>Hello</p></div>" | himalaya
+   
+   ```
+## 2. CSS to JSON: css-tree or postcss
+For CSS, you generally want to parse the stylesheet into a searchable object. css-tree provides a fast CLI for this.
+ * **Installation:** npm install -g css-tree
+ * **Usage:**
+   ```bash
+   csstree path/to/style.css --as-json > style.json
+   
+   ```
+Alternatively, if you use **PostCSS**, you can use the postcss-json plugin, though it is often used within build scripts rather than as a standalone CLI.
+## 3. JavaScript to JSON: esprima or @babel/parser
+Converting JS to JSON means turning logic into an AST. This is useful for static analysis.
+ * **Tool:** esparse (bundled with Esprima)
+ * **Installation:** npm install -g esprima
+ * **Usage:**
+   ```bash
+   esparse script.js > script.json
+   
+   ```
+ * **Alternative:** Use **Babel** if you need support for the latest ECMAScript features or TypeScript:
+   ```bash
+   npx @babel/parser script.js > script.json
+   
+   ```
+## Why JSON? Understanding the AST
+When you convert these languages to JSON, the result is an **Abstract Syntax Tree (AST)**. Instead of raw text, the JSON represents the logical hierarchy of the code.
+| Feature | HTML (himalaya) | CSS (css-tree) | JS (esprima) |
+|---|---|---|---|
+| **Root Node** | root | StyleSheet | Program |
+| **Primary Units** | Elements/Attributes | Rules/Declarations | Statements/Expressions |
+| **Output Size** | Moderate | High | Very High |
+### Pro-Tip: Processing the Output
+Once you have the JSON, you can use **jq** to filter the results directly from the command line. For example, to get all classes from an HTML file converted by himalaya:
+```bash
+himalaya index.html | jq '.. | .attributes? // empty | .[] | select(.key=="class") | .value'
+
+```"
