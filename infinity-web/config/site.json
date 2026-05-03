@@ -1,5 +1,5 @@
 {
-  "site_name": "Infinity Terminal Helpers",
+  "site_name": "Infinity Terminal",
   "site_slug": "infinity-web",
   "entrypoint": "index.html",
   "main_readme_link": "../README.md",
@@ -40,6 +40,6 @@
     "card_style": "rolling",
     "hero_style": "panning_panorama",
     "search_mode": ["fuzzy", "regex"],
-    "default_theme": "dark"
+    "default_theme": "light"
   }
 }
