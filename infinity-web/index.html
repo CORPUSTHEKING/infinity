@@ -4,10 +4,97 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Infinity | Terminal Helpers</title>
-    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-
+    
     <link rel="stylesheet" href="assets/css/main.css">
     <link rel="stylesheet" href="assets/css/panoramic.css">
+<style>
+    /* --- Base Page Setup --- */
+    body {
+        background-color: #1a1a1a; /* Obsidian Dark Background */
+        color: #dcddde;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+        line-height: 1.6;
+        padding: 40px;
+        max-width: 800px;
+        margin: 0 auto;
+    }
+
+    /* --- Universal Callout Styling --- */
+    .callout {
+        margin: 1.5em 0;
+        border-left: 4px solid;
+        border-radius: 4px;
+        overflow: hidden;
+    }
+
+    /* Title & Summary (Header) */
+    .callout-title, 
+    .callout summary {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 10px 16px;
+        font-weight: 700;
+        cursor: default;
+        list-style: none; /* Hide default HTML arrow */
+    }
+
+    /* Remove the default arrow in Safari */
+    .callout summary::-webkit-details-marker { 
+        display: none; 
+    }
+
+    /* Content Area */
+    .callout-content {
+        padding: 12px 16px;
+        background-color: rgba(255, 255, 255, 0.03);
+    }
+
+    /* Reset margins for elements inside the content */
+    .callout-content p:first-child,
+    .callout-content ol:first-child {
+        margin-top: 0;
+    }
+    .callout-content p:last-child,
+    .callout-content ol:last-child {
+        margin-bottom: 0;
+    }
+
+    /* --- THE SPARK: Info Variant (Blue) --- */
+    .callout-info {
+        border-left-color: #086ddd;
+        background-color: rgba(8, 109, 221, 0.1);
+    }
+    .callout-info .callout-title,
+    .callout-info summary {
+        color: #086ddd;
+        cursor: pointer; /* Pointer because it's clickable */
+    }
+    /* Add a small custom arrow for the collapsible info */
+    .callout-info summary::before {
+        content: "▶";
+        font-size: 0.7em;
+        transition: transform 0.2s;
+    }
+    details[open].callout-info summary::before {
+        transform: rotate(90deg);
+    }
+
+    /* --- DR INFINITY: Question Variant (Teal) --- */
+    .callout-question {
+        border-left-color: #00bfbc;
+        background-color: rgba(0, 191, 188, 0.1);
+    }
+    .callout-question .callout-title {
+        color: #00bfbc;
+    }
+
+    /* Bold emphasis within content */
+    strong {
+        color: #ffffff;
+        text-shadow: 0 0 5px rgba(255, 255, 255, 0.2);
+    }
+</style>
 </head>
 <body>
     <div id="app">
@@ -15,58 +102,6 @@
             [ INITIALIZING INFINITY CORE... ]
         </div>
     </div>
-<h2 id="greetings-fellow-developer"># <strong>Greetings fellow
-developer</strong></h2>
-<blockquote>
-<p>[!question]+ Dr Infinity 🧐 1. What is the current feel of your CLI
-�? 2. What feature do you feel like adding or amending to that Infinite
-toolset🛠️🧬? 3. Working on a project🗂️🗝️? 4. Last guess, You’re a
-Mastermind, right👑? 5. Wait! Do you have a cli 🤔</p>
-</blockquote>
-<h2 id="diving-right-in"><strong>Diving Right In</strong></h2>
-<blockquote>
-<p>[!quote]- ctk Yes, It Is Your Mandate as The CHIEF COMMANDER at Your
-Current Station To Make It FAST, EFFICIENT and Keep it Attractive as
-possible.</p>
-</blockquote>
-<h4
-id="the-very-moment-has-come-to-feel-and-know-the-actual-depth-of-infinity"><em>The
-very moment has come to feel and know the actual depth of
-infinity</em></h4>
-<p>I bet you recall the time you saw a command line, that’s besides the
-point, I’m all about the instance you were left alone with the terminal
-and only command you could think of was <code>ls</code> or just pressing
-‘enter’. Its fascinating how the scavenger currently scrolling built
-themselves to who they currently are 😎.</p>
-<blockquote>
-<p>[!info]- The Spark 💥 We all grew different. It is the passion that
-keeps us all going. A kind of drive unseen but STRONG enough to move
-worlds. It flows through each of us, you feel it flowing within you as
-you scroll. My advice - Do not let it go.</p>
-</blockquote>
-<p>Bottomline : That Spark is exactly what drives infinity</p>
-<hr />
-<p>The fact that you are here defines the strong raging
-<strong>determination</strong> within you. We never stop at obstacles
-because deep within we know that there is a solution somewhere and if we
-haven’t found it yet, we make one until The <strong>BEST</strong> is
-<strong>FOUND</strong></p>
-<p><strong>INFINITY</strong> was built as a <strong>toolSuite</strong> a
-<strong>community</strong>, a <strong>refuge</strong>, a
-<strong>Family</strong>, that space where the
-<strong><em>master</em></strong> and the
-<strong><em>beginner</em></strong> may be
-<strong>recognized</strong>/<strong>helped</strong> to hit that very
-spot they aim at with passion and laser precision.</p>
-<table>
-<tbody>
-<tr>
-<td style="text-align: right;"><strong>Welcome to Infinity</strong></td>
-</tr>
-</tbody>
-</table>
-<h1 id="easing-the-path-to-mastery"><strong><em>Easing The Path To
-Mastery</em></strong></h1>
     <script type="module" src="assets/js/app.js"></script>
     <script type="module" src="components/docs/injector.js"></script>
 </body>
