@@ -40,6 +40,6 @@
     "card_style": "rolling",
     "hero_style": "panning_panorama",
     "search_mode": ["fuzzy", "regex"],
-    "default_theme": "light"
+    "default_theme": "dark"
   }
 }
