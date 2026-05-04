@@ -66,19 +66,7 @@ haven’t found it yet, we make one until The <strong>BEST</strong> is
 <strong><em>beginner</em></strong> may be
 <strong>recognized</strong>/<strong>helped</strong> to hit that very
 spot they aim at with passion and laser precision.</p>
-<table>
-<tbody>
-<tr>
-<td style="text-align: right;"><strong>Welcome to Infinity</strong></td>
-</tr>
-</tbody>
-</table>
-<h1 id="easing-the-path-to-mastery"><strong><em>Easing The Path To
-Mastery</em></strong></h1>
-      <p>INFINITY</p>
-    </section>
-  `;
-}
+
 <h2 id="expand-your-arsenal"><strong>Expand Your Arsenal. Centralize the Chaos.</strong></h2>
 <p>
   You already have the drive. You already know how to build. But the modern development ecosystem is fragmented—scattered across a thousand browser tabs, lost bookmarks, and buried repository READMEs. You spend precious cycles hunting for the right configuration, the exact script, or the perfect starting boilerplate.
@@ -135,3 +123,17 @@ Mastery</em></strong></h1>
   <a href="#upload" class="inf-link">[ Upload Your Script ]</a> | 
   <a href="#request" class="inf-link">[ Request a Tool ]</a>
 </p>
+
+<table>
+<tbody>
+<tr>
+<td style="text-align: right;"><strong>Welcome to Infinity</strong></td>
+</tr>
+</tbody>
+</table>
+<h1 id="easing-the-path-to-mastery"><strong><em>Easing The Path To
+Mastery</em></strong></h1>
+      <p>INFINITY</p>
+    </section>
+  `;
+}
