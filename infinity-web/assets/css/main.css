@@ -75,3 +75,9 @@ a[href^="http"]::after {
     margin-left: 5px;
     vertical-align: super;
 }
+
+html {
+    /* Set to auto so programmatic restores are instant, 
+       but you can toggle this to smooth for anchor links */
+    scroll-behavior: auto; 
+}
