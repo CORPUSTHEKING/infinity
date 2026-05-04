@@ -2,7 +2,7 @@ export function renderAssistancePage() {
   return `
     <section class="inf-page">
       <h2>Infinity</h2>
-<h2 id="greetings-fellow-developer"># <strong>Greetings fellow
+<h2 id="greetings-fellow-developer"> <strong>Greetings fellow
 developer</strong></h2>
 <div class="callout callout-question">
     <div class="callout-title">
@@ -21,11 +21,13 @@ developer</strong></h2>
 </div>
 
 <h2 id="diving-right-in"><strong>Diving Right In</strong></h2>
-<blockquote>
-<p>[!quote]- ctk Yes, It Is Your Mandate as The CHIEF COMMANDER at Your
-Current Station To Make It FAST, EFFICIENT and Keep it Attractive as
-possible.</p>
-</blockquote>
+<details class="callout callout-info">                                                                 <summary>
+        <span class="callout-icon">💬</span>
+        <span class="callout-title-text">Quote🧲TK</span>
+    </summary>
+    <div class="callout-content">
+        <p> Yes, It Is Your Mandate as The CHIEF COMMANDER at Your Current Station To Keep It FAST🚀, EFFICIENT🛸 and Keep it Attractive🔥 as possible.</p>                                                                    </div>
+</details>
 <h4
 id="the-very-moment-has-come-to-feel-and-know-the-actual-depth-of-infinity"><em>The
 very moment has come to feel and know the actual depth of
@@ -41,7 +43,12 @@ themselves to who they currently are 😎.</p>
         <span class="callout-title-text">The Spark</span>
     </summary>
     <div class="callout-content">
-        <p>We all grew different. It is the passion that keeps us all going. A kind of drive unseen but <strong>STRONG</strong> enough to move worlds. It flows through each of us, you feel it flowing within you as you scroll. My advice - Do not let it go.</p>
+        <p>
+  🌱 We all grew different. It is the passion that keeps us all going. 
+  ⚡ A kind of drive unseen but <strong>STRONG</strong> enough to move worlds. 
+  🌊 It flows through each of us, you feel it flowing within you as you scroll. 
+  💎 My advice — Do not let it go. ✨
+</p>
     </div>
 </details>
 
