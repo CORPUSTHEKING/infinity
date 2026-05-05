@@ -1,0 +1,353 @@
+[
+  {
+    "type": "directory",
+    "name": "CONSTANTS_CAUTION",
+    "children": [
+      {
+        "type": "file",
+        "id": "colors",
+        "name": "colors.conf",
+        "path": "CONSTANTS_CAUTION/colors.conf",
+        "size": 41879,
+        "modified": "2026-04-09T15:41:58.000Z"
+      },
+      {
+        "type": "file",
+        "id": "env",
+        "name": "env.global",
+        "path": "CONSTANTS_CAUTION/env.global",
+        "size": 1295,
+        "modified": "2026-04-09T15:40:54.000Z"
+      },
+      {
+        "type": "file",
+        "id": "logging",
+        "name": "logging.conf",
+        "path": "CONSTANTS_CAUTION/logging.conf",
+        "size": 1213,
+        "modified": "2026-04-09T15:40:22.000Z"
+      }
+    ]
+  },
+  {
+    "type": "directory",
+    "name": "DIRECTORIES",
+    "children": [
+      {
+        "type": "tool",
+        "id": "daudit",
+        "name": "daudit",
+        "path": "assets/payloads/DIRECTORIES/daudit",
+        "size": 676,
+        "modified": "2026-04-09T15:02:56.000Z",
+        "title": "Directory Auditor (daudit)",
+        "preview": "Audit directory sizes with optional depth control.",
+        "link": "#docs?id=daudit",
+        "group": "DIRECTORIES",
+        "kindLink": "#assets/payloads/DIRECTORIES/daudit",
+        "description": "Grid-style directory audit that reports directory sizes with optional max-depth control. See #assets/payloads/DIRECTORIES/daudit.",
+        "usage": "daudit <directory>",
+        "runtime": {
+          "shell": "bash",
+          "mode": "interactive"
+        },
+        "inputs": {
+          "argv": [
+            "directory path"
+          ],
+          "prompts": [
+            "Enter max depth (Press Enter for Infinity)"
+          ]
+        },
+        "outputs": [
+          "Lists directories",
+          "Displays size via du -sh",
+          "Formatted output with icons"
+        ],
+        "dependencies": [
+          "bash",
+          "find",
+          "du",
+          "read",
+          "basename",
+          "echo -e"
+        ],
+        "behavior": {
+          "depth_control": "Optional max depth",
+          "scan_mode": "Directory traversal",
+          "safety": "Read-only"
+        },
+        "notes": [
+          "Name currently not printed in output",
+          "Grid formatting commented out"
+        ],
+        "slug": "daudit"
+      }
+    ]
+  },
+  {
+    "type": "directory",
+    "name": "FILEOPS",
+    "children": [
+      {
+        "type": "tool",
+        "id": "append",
+        "name": "append",
+        "path": "assets/payloads/FILEOPS/append",
+        "size": 975,
+        "modified": "2026-04-09T15:35:50.000Z",
+        "title": "Append Tool",
+        "preview": "Safely append content from one file to another with confirmation.",
+        "link": "#docs?id=append",
+        "group": "FILEOPS",
+        "kindLink": "#assets/payloads/FILEOPS/append",
+        "description": "Append the contents of one source file into a destination file after explicit confirmation. See #assets/payloads/FILEOPS/append.",
+        "usage": "append <sourcefile> <destfile>",
+        "runtime": {
+          "shell": "bash",
+          "mode": "non-interactive"
+        },
+        "inputs": {
+          "argv": [
+            "$1 as default source file",
+            "$2 as default destination file"
+          ],
+          "env": [
+            "SRC",
+            "DEST"
+          ],
+          "confirmation": "yes"
+        },
+        "outputs": [
+          "Appends source file contents to destination file",
+          "Prints review, info, abort, error, and ok status messages"
+        ],
+        "dependencies": [
+          "bash",
+          "cat",
+          "read",
+          "set -euo pipefail"
+        ],
+        "behavior": {
+          "source_resolution": "Uses $SRC if set, otherwise falls back to $1",
+          "destination_resolution": "Uses $DEST if set, otherwise falls back to $2",
+          "confirmation_gate": "Requires the user to type yes before writing",
+          "validation": "Fails if the source file does not exist",
+          "write_mode": "append only",
+          "safety": "Never overwrites the destination file"
+        },
+        "notes": [
+          "Designed for explicit file-to-file append operations",
+          "Suitable for controlled merges and manual review workflows"
+        ],
+        "slug": "append"
+      },
+      {
+        "type": "tool",
+        "id": "catappend",
+        "name": "catappend",
+        "path": "assets/payloads/FILEOPS/catappend",
+        "size": 815,
+        "modified": "2026-04-09T15:35:04.000Z",
+        "title": "Cat-Append",
+        "preview": "Interactive stdin capture and append to file.",
+        "link": "#docs?id=catappend",
+        "group": "FILEOPS",
+        "kindLink": "#assets/payloads/FILEOPS/catappend",
+        "description": "Interactively append multi-line stdin content to a target file, with file selection fallback and append-only behavior. See #assets/payloads/FILEOPS/catappend.",
+        "usage": "catappend [filename]",
+        "runtime": {
+          "shell": "bash",
+          "mode": "interactive"
+        },
+        "inputs": {
+          "argv": [
+            "optional target filename"
+          ],
+          "stdin": "multi-line content ending with Ctrl+D",
+          "prompts": [
+            "Select file (fzf fallback)",
+            "Enter filename"
+          ]
+        },
+        "outputs": [
+          "Appends captured stdin to the chosen target file",
+          "Prints start, separator, and done messages"
+        ],
+        "dependencies": [
+          "bash",
+          "fzf",
+          "find",
+          "read",
+          "cat",
+          "source $TOOLS_ROOT/env.global"
+        ],
+        "behavior": {
+          "target_resolution": "Uses $1 first, then fzf selection, then manual filename prompt",
+          "capture_mode": "Reads stdin directly and appends it to the target file",
+          "write_mode": "append only",
+          "safety": "Never truncates or overwrites the target file",
+          "fallbacks": [
+            "fzf selection when no filename is supplied",
+            "manual prompt when fzf returns nothing"
+          ]
+        },
+        "notes": [
+          "Requires an interactive terminal for the prompt flow",
+          "Best used when adding content to an existing file"
+        ],
+        "slug": "catappend"
+      },
+      {
+        "type": "tool",
+        "id": "faudit",
+        "name": "faudit",
+        "path": "assets/payloads/FILEOPS/faudit",
+        "size": 915,
+        "modified": "2026-04-09T15:02:56.000Z",
+        "title": "File Auditor (faudit)",
+        "preview": "Scan files with icons and color output.",
+        "link": "#docs?id=faudit",
+        "group": "FILEOPS",
+        "kindLink": "#assets/payloads/FILEOPS/faudit",
+        "description": "Live-stream file audit with extension-based icons. See #assets/payloads/FILEOPS/faudit.",
+        "usage": "faudit <directory>",
+        "runtime": {
+          "shell": "bash",
+          "mode": "interactive"
+        },
+        "inputs": {
+          "argv": [
+            "directory path"
+          ],
+          "prompts": [
+            "Enter max depth"
+          ]
+        },
+        "outputs": [
+          "Lists files",
+          "Displays icons per extension",
+          "Colored output"
+        ],
+        "dependencies": [
+          "bash",
+          "find",
+          "case",
+          "echo -e"
+        ],
+        "behavior": {
+          "classification": "Extension-based icons",
+          "scan_mode": "Recursive file scan",
+          "safety": "Read-only"
+        },
+        "slug": "faudit"
+      },
+      {
+        "type": "tool",
+        "id": "termux-shell",
+        "name": "termux-shell",
+        "path": "assets/payloads/FILEOPS/termux-shell",
+        "size": 813,
+        "modified": "2026-04-09T15:02:56.000Z",
+        "title": "Termux Shell Environment",
+        "preview": "Force-load login semantics and environment.",
+        "link": "#docs?id=termux-shell",
+        "group": "FILEOPS",
+        "kindLink": "#assets/payloads/FILEOPS/termux-shell",
+        "description": "Load a canonical Termux shell environment and hand off to bash. See #assets/payloads/FILEOPS/termux-shell.",
+        "usage": "termux-shell [args]",
+        "runtime": {
+          "shell": "bash",
+          "mode": "interactive"
+        },
+        "outputs": [
+          "Loads environment",
+          "Sources configs",
+          "Execs bash"
+        ],
+        "dependencies": [
+          "bash",
+          "env.global"
+        ],
+        "behavior": {
+          "environment_setup": "Sets PREFIX, HOME, PATH",
+          "handoff": "exec bash",
+          "safety": "No file writes"
+        },
+        "slug": "termux-shell"
+      }
+    ]
+  },
+  {
+    "type": "directory",
+    "name": "SYSTEM",
+    "children": [
+      {
+        "type": "tool",
+        "id": "regfind",
+        "name": "regfind",
+        "path": "assets/payloads/SYSTEM/regfind",
+        "size": 350,
+        "modified": "2026-04-09T15:02:56.000Z",
+        "title": "Regex Finder",
+        "preview": "Recursive grep search with regex support.",
+        "link": "#docs?id=regfind",
+        "group": "SYSTEM",
+        "kindLink": "#assets/payloads/SYSTEM/regfind",
+        "description": "Recursive regex search using grep. See #assets/payloads/SYSTEM/regfind.",
+        "usage": "regfind <regex> [path]",
+        "runtime": {
+          "shell": "bash",
+          "mode": "non-interactive"
+        },
+        "dependencies": [
+          "bash",
+          "grep"
+        ],
+        "behavior": {
+          "search_mode": "grep -rEnI",
+          "safety": "Read-only"
+        },
+        "slug": "regfind"
+      },
+      {
+        "type": "file",
+        "id": "startuplog",
+        "name": "startuplog",
+        "path": "SYSTEM/startuplog",
+        "size": 946,
+        "modified": "2026-04-09T15:02:56.000Z"
+      }
+    ]
+  },
+  {
+    "type": "directory",
+    "name": "TEMPLATES",
+    "children": [
+      {
+        "type": "file",
+        "id": "renamd",
+        "name": "renamd",
+        "path": "TEMPLATES/renamd",
+        "size": 279,
+        "modified": "2026-04-09T15:02:56.000Z"
+      }
+    ]
+  },
+  {
+    "type": "file",
+    "id": "docs-manifest",
+    "name": "docs-manifest.json",
+    "path": "docs-manifest.json",
+    "size": 890,
+    "modified": "2026-04-09T15:02:56.000Z"
+  },
+  {
+    "type": "file",
+    "id": "download-mirror",
+    "name": "download-mirror.sh",
+    "path": "download-mirror.sh",
+    "size": 0,
+    "modified": "2026-04-09T15:02:56.000Z"
+  }
+]
