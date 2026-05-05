@@ -1,5 +1,7 @@
 import { mountLayout } from '../../components/layout.js';
 import { initRouter } from '../../components/router.js';
+import { initTOC } from "../../components/toc.js";
+
 const saveScroll = () => {
   const currentPath = window.location.hash || '#assistance';
   sessionStorage.setItem(`scroll_${currentPath}`, window.scrollY);
@@ -28,6 +30,8 @@ async function bootstrap() {
   }
 
   const ui = mountLayout(root, config);
+
+ //  initTOC();
 
   // Centralized Event Delegation
   document.addEventListener('click', (e) => {
@@ -107,6 +111,9 @@ async function bootstrap() {
   }
 
   initRouter(ui, config);
+
+  initTOC();
+  
   // 2. Handle restoration when the view changes
   window.addEventListener('hashchange', () => {
     setTimeout(restoreScroll, 50); 
