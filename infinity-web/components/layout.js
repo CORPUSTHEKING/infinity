@@ -30,6 +30,7 @@ export function createLayoutShell(config = {}) {
       <section class="inf-summary" data-inf-summary style="display: none;">
         ${renderSummary()}
       </section>
+      <section class="inf-toc-wrap" data-toc-slot></section>
 
       <main class="inf-main" data-inf-main></main>
 
