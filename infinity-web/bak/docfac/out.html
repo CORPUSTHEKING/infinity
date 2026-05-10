@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Converted Document</title>
+  <style>
+
+html {
+color: #1a1a1a;
+background-color: #fdfdfd;
+}
+body {
+margin: 0 auto;
+max-width: 36em;
+padding-left: 50px;
+padding-right: 50px;
+padding-top: 50px;
+padding-bottom: 50px;
+hyphens: auto;
+overflow-wrap: break-word;
+text-rendering: optimizeLegibility;
+font-kerning: normal;
+}
+@media (max-width: 600px) {
+body {
+font-size: 0.9em;
+padding: 12px;
+}
+h1 {
+font-size: 1.8em;
+}
+}
+@media print {
+html {
+background-color: white;
+}
+body {
+background-color: transparent;
+color: black;
+font-size: 12pt;
+}
+p, h2, h3 {
+orphans: 3;
+widows: 3;
+}
+h2, h3, h4 {
+page-break-after: avoid;
+}
+}
+p {
+margin: 1em 0;
+}
+a {
+color: #1a1a1a;
+}
+a:visited {
+color: #1a1a1a;
+}
+img {
+max-width: 100%;
+}
+svg {
+height: auto;
+max-width: 100%;
+}
+h1, h2, h3, h4, h5, h6 {
+margin-top: 1.4em;
+}
+h5, h6 {
+font-size: 1em;
+font-style: italic;
+}
+h6 {
+font-weight: normal;
+}
+ol, ul {
+padding-left: 1.7em;
+margin-top: 1em;
+}
+li > ol, li > ul {
+margin-top: 0;
+}
+blockquote {
+margin: 1em 0 1em 1.7em;
+padding-left: 1em;
+border-left: 2px solid #e6e6e6;
+color: #606060;
+}
+code {
+font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+font-size: 85%;
+margin: 0;
+hyphens: manual;
+}
+pre {
+margin: 1em 0;
+overflow: auto;
+}
+pre code {
+padding: 0;
+overflow: visible;
+overflow-wrap: normal;
+}
+.sourceCode {
+background-color: transparent;
+overflow: visible;
+}
+hr {
+border: none;
+border-top: 1px solid #1a1a1a;
+height: 1px;
+margin: 1em 0;
+}
+table {
+margin: 1em 0;
+border-collapse: collapse;
+width: 100%;
+overflow-x: auto;
+display: block;
+font-variant-numeric: lining-nums tabular-nums;
+}
+table caption {
+margin-bottom: 0.75em;
+}
+tbody {
+margin-top: 0.5em;
+border-top: 1px solid #1a1a1a;
+border-bottom: 1px solid #1a1a1a;
+}
+th {
+border-top: 1px solid #1a1a1a;
+padding: 0.25em 0.5em 0.25em 0.5em;
+}
+td {
+padding: 0.125em 0.5em 0.25em 0.5em;
+}
+header {
+margin-bottom: 4em;
+text-align: center;
+}
+#TOC li {
+list-style: none;
+}
+#TOC ul {
+padding-left: 1.3em;
+}
+#TOC > ul {
+padding-left: 0;
+}
+#TOC a:not(:hover) {
+text-decoration: none;
+}
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+
+ul.task-list[class]{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+font-size: inherit;
+width: 0.8em;
+margin: 0 0.8em 0.2em -1.6em;
+vertical-align: middle;
+}
+</style>
+  <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title">Converted Document</h1>
+</header>
+<p>A strict append-confirmation Bash script. It takes a source file and destination file from arguments or environment, shows a review prompt, requires typed confirmation, verifies the source exists, then appends the source contents into the destination.</p>
+<p>Line / fragment Reason Description</p>
+<table style="width:99%;">
+<colgroup>
+<col style="width: 46%" />
+<col style="width: 9%" />
+<col style="width: 43%" />
+</colgroup>
+<thead>
+<tr>
+<th style="text-align: left;">Column 1</th>
+<th style="text-align: left;">Column 2</th>
+<th style="text-align: left;">Column 3</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">#!/data/data/com.termux/files/usr/bin/bash</td>
+<td style="text-align: left;">Interpreter selection</td>
+<td style="text-align: left;">Shebang. Tells the OS to run this script with the Bash binary at that absolute path. #! marks the interpreter directive; the rest is the executable path.</td>
+</tr>
+<tr>
+<td style="text-align: left;">/data/data/com.termux/files/usr/bin/bash</td>
+<td style="text-align: left;">Absolute interpreter path</td>
+<td style="text-align: left;">Forces this specific Bash executable instead of searching PATH.</td>
+</tr>
+<tr>
+<td style="text-align: left;">set -euo pipefail</td>
+<td style="text-align: left;">Strict shell mode</td>
+<td style="text-align: left;">Enables fail-fast behavior. -e exits on unhandled non-zero status, -u errors on unset variables, and pipefail makes pipelines fail if any command in them fails.</td>
+</tr>
+<tr>
+<td style="text-align: left;">set</td>
+<td style="text-align: left;">Shell built-in</td>
+<td style="text-align: left;">Bash built-in used to change shell options.</td>
+</tr>
+<tr>
+<td style="text-align: left;">-e</td>
+<td style="text-align: left;">Exit on error</td>
+<td style="text-align: left;">Stops execution when a command fails, with standard Bash exception rules.</td>
+</tr>
+<tr>
+<td style="text-align: left;">-u</td>
+<td style="text-align: left;">Unset-variable error</td>
+<td style="text-align: left;">Treats reference to an unset variable as an error.</td>
+</tr>
+<tr>
+<td style="text-align: left;">-o pipefail</td>
+<td style="text-align: left;">Pipeline failure mode</td>
+<td style="text-align: left;">Makes a pipeline return failure if any command in the pipeline fails, not just the last one.</td>
+</tr>
+<tr>
+<td style="text-align: left;"># defaults</td>
+<td style="text-align: left;">Comment</td>
+<td style="text-align: left;">Section label only. Ignored by Bash.</td>
+</tr>
+<tr>
+<td style="text-align: left;">DEFAULT_SRC=“$1”</td>
+<td style="text-align: left;">Default source assignment</td>
+<td style="text-align: left;">Stores the first positional argument in DEFAULT_SRC. This is the fallback source file if no other source is provided.</td>
+</tr>
+<tr>
+<td style="text-align: left;">“$1”</td>
+<td style="text-align: left;">Positional parameter</td>
+<td style="text-align: left;">The first command-line argument. Quoted to preserve spaces and special characters.</td>
+</tr>
+<tr>
+<td style="text-align: left;">#“…env…”</td>
+<td style="text-align: left;">Commented-out literal path</td>
+<td style="text-align: left;">Ignored by Bash. It shows an alternative or reference path, but has no runtime effect.</td>
+</tr>
+<tr>
+<td style="text-align: left;">DEFAULT_DEST=“$2”</td>
+<td style="text-align: left;">Default destination assignment</td>
+<td style="text-align: left;">Stores the second positional argument in DEFAULT_DEST. This is the fallback destination file if no other destination is provided.</td>
+</tr>
+<tr>
+<td style="text-align: left;">“$2”</td>
+<td style="text-align: left;">Positional parameter</td>
+<td style="text-align: left;">The second command-line argument. Quoted for safety.</td>
+</tr>
+<tr>
+<td style="text-align: left;">#“…/cupidkeofficial8/.env”</td>
+<td style="text-align: left;">Commented-out literal path</td>
+<td style="text-align: left;">Ignored by Bash. It is only a note and does nothing.</td>
+</tr>
+<tr>
+<td style="text-align: left;">#echo “<span class="math display">\[prompt\]</span> source file?”</td>
+<td style="text-align: left;">Comment</td>
+<td style="text-align: left;">Ignored by Bash. Indicates a previously planned prompt.</td>
+</tr>
+<tr>
+<td style="text-align: left;">#echo ” default: <span class="math inline">\(DEFAULT_SRC&quot; | Comment | Ignored by Bash. Would have printed the default source value if active. |
+| #read -r -p &quot;SRC (press Enter to accept default): &quot; SRC | Comment | Ignored by Bash. Shows a manual input prompt that is currently disabled. |
+| SRC=&quot;\)</span>{SRC:-$DEFAULT_SRC}”</td>
+<td style="text-align: left;">Source fallback resolution</td>
+<td style="text-align: left;">Uses parameter expansion to set SRC to its existing value if already defined; otherwise falls back to DEFAULT_SRC.</td>
+</tr>
+<tr>
+<td style="text-align: left;">SRC</td>
+<td style="text-align: left;">Variable</td>
+<td style="text-align: left;">Final source file path used by the script.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><span class="math inline">\({SRC:-\)</span>DEFAULT_SRC}</td>
+<td style="text-align: left;">Parameter expansion with default</td>
+<td style="text-align: left;">Returns SRC if set and non-empty; otherwise returns DEFAULT_SRC. :- means “use default if unset or empty.”</td>
+</tr>
+<tr>
+<td style="text-align: left;">:</td>
+<td style="text-align: left;">Default-value operator</td>
+<td style="text-align: left;">In <span class="math inline">\({var:-default}, the colon means empty strings also count as missing. |
+| #echo block for destination | Comment | Ignored by Bash. Mirrors the source prompt comments but for destination input. |
+| DEST=&quot;\)</span>{DEST:-$DEFAULT_DEST}”</td>
+</tr>
+<tr>
+<td style="text-align: left;">DEST</td>
+<td style="text-align: left;">Variable</td>
+<td style="text-align: left;">Final destination file path used by the script.</td>
+</tr>
+<tr>
+<td style="text-align: left;">echo</td>
+<td style="text-align: left;">Output command</td>
+<td style="text-align: left;">Prints text to standard output.</td>
+</tr>
+<tr>
+<td style="text-align: left;">echo (blank line)</td>
+<td style="text-align: left;">Spacing</td>
+<td style="text-align: left;">The standalone echo prints a newline to visually separate sections.</td>
+</tr>
+<tr>
+<td style="text-align: left;">“<span class="math display">\[review\]</span>”</td>
+<td style="text-align: left;">Label text</td>
+<td style="text-align: left;">Marks the review section shown to the user.</td>
+</tr>
+<tr>
+<td style="text-align: left;">” SRC : $SRC”</td>
+<td style="text-align: left;">Review output</td>
+<td style="text-align: left;">Shows the chosen source file path.</td>
+</tr>
+<tr>
+<td style="text-align: left;">” DEST: <span class="math inline">\(DEST&quot; | Review output | Shows the chosen destination file path. |
+| read -r -p &quot;Append SRC -&gt; DEST ? [yes/NO]: &quot; CONFIRM | Confirmation prompt | Reads a typed response into CONFIRM. -r disables backslash escaping. -p shows the prompt first. |
+| read | Built-in command | Reads one line from standard input into a variable. |
+| -r | Raw read mode | Prevents backslashes from being interpreted as escapes. |
+| -p | Prompt option | Displays the prompt string before reading input. |
+| &quot;Append SRC -&gt; DEST ? [yes/NO]: &quot; | Prompt text | Asks the user to type exactly yes to continue. |
+| CONFIRM | Variable | Holds the user’s typed confirmation. |
+| if [ &quot;\)</span>CONFIRM” != “yes” ]; then</td>
+<td style="text-align: left;">Confirmation gate</td>
+<td style="text-align: left;">Starts a conditional that aborts unless the user typed yes exactly. [ is the test command. != performs string inequality comparison. then begins the abort branch.</td>
+</tr>
+<tr>
+<td style="text-align: left;">[</td>
+<td style="text-align: left;">Test command</td>
+<td style="text-align: left;">POSIX-style conditional test.</td>
+</tr>
+<tr>
+<td style="text-align: left;">“<span class="math inline">\(CONFIRM&quot; | Tested value | The user’s confirmation input, quoted to preserve spaces. |
+| != | String inequality | True when the input is not exactly yes. |
+| &quot;yes&quot; | Required approval string | The only accepted value for continuing. |
+| then | Branch start | Begins commands that run when confirmation fails. |
+| echo &quot;[abort] user declined&quot; | Abort message | Prints a message indicating the user rejected the action. |
+| exit 1 | Failure exit | Stops the script with a non-zero status to indicate cancellation/error. |
+| fi | End conditional | Closes the confirmation if block. |
+| if [ ! -f &quot;\)</span>SRC” ]; then</td>
+<td style="text-align: left;">Source existence check</td>
+<td style="text-align: left;">Verifies that the source path exists and is a regular file. ! negates the test. If the file is missing or not regular, the script aborts.</td>
+</tr>
+<tr>
+<td style="text-align: left;">!</td>
+<td style="text-align: left;">Negation</td>
+<td style="text-align: left;">Inverts the truth value of the file test.</td>
+</tr>
+<tr>
+<td style="text-align: left;">-f</td>
+<td style="text-align: left;">Regular-file test</td>
+<td style="text-align: left;">Returns true only if the path exists and is a regular file.</td>
+</tr>
+<tr>
+<td style="text-align: left;">“$SRC”</td>
+<td style="text-align: left;">Source path</td>
+<td style="text-align: left;">The file that will be appended from.</td>
+</tr>
+<tr>
+<td style="text-align: left;">echo “<span class="math display">\[error\]</span> source not found: $SRC” &gt;&amp;2</td>
+<td style="text-align: left;">Error reporting</td>
+<td style="text-align: left;">Prints an error to standard error. &gt;&amp;2 redirects output to stderr.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&gt;&amp;2</td>
+<td style="text-align: left;">stderr redirection</td>
+<td style="text-align: left;">Sends the error message to file descriptor 2 instead of stdout.</td>
+</tr>
+<tr>
+<td style="text-align: left;">exit 1</td>
+<td style="text-align: left;">Failure exit</td>
+<td style="text-align: left;">Stops the script if the source file does not exist.</td>
+</tr>
+<tr>
+<td style="text-align: left;">fi</td>
+<td style="text-align: left;">End conditional</td>
+<td style="text-align: left;">Closes the source existence check.</td>
+</tr>
+<tr>
+<td style="text-align: left;">echo “<span class="math display">\[info\]</span> appending $SRC -&gt; <span class="math inline">\(DEST&quot; | Status message | Announces the append operation before it happens. |
+| cat &quot;\)</span>SRC” &gt;&gt; “<span class="math inline">\(DEST&quot; | Append operation | Reads the source file and appends its contents to the destination file. &gt;&gt; appends instead of overwriting. |
+| cat | External command | Outputs the contents of the source file unchanged. |
+| &quot;\)</span>SRC”</td>
+<td style="text-align: left;">Input file</td>
+<td style="text-align: left;">The file being read. Quoted to preserve spaces and special characters.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&gt;&gt;</td>
+<td style="text-align: left;">Append redirection</td>
+<td style="text-align: left;">Adds output to the end of the destination file.</td>
+</tr>
+<tr>
+<td style="text-align: left;">“$DEST”</td>
+<td style="text-align: left;">Output file</td>
+<td style="text-align: left;">The file receiving the appended content. Quoted for safety.</td>
+</tr>
+<tr>
+<td style="text-align: left;">echo “<span class="math display">\[ok\]</span> appended successfully”</td>
+<td style="text-align: left;">Success message</td>
+<td style="text-align: left;">Confirms that the append completed.</td>
+</tr>
+</tbody>
+</table>
+<p>Dependencies</p>
+<p>Dependency Reason Description</p>
+<table style="width:99%;">
+<colgroup>
+<col style="width: 15%" />
+<col style="width: 15%" />
+<col style="width: 68%" />
+</colgroup>
+<thead>
+<tr>
+<th style="text-align: left;">Column 1</th>
+<th style="text-align: left;">Column 2</th>
+<th style="text-align: left;">Column 3</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">bash</td>
+<td style="text-align: left;">Script interpreter</td>
+<td style="text-align: left;">Required for set -euo pipefail, ${var:-default}, read -r -p, and the rest of the shell syntax used here.</td>
+</tr>
+<tr>
+<td style="text-align: left;">cat</td>
+<td style="text-align: left;">File-reading command</td>
+<td style="text-align: left;">Used to stream the source file contents into the destination file.</td>
+</tr>
+<tr>
+<td style="text-align: left;">Standard input</td>
+<td style="text-align: left;">User interaction</td>
+<td style="text-align: left;">Needed for the confirmation prompt.</td>
+</tr>
+<tr>
+<td style="text-align: left;">Standard output</td>
+<td style="text-align: left;">User messages</td>
+<td style="text-align: left;">Used for review, info, and success messages.</td>
+</tr>
+<tr>
+<td style="text-align: left;">Standard error</td>
+<td style="text-align: left;">Error reporting</td>
+<td style="text-align: left;">Used for the missing-source error message.</td>
+</tr>
+<tr>
+<td style="text-align: left;">Source file path</td>
+<td style="text-align: left;">Input data</td>
+<td style="text-align: left;">Must point to an existing regular file for the append to proceed.</td>
+</tr>
+<tr>
+<td style="text-align: left;">Destination file path</td>
+<td style="text-align: left;">Output target</td>
+<td style="text-align: left;">Must be writable for the append to succeed.</td>
+</tr>
+</tbody>
+</table>
+<p>## Symbol and syntax table</p>
+<p>Symbol Meaning Effect here</p>
+<table style="width:99%;">
+<colgroup>
+<col style="width: 16%" />
+<col style="width: 21%" />
+<col style="width: 61%" />
+</colgroup>
+<thead>
+<tr>
+<th style="text-align: left;">Column 1</th>
+<th style="text-align: left;">Column 2</th>
+<th style="text-align: left;">Column 3</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">#</td>
+<td style="text-align: left;">Comment marker</td>
+<td style="text-align: left;">Everything after it is ignored by Bash.</td>
+</tr>
+<tr>
+<td style="text-align: left;">”</td>
+<td style="text-align: left;">Double quotes</td>
+<td style="text-align: left;">Preserve spaces and special characters while allowing variable expansion.</td>
+</tr>
+<tr>
+<td style="text-align: left;">$</td>
+<td style="text-align: left;">Variable expansion</td>
+<td style="text-align: left;">Used for $1, $2, $SRC, $DEST, $CONFIRM.</td>
+</tr>
+<tr>
+<td style="text-align: left;">{}</td>
+<td style="text-align: left;">Parameter expansion boundary</td>
+<td style="text-align: left;">Used in <span class="math inline">\({SRC:-\)</span>DEFAULT_SRC} and <span class="math inline">\({DEST:-\)</span>DEFAULT_DEST}.</td>
+</tr>
+<tr>
+<td style="text-align: left;">:-</td>
+<td style="text-align: left;">Default-value operator</td>
+<td style="text-align: left;">Uses the fallback if the variable is unset or empty.</td>
+</tr>
+<tr>
+<td style="text-align: left;">:</td>
+<td style="text-align: left;">Part of :-</td>
+<td style="text-align: left;">Makes the default apply to empty strings as well as unset values.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><span class="math display">\[ \]</span></td>
+<td style="text-align: left;">Test syntax</td>
+<td style="text-align: left;">Used for file and string checks.</td>
+</tr>
+<tr>
+<td style="text-align: left;">!</td>
+<td style="text-align: left;">Negation</td>
+<td style="text-align: left;">Inverts the result of <span class="math display">\[ -f &quot;\$SRC&quot; \]</span>.</td>
+</tr>
+<tr>
+<td style="text-align: left;">-z</td>
+<td style="text-align: left;">Empty-string test</td>
+<td style="text-align: left;">Not used directly in the active code here, but the same family of test operators as -f.</td>
+</tr>
+<tr>
+<td style="text-align: left;">-f</td>
+<td style="text-align: left;">Regular file test</td>
+<td style="text-align: left;">Confirms the source path is a normal file.</td>
+</tr>
+<tr>
+<td style="text-align: left;">!=</td>
+<td style="text-align: left;">String inequality</td>
+<td style="text-align: left;">Checks that confirmation is not equal to yes.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&gt;</td>
+<td style="text-align: left;">Redirection operator</td>
+<td style="text-align: left;">In &gt;&amp;2, redirects output to stderr.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&amp;</td>
+<td style="text-align: left;">File descriptor syntax</td>
+<td style="text-align: left;">Part of &gt;&amp;2.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&gt;&gt;</td>
+<td style="text-align: left;">Append redirection</td>
+<td style="text-align: left;">Writes to the end of the destination file.</td>
+</tr>
+<tr>
+<td style="text-align: left;">;</td>
+<td style="text-align: left;">Command separator</td>
+<td style="text-align: left;">Not used here in active commands.</td>
+</tr>
+<tr>
+<td style="text-align: left;">set -euo pipefail</td>
+<td style="text-align: left;">Shell option bundle</td>
+<td style="text-align: left;">Makes the script stricter and more predictable.</td>
+</tr>
+<tr>
+<td style="text-align: left;">read -r -p</td>
+<td style="text-align: left;">Prompted input</td>
+<td style="text-align: left;">Reads one line from the user with a prompt and no backslash escaping.</td>
+</tr>
+<tr>
+<td style="text-align: left;">exit 1</td>
+<td style="text-align: left;">Error status</td>
+<td style="text-align: left;">Indicates a failed or aborted operation.</td>
+</tr>
+</tbody>
+</table>
+<p>## Execution flow</p>
+<p>Step What happens</p>
+<table style="width:98%;">
+<colgroup>
+<col style="width: 20%" />
+<col style="width: 57%" />
+<col style="width: 20%" />
+</colgroup>
+<thead>
+<tr>
+<th style="text-align: left;">Column 1</th>
+<th style="text-align: left;">Column 2</th>
+<th style="text-align: left;">Column 3</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">1</td>
+<td style="text-align: left;">Bash starts the script using the explicit interpreter path.</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;">2</td>
+<td style="text-align: left;">Strict mode is enabled.</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;">3</td>
+<td style="text-align: left;">DEFAULT_SRC and DEFAULT_DEST are set from positional arguments.</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;">4</td>
+<td style="text-align: left;">SRC and DEST resolve to explicit values or defaults.</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;">5</td>
+<td style="text-align: left;">The script prints a review of the chosen source and destination.</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;">6</td>
+<td style="text-align: left;">It asks the user to type yes to continue.</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;">7</td>
+<td style="text-align: left;">If the answer is not yes, the script aborts.</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;">8</td>
+<td style="text-align: left;">It verifies that the source file exists and is a regular file.</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;">9</td>
+<td style="text-align: left;">If the source is missing, the script prints an error and exits.</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;">10</td>
+<td style="text-align: left;">It appends the source file contents to the destination file.</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;">11</td>
+<td style="text-align: left;">It prints a success message.</td>
+<td style="text-align: left;"></td>
+</tr>
+</tbody>
+</table>
+<p>## Important behavior details</p>
+<p>Behavior Description</p>
+<table style="width:99%;">
+<colgroup>
+<col style="width: 13%" />
+<col style="width: 72%" />
+<col style="width: 13%" />
+</colgroup>
+<thead>
+<tr>
+<th style="text-align: left;">Column 1</th>
+<th style="text-align: left;">Column 2</th>
+<th style="text-align: left;">Column 3</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">Default resolution</td>
+<td style="text-align: left;">SRC and DEST can already be set in the environment; if they are empty or unset, the script falls back to the positional arguments.</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;">Confirmation is exact</td>
+<td style="text-align: left;">Only yes continues. Any other response, including Yes or YES, aborts.</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;">Source validation only</td>
+<td style="text-align: left;">The script checks that the source exists and is a regular file, but it does not validate the destination path before appending.</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;">Append mode</td>
+<td style="text-align: left;">Existing contents of the destination file are preserved; new content is added at the end.</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;">Failure handling</td>
+<td style="text-align: left;">Because set -euo pipefail is active, unexpected failures are likely to stop the script immediately.</td>
+<td style="text-align: left;"></td>
+</tr>
+</tbody>
+</table>
+</body>
+</html>

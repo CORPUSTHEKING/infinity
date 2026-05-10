@@ -1,0 +1,564 @@
+<p>A strict append-confirmation Bash script. It takes a source file and
+destination file from arguments or environment, shows a review prompt,
+requires typed confirmation, verifies the source exists, then appends
+the source contents into the destination.</p>
+<p>Line / fragment Reason Description</p>
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr>
+<th>Column 1</th>
+<th>Column 2</th>
+<th>Column 3</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>#!/data/data/com.termux/files/usr/bin/bash</td>
+<td>Interpreter selection</td>
+<td>Shebang. Tells the OS to run this script with the Bash binary at
+that absolute path. #! marks the interpreter directive; the rest is the
+executable path.</td>
+</tr>
+<tr>
+<td>/data/data/com.termux/files/usr/bin/bash</td>
+<td>Absolute interpreter path</td>
+<td>Forces this specific Bash executable instead of searching PATH.</td>
+</tr>
+<tr>
+<td>set -euo pipefail</td>
+<td>Strict shell mode</td>
+<td>Enables fail-fast behavior. -e exits on unhandled non-zero status,
+-u errors on unset variables, and pipefail makes pipelines fail if any
+command in them fails.</td>
+</tr>
+<tr>
+<td>set</td>
+<td>Shell built-in</td>
+<td>Bash built-in used to change shell options.</td>
+</tr>
+<tr>
+<td>-e</td>
+<td>Exit on error</td>
+<td>Stops execution when a command fails, with standard Bash exception
+rules.</td>
+</tr>
+<tr>
+<td>-u</td>
+<td>Unset-variable error</td>
+<td>Treats reference to an unset variable as an error.</td>
+</tr>
+<tr>
+<td>-o pipefail</td>
+<td>Pipeline failure mode</td>
+<td>Makes a pipeline return failure if any command in the pipeline
+fails, not just the last one.</td>
+</tr>
+<tr>
+<td># defaults</td>
+<td>Comment</td>
+<td>Section label only. Ignored by Bash.</td>
+</tr>
+<tr>
+<td>DEFAULT_SRC=“$1”</td>
+<td>Default source assignment</td>
+<td>Stores the first positional argument in DEFAULT_SRC. This is the
+fallback source file if no other source is provided.</td>
+</tr>
+<tr>
+<td>“$1”</td>
+<td>Positional parameter</td>
+<td>The first command-line argument. Quoted to preserve spaces and
+special characters.</td>
+</tr>
+<tr>
+<td>#“…env…”</td>
+<td>Commented-out literal path</td>
+<td>Ignored by Bash. It shows an alternative or reference path, but has
+no runtime effect.</td>
+</tr>
+<tr>
+<td>DEFAULT_DEST=“$2”</td>
+<td>Default destination assignment</td>
+<td>Stores the second positional argument in DEFAULT_DEST. This is the
+fallback destination file if no other destination is provided.</td>
+</tr>
+<tr>
+<td>“$2”</td>
+<td>Positional parameter</td>
+<td>The second command-line argument. Quoted for safety.</td>
+</tr>
+<tr>
+<td>#“…/cupidkeofficial8/.env”</td>
+<td>Commented-out literal path</td>
+<td>Ignored by Bash. It is only a note and does nothing.</td>
+</tr>
+<tr>
+<td>#echo “[prompt] source file?”</td>
+<td>Comment</td>
+<td>Ignored by Bash. Indicates a previously planned prompt.</td>
+</tr>
+<tr>
+<td>#echo ” default: <span class="math inline">$DEFAULT_SRC" | Comment |
+Ignored by Bash. Would have printed the default source value if active.
+|
+| #read -r -p "SRC (press Enter to accept default): " SRC | Comment |
+Ignored by Bash. Shows a manual input prompt that is currently disabled.
+|
+| SRC="$</span>{SRC:-$DEFAULT_SRC}”</td>
+<td>Source fallback resolution</td>
+<td>Uses parameter expansion to set SRC to its existing value if already
+defined; otherwise falls back to DEFAULT_SRC.</td>
+</tr>
+<tr>
+<td>SRC</td>
+<td>Variable</td>
+<td>Final source file path used by the script.</td>
+</tr>
+<tr>
+<td><span class="math inline">${SRC:-$</span>DEFAULT_SRC}</td>
+<td>Parameter expansion with default</td>
+<td>Returns SRC if set and non-empty; otherwise returns DEFAULT_SRC. :-
+means “use default if unset or empty.”</td>
+</tr>
+<tr>
+<td>:</td>
+<td>Default-value operator</td>
+<td>In <span class="math inline">${var:-default}, the colon means empty
+strings also count as missing. |
+| #echo block for destination | Comment | Ignored by Bash. Mirrors the
+source prompt comments but for destination input. |
+| DEST="$</span>{DEST:-$DEFAULT_DEST}”</td>
+</tr>
+<tr>
+<td>DEST</td>
+<td>Variable</td>
+<td>Final destination file path used by the script.</td>
+</tr>
+<tr>
+<td>echo</td>
+<td>Output command</td>
+<td>Prints text to standard output.</td>
+</tr>
+<tr>
+<td>echo (blank line)</td>
+<td>Spacing</td>
+<td>The standalone echo prints a newline to visually separate
+sections.</td>
+</tr>
+<tr>
+<td>“[review]”</td>
+<td>Label text</td>
+<td>Marks the review section shown to the user.</td>
+</tr>
+<tr>
+<td>” SRC : $SRC”</td>
+<td>Review output</td>
+<td>Shows the chosen source file path.</td>
+</tr>
+<tr>
+<td>” DEST: <span class="math inline">$DEST" | Review output | Shows the
+chosen destination file path. |
+| read -r -p "Append SRC -&gt; DEST ? [yes/NO]: " CONFIRM | Confirmation
+prompt | Reads a typed response into CONFIRM. -r disables backslash
+escaping. -p shows the prompt first. |
+| read | Built-in command | Reads one line from standard input into a
+variable. |
+| -r | Raw read mode | Prevents backslashes from being interpreted as
+escapes. |
+| -p | Prompt option | Displays the prompt string before reading input.
+|
+| "Append SRC -&gt; DEST ? [yes/NO]: " | Prompt text | Asks the user to
+type exactly yes to continue. |
+| CONFIRM | Variable | Holds the user’s typed confirmation. |
+| if [ "$</span>CONFIRM” != “yes” ]; then</td>
+<td>Confirmation gate</td>
+<td>Starts a conditional that aborts unless the user typed yes exactly.
+[ is the test command. != performs string inequality comparison. then
+begins the abort branch.</td>
+</tr>
+<tr>
+<td>[</td>
+<td>Test command</td>
+<td>POSIX-style conditional test.</td>
+</tr>
+<tr>
+<td>“<span class="math inline">$CONFIRM" | Tested value | The user’s
+confirmation input, quoted to preserve spaces. |
+| != | String inequality | True when the input is not exactly yes. |
+| "yes" | Required approval string | The only accepted value for
+continuing. |
+| then | Branch start | Begins commands that run when confirmation
+fails. |
+| echo "[abort] user declined" | Abort message | Prints a message
+indicating the user rejected the action. |
+| exit 1 | Failure exit | Stops the script with a non-zero status to
+indicate cancellation/error. |
+| fi | End conditional | Closes the confirmation if block. |
+| if [ ! -f "$</span>SRC” ]; then</td>
+<td>Source existence check</td>
+<td>Verifies that the source path exists and is a regular file. !
+negates the test. If the file is missing or not regular, the script
+aborts.</td>
+</tr>
+<tr>
+<td>!</td>
+<td>Negation</td>
+<td>Inverts the truth value of the file test.</td>
+</tr>
+<tr>
+<td>-f</td>
+<td>Regular-file test</td>
+<td>Returns true only if the path exists and is a regular file.</td>
+</tr>
+<tr>
+<td>“$SRC”</td>
+<td>Source path</td>
+<td>The file that will be appended from.</td>
+</tr>
+<tr>
+<td>echo “[error] source not found: $SRC” &gt;&amp;2</td>
+<td>Error reporting</td>
+<td>Prints an error to standard error. &gt;&amp;2 redirects output to
+stderr.</td>
+</tr>
+<tr>
+<td>&gt;&amp;2</td>
+<td>stderr redirection</td>
+<td>Sends the error message to file descriptor 2 instead of stdout.</td>
+</tr>
+<tr>
+<td>exit 1</td>
+<td>Failure exit</td>
+<td>Stops the script if the source file does not exist.</td>
+</tr>
+<tr>
+<td>fi</td>
+<td>End conditional</td>
+<td>Closes the source existence check.</td>
+</tr>
+<tr>
+<td>echo “[info] appending $SRC -&gt; <span class="math inline">$DEST" |
+Status message | Announces the append operation before it happens. |
+| cat "$</span>SRC” &gt;&gt; “<span class="math inline">$DEST" | Append
+operation | Reads the source file and appends its contents to the
+destination file. &gt;&gt; appends instead of overwriting. |
+| cat | External command | Outputs the contents of the source file
+unchanged. |
+| "$</span>SRC”</td>
+<td>Input file</td>
+<td>The file being read. Quoted to preserve spaces and special
+characters.</td>
+</tr>
+<tr>
+<td>&gt;&gt;</td>
+<td>Append redirection</td>
+<td>Adds output to the end of the destination file.</td>
+</tr>
+<tr>
+<td>“$DEST”</td>
+<td>Output file</td>
+<td>The file receiving the appended content. Quoted for safety.</td>
+</tr>
+<tr>
+<td>echo “[ok] appended successfully”</td>
+<td>Success message</td>
+<td>Confirms that the append completed.</td>
+</tr>
+</tbody>
+</table>
+<p>Dependencies</p>
+<p>Dependency Reason Description</p>
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr>
+<th>Column 1</th>
+<th>Column 2</th>
+<th>Column 3</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>bash</td>
+<td>Script interpreter</td>
+<td>Required for set -euo pipefail, ${var:-default}, read -r -p, and the
+rest of the shell syntax used here.</td>
+</tr>
+<tr>
+<td>cat</td>
+<td>File-reading command</td>
+<td>Used to stream the source file contents into the destination
+file.</td>
+</tr>
+<tr>
+<td>Standard input</td>
+<td>User interaction</td>
+<td>Needed for the confirmation prompt.</td>
+</tr>
+<tr>
+<td>Standard output</td>
+<td>User messages</td>
+<td>Used for review, info, and success messages.</td>
+</tr>
+<tr>
+<td>Standard error</td>
+<td>Error reporting</td>
+<td>Used for the missing-source error message.</td>
+</tr>
+<tr>
+<td>Source file path</td>
+<td>Input data</td>
+<td>Must point to an existing regular file for the append to
+proceed.</td>
+</tr>
+<tr>
+<td>Destination file path</td>
+<td>Output target</td>
+<td>Must be writable for the append to succeed.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="symbol-and-syntax-table">Symbol and syntax table</h2>
+<p>Symbol Meaning Effect here</p>
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr>
+<th>Column 1</th>
+<th>Column 2</th>
+<th>Column 3</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>#</td>
+<td>Comment marker</td>
+<td>Everything after it is ignored by Bash.</td>
+</tr>
+<tr>
+<td>”</td>
+<td>Double quotes</td>
+<td>Preserve spaces and special characters while allowing variable
+expansion.</td>
+</tr>
+<tr>
+<td>$</td>
+<td>Variable expansion</td>
+<td>Used for $1, $2, $SRC, $DEST, $CONFIRM.</td>
+</tr>
+<tr>
+<td>{}</td>
+<td>Parameter expansion boundary</td>
+<td>Used in <span class="math inline">${SRC:-$</span>DEFAULT_SRC} and
+<span class="math inline">${DEST:-$</span>DEFAULT_DEST}.</td>
+</tr>
+<tr>
+<td>:-</td>
+<td>Default-value operator</td>
+<td>Uses the fallback if the variable is unset or empty.</td>
+</tr>
+<tr>
+<td>:</td>
+<td>Part of :-</td>
+<td>Makes the default apply to empty strings as well as unset
+values.</td>
+</tr>
+<tr>
+<td>[ ]</td>
+<td>Test syntax</td>
+<td>Used for file and string checks.</td>
+</tr>
+<tr>
+<td>!</td>
+<td>Negation</td>
+<td>Inverts the result of [ -f “$SRC” ].</td>
+</tr>
+<tr>
+<td>-z</td>
+<td>Empty-string test</td>
+<td>Not used directly in the active code here, but the same family of
+test operators as -f.</td>
+</tr>
+<tr>
+<td>-f</td>
+<td>Regular file test</td>
+<td>Confirms the source path is a normal file.</td>
+</tr>
+<tr>
+<td>!=</td>
+<td>String inequality</td>
+<td>Checks that confirmation is not equal to yes.</td>
+</tr>
+<tr>
+<td>&gt;</td>
+<td>Redirection operator</td>
+<td>In &gt;&amp;2, redirects output to stderr.</td>
+</tr>
+<tr>
+<td>&amp;</td>
+<td>File descriptor syntax</td>
+<td>Part of &gt;&amp;2.</td>
+</tr>
+<tr>
+<td>&gt;&gt;</td>
+<td>Append redirection</td>
+<td>Writes to the end of the destination file.</td>
+</tr>
+<tr>
+<td>;</td>
+<td>Command separator</td>
+<td>Not used here in active commands.</td>
+</tr>
+<tr>
+<td>set -euo pipefail</td>
+<td>Shell option bundle</td>
+<td>Makes the script stricter and more predictable.</td>
+</tr>
+<tr>
+<td>read -r -p</td>
+<td>Prompted input</td>
+<td>Reads one line from the user with a prompt and no backslash
+escaping.</td>
+</tr>
+<tr>
+<td>exit 1</td>
+<td>Error status</td>
+<td>Indicates a failed or aborted operation.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="execution-flow">Execution flow</h2>
+<p>Step What happens</p>
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr>
+<th>Column 1</th>
+<th>Column 2</th>
+<th>Column 3</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>Bash starts the script using the explicit interpreter path.</td>
+<td></td>
+</tr>
+<tr>
+<td>2</td>
+<td>Strict mode is enabled.</td>
+<td></td>
+</tr>
+<tr>
+<td>3</td>
+<td>DEFAULT_SRC and DEFAULT_DEST are set from positional arguments.</td>
+<td></td>
+</tr>
+<tr>
+<td>4</td>
+<td>SRC and DEST resolve to explicit values or defaults.</td>
+<td></td>
+</tr>
+<tr>
+<td>5</td>
+<td>The script prints a review of the chosen source and
+destination.</td>
+<td></td>
+</tr>
+<tr>
+<td>6</td>
+<td>It asks the user to type yes to continue.</td>
+<td></td>
+</tr>
+<tr>
+<td>7</td>
+<td>If the answer is not yes, the script aborts.</td>
+<td></td>
+</tr>
+<tr>
+<td>8</td>
+<td>It verifies that the source file exists and is a regular file.</td>
+<td></td>
+</tr>
+<tr>
+<td>9</td>
+<td>If the source is missing, the script prints an error and exits.</td>
+<td></td>
+</tr>
+<tr>
+<td>10</td>
+<td>It appends the source file contents to the destination file.</td>
+<td></td>
+</tr>
+<tr>
+<td>11</td>
+<td>It prints a success message.</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h2 id="important-behavior-details">Important behavior details</h2>
+<p>Behavior Description</p>
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr>
+<th>Column 1</th>
+<th>Column 2</th>
+<th>Column 3</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Default resolution</td>
+<td>SRC and DEST can already be set in the environment; if they are
+empty or unset, the script falls back to the positional arguments.</td>
+<td></td>
+</tr>
+<tr>
+<td>Confirmation is exact</td>
+<td>Only yes continues. Any other response, including Yes or YES,
+aborts.</td>
+<td></td>
+</tr>
+<tr>
+<td>Source validation only</td>
+<td>The script checks that the source exists and is a regular file, but
+it does not validate the destination path before appending.</td>
+<td></td>
+</tr>
+<tr>
+<td>Append mode</td>
+<td>Existing contents of the destination file are preserved; new content
+is added at the end.</td>
+<td></td>
+</tr>
+<tr>
+<td>Failure handling</td>
+<td>Because set -euo pipefail is active, unexpected failures are likely
+to stop the script immediately.</td>
+<td></td>
+</tr>
+</tbody>
+</table>

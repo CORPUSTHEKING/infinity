@@ -2,6 +2,9 @@ export function renderAssistancePage() {
   return `
     <section class="inf-page">
       <h2>Infinity</h2>
+
+<a href="./index/developer-listing.html">Find & Hire A Developer</a>
+
 <h2 id="greetings-fellow-developer"> <strong>Greetings fellow
 developer</strong></h2>
 <div class="callout callout-question">
