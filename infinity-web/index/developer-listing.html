@@ -278,7 +278,7 @@ section { padding: 18px 0; }
           <div class="eyebrow"><span class="dot"></span> Choose a developer to load their profile</div>
           <h1>Developer roster</h1>
           <p class="subtitle">
-            Each card opens the matching developer folder, loads <code>$name/index.json</code>, and renders the profile page in <code>./index/index.html</code>.
+            Each card opens the matching developer folder, loads <code>$name/index.json</code>, and renders the profile page in <code>./index.html</code>.
           </p>
           <div class="actions">
             <a class="btn btn-primary" href="#developers">Browse Developers</a>
@@ -315,7 +315,7 @@ section { padding: 18px 0; }
 <section>
   <div class="footer-cta">
     <h2>One clean flow: choose → fetch JSON → render profile</h2>
-    <p>Keep developer data in <code>./config/developer/$name/index.json</code>, keep the profile renderer at <code>./index/index.html</code>, and use this page as the intake list.</p>
+    <p>Keep developer data in <code>./config/developer/$name/index.json</code>, keep the profile renderer at <code>./index.html</code>, and use this page as the intake list.</p>
   </div>
 </section>
 
@@ -370,7 +370,7 @@ section { padding: 18px 0; }
     const renderCards = (items) => {
       countValue.textContent = items.length;
       grid.innerHTML = items.map(dev => {
-        const profileUrl = `./index/index.html?name=${encodeURIComponent(dev.slug)}`;
+        const profileUrl = `./index.html?name=${encodeURIComponent(dev.slug)}`;
         return `
           <article class="card">
             <div class="card-top">
