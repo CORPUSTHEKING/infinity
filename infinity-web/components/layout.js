@@ -6,7 +6,7 @@ import { renderSearchDock } from './searchdock.js';
 import { renderSummary } from './summary.js';
 
 export function createLayoutShell(config = {}) {
-  const siteName = config.site_name || 'INFINITY';
+  const siteName = config.site_name || 'SWINFINITY';
 
   return `
     <div class="inf-shell" data-inf-shell>
@@ -22,10 +22,6 @@ export function createLayoutShell(config = {}) {
       ${renderSidebar()}
       ${renderQuickRail(config)}
       ${renderDrawer(config)}
-
-      <section class="inf-hero" data-inf-hero>
-        ${renderHero(siteName)}
-      </section>
 
       <section class="inf-summary" data-inf-summary style="display: none;">
         ${renderSummary()}
@@ -51,7 +47,7 @@ export function createLayoutShell(config = {}) {
 export function mountLayout(root, config = {}) {
   root.innerHTML = createLayoutShell(config);
 
-bindSidebar(root);
+  bindSidebar(root);
 
   const shell = root.querySelector('[data-inf-shell]');
   const brandbar = root.querySelector('[data-inf-brandbar]');
@@ -61,8 +57,20 @@ bindSidebar(root);
   const searchPanel = root.querySelector('[data-inf-searchpanel]');
   const searchInput = root.querySelector('[data-inf-search-input]');
 
+  const menuBtn = root.querySelector('[data-inf-menu-toggle]');
+  const sidebar = root.querySelector('[data-inf-sidebar]') || root.querySelector('.inf-sidebar');
+
+  menuBtn?.addEventListener('click', () => {
+    const isOpen = sidebar?.classList.toggle('is-open');
+    menuBtn.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+  });
+
   return {
     root, shell, brandbar, quickRail, drawer, searchDock, searchPanel, searchInput,
+    setSidebarVisible(visible) {
+      if (sidebar) sidebar.classList.toggle('is-open', visible);
+      if (menuBtn) menuBtn.setAttribute('aria-expanded', visible ? 'true' : 'false');
+    },
     setHero(html) {
       const hero = root.querySelector('[data-inf-hero]');
       if (hero) hero.innerHTML = html;
