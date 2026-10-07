@@ -1,66 +1,45 @@
-let cachedManifest = null;
+import { loadConfig, getCachedConfig } from './config.js';
 
-export async function getManifest() {
-  if (cachedManifest) return cachedManifest;
-  try {
-    // 1. Load both files concurrently
-    const [treeRes, docsRes] = await Promise.all([
-      fetch('./assets/payloads/manifest.json'),
-      fetch('./assets/payloads/docs-manifest.json')
-    ]);
-
-    if (!treeRes.ok || !docsRes.ok) throw new Error('Failed to fetch manifest data');
-
-    const tree = await treeRes.json();
-    const docs = await docsRes.json();
-
-    // 2. Create a lookup map for descriptions (using slug/id)
-    const docsMap = docs.reduce((acc, doc) => {
-      acc[doc.slug] = doc;
-      return acc;
-    }, {});
-
-    // 3. Traverse the manifest tree and inject documentation
-    function hydrate(nodes) {
-      for (const node of nodes) {
-        if (node.type === 'file') {
-          // Merge doc properties (description, author, etc.) into the file node
-          Object.assign(node, docsMap[node.id] || {});
-        } else if (node.type === 'directory' && node.children) {
-          hydrate(node.children);
-        }
-      }
-    }
-
-    hydrate(tree);
-    cachedManifest = tree;
-    return cachedManifest;
-
-  } catch (err) {
-    console.error('Infinity: Manifest hydration failed:', err);
-    return [];
-  }
+function getManifestTree(config) {
+  const manifest = config?.data?.payloadManifest ?? config?.payloadManifest ?? [];
+  return Array.isArray(manifest) ? manifest : [];
 }
 
-export async function searchScripts(query) {
+export async function getManifest() {
+  const config = getCachedConfig() || await loadConfig();
+  return getManifestTree(config);
+}
+
+export async function searchScripts(query = '') {
   const manifest = await getManifest();
+  const q = String(query ?? '').trim().toLowerCase();
+  if (!q) return [];
+
   const results = [];
-  const q = query.toLowerCase();
 
   function traverse(nodes) {
+    if (!Array.isArray(nodes)) return;
+
     for (const node of nodes) {
-      if (node.type === 'file') {
-        // Search in the hydrated fields
-        const inName = node.name.toLowerCase().includes(q);
-        const inDesc = node.description && node.description.toLowerCase().includes(q);
-        
-        if (inName || inDesc) results.push(node);
-      } else if (node.type === 'directory' && node.children) {
-        traverse(node.children);
+      if (!node || typeof node !== 'object') continue;
+
+      if (
+        node.type === 'file' &&
+        typeof node.name === 'string' &&
+        node.name.toLowerCase().includes(q)
+      ) {
+        results.push(node);
+        continue;
       }
+
+      if (node.type === 'directory') traverse(node.children);
     }
   }
 
   traverse(manifest);
   return results;
+}
+
+export function clearDataCache() {
+  // Configuration/data caching is centrally owned by config.js.
 }

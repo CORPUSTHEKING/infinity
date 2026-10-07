@@ -17,8 +17,6 @@ export function renderQuickRail(config = {}) {
         ${actions.map((item) => `
           <a href="#${item.key}" data-route="${item.key}">${item.label}</a>
         `).join('')}
-        <a href="#toc" data-toc-toggle>toc</a>
-
       </div>
     </nav>
   `;
@@ -59,19 +57,6 @@ export function bindQuickRail({ rail, shell, onOpen, onClose } = {}) {
     rail.classList.toggle('is-faded', scrolled && !rail.classList.contains('is-hidden'));
   };
 
-rail.querySelector('[data-toc-toggle]')?.addEventListener('click', (e) => {
-    e.preventDefault();
-
-    const toc = document.querySelector('[data-toc-root] details');
-    if (!toc) return;
-
-    toc.open = !toc.open;
-
-    if (toc.open) {
-      toc.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
-  });
-  
   document.addEventListener(
     'pointerdown',
     (event) => {
